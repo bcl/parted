@@ -3,6 +3,7 @@ GNU parted NEWS                                    -*- outline -*-
 * Noteworthy changes in release 3.1-29 (2017-04-11) [RHEL7.4]
 
   Parted now recognizes NVMe devices
+  Add resizepart command to resize a partition
 
 * Noteworthy changes in release 3.1-18 (2014-08-12) [RHEL7.1]
 

@@ -152,6 +152,9 @@ static const char* fs_type_msg_start = N_("FS-TYPE is one of: ");
 static const char* start_end_msg =    N_("START and END are disk locations, such as "
                 "4GB or 10%.  Negative values count from the end of the disk.  "
                 "For example, -1s specifies exactly the last sector.\n");
+static const char* end_msg =          N_("END is disk location, such as "
+                "4GB or 10%.  Negative value counts from the end of the disk.  "
+                "For example, -1s specifies exactly the last sector.\n");
 static const char* state_msg =        N_("STATE is one of: on, off\n");
 static const char* device_msg =       N_("DEVICE is usually /dev/hda or /dev/sda\n");
 static const char* name_msg =         N_("NAME is any word you want\n");
@@ -433,6 +436,21 @@ constraint_from_start_end (PedDevice* dev, PedGeometry* range_start,
 {
         return ped_constraint_new (ped_alignment_any, ped_alignment_any,
                 range_start, range_end, 1, dev->length);
+}
+
+
+static PedConstraint*
+constraint_from_start_end_fixed_start (PedDevice* dev, PedSector start_sector,
+                           PedGeometry* range_end)
+{
+        PedGeometry range_start;
+        range_start.dev = dev;
+        range_start.start = start_sector;
+        range_start.end = start_sector;
+        range_start.length = 1;
+
+        return ped_constraint_new (ped_alignment_any, ped_alignment_any,
+                &range_start, range_end, 1, dev->length);
 }
 
 void
@@ -1478,7 +1496,7 @@ error:
 }
 
 static int
-do_resize (PedDevice **dev, PedDisk** diskp)
+do_resize (PedDevice **dev)
 {
         ped_exception_throw (
                 PED_EXCEPTION_ERROR,
@@ -1486,6 +1504,63 @@ do_resize (PedDevice **dev, PedDisk** diskp)
                 _("The resize command has been removed in parted 3.0"));
         return 0;
 }
+
+static int
+do_resizepart (PedDevice** dev)
+{
+        PedDisk                 *disk;
+        PedPartition            *part = NULL;
+        PedSector               start, end, oldend;
+        PedGeometry             *range_end = NULL;
+        PedConstraint*          constraint;
+        int rc = 0;
+
+        disk = ped_disk_new (*dev);
+        if (!disk)
+                goto error;
+
+        if (ped_disk_is_flag_available(disk, PED_DISK_CYLINDER_ALIGNMENT))
+                if (!ped_disk_set_flag(disk, PED_DISK_CYLINDER_ALIGNMENT,
+                                       alignment == ALIGNMENT_CYLINDER))
+                        goto error;
+
+        if (!command_line_get_partition (_("Partition number?"), disk, &part))
+                goto error;
+        if (!_partition_warn_busy (part))
+                goto error;
+
+        start = part->geom.start;
+        end = oldend = part->geom.end;
+        if (!command_line_get_sector (_("End?"), *dev, &end, &range_end, NULL))
+                goto error;
+        /* Do not move start of the partition */
+        constraint = constraint_from_start_end_fixed_start (*dev, start, range_end);
+        if (!ped_disk_set_partition_geom (disk, part, constraint,
+                                          start, end))
+                goto error_destroy_constraint;
+        /* warn when shrinking partition - might lose data */
+        if (part->geom.end < oldend)
+                if (ped_exception_throw (
+                            PED_EXCEPTION_WARNING,
+                            PED_EXCEPTION_YES_NO,
+                            _("Shrinking a partition can cause data loss, " \
+                              "are you sure you want to continue?")) != PED_EXCEPTION_YES)
+                        goto error_destroy_constraint;
+        ped_disk_commit (disk);
+
+        if ((*dev)->type != PED_DEVICE_FILE)
+                disk_is_modified = 1;
+
+        rc = 1;
+
+error_destroy_constraint:
+        ped_constraint_destroy (constraint);
+error:
+        if (range_end != NULL)
+                ped_geometry_destroy (range_end);
+        return rc;
+}
+
 
 static int
 do_rm (PedDevice** dev)
