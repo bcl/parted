@@ -11,6 +11,14 @@ GNU parted NEWS                                    -*- outline -*-
 
 ** Bug Fixes
 
+  libparted: handle logical partitions starting immediately after
+  the EBR.  Creating a logical partition one sector after the EBR
+  used to cause parted to complain that it could not inform the
+  kernel of the changes, but after a reboot, everything was fine.
+  Parted will now correctly inform the kernel of the changes, but
+  only set the length of the extended partition to 1 sector instead
+  of two, which would cause it to overlap the logical partition.
+
   If a drive was 100 times an even multiple of two, sizes specified as
   a percentage would trigger the exact placement rule and refuse to round
   to the nearest half percent.
