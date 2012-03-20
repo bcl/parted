@@ -465,6 +465,17 @@ gpt_probe (const PedDevice *dev)
   if (dev->length <= 1)
     return 0;
 
+  void *label;
+  if (!ptt_read_sector (dev, 0, &label))
+    return 0;
+
+  if (!_pmbr_is_valid ((const LegacyMBR_t *) label))
+    {
+        free (label);
+        return 0;
+    }
+  free (label);
+
   void *pth_raw = ped_malloc (pth_get_size (dev));
   if (ped_device_read (dev, pth_raw, 1, GPT_HEADER_SECTORS)
       || ped_device_read (dev, pth_raw, dev->length - 1, GPT_HEADER_SECTORS))
@@ -472,40 +483,11 @@ gpt_probe (const PedDevice *dev)
       gpt = pth_new_from_raw (dev, pth_raw);
       if (gpt->Signature == PED_CPU_TO_LE64 (GPT_HEADER_SIGNATURE))
         gpt_sig_found = 1;
+      pth_free (gpt);
     }
-
   free (pth_raw);
 
-  pth_free (gpt);
-
-  if (!gpt_sig_found)
-    return 0;
-
-  void *label;
-  if (!ptt_read_sector (dev, 0, &label))
-    return 0;
-
-  int ok = 1;
-  if (!_pmbr_is_valid ((const LegacyMBR_t *) label))
-    {
-      int ex_status = ped_exception_throw
-        (PED_EXCEPTION_WARNING,
-         PED_EXCEPTION_YES_NO,
-         _("%s contains GPT signatures, indicating that it has "
-           "a GPT table.  However, it does not have a valid "
-           "fake msdos partition table, as it should.  Perhaps "
-           "it was corrupted -- possibly by a program that "
-           "doesn't understand GPT partition tables.  Or "
-           "perhaps you deleted the GPT table, and are now "
-           "using an msdos partition table.  Is this a GPT "
-           "partition table?"),
-         dev->path);
-      if (ex_status == PED_EXCEPTION_NO)
-        ok = 0;
-    }
-
-  free (label);
-  return ok;
+  return gpt_sig_found;
 }
 
 static PedDisk *
