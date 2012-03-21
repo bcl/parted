@@ -2873,14 +2873,13 @@ _dm_reread_part_table (PedDisk* disk)
           return 1;
 
         int     rc = 1;
-        int     last = PED_MIN (largest_partnum, 16);
         int     i;
 
         sync();
         if (!_dm_remove_parts(disk->dev))
                 rc = 0;
 
-        for (i = 1; i <= last; i++) {
+        for (i = 1; i <= largest_partnum; i++) {
                 PedPartition*      part;
 
                 part = ped_disk_get_partition (disk, i);
