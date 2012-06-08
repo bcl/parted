@@ -1,9 +1,10 @@
 GNU parted NEWS                                    -*- outline -*-
 
-* Noteworthy changes in release 3.1-2 (2012-03-21) [Fedora]
+* Noteworthy changes in release 3.1-4 (2012-06-08) [Fedora]
 
 ** Bug Fixes
 
+  libparted: Don't crash on big-endian systems when using GPT
   libparted: Treat disks without a PMBR as msdos labeled disks
   even if they have GPT partition tables.
 
