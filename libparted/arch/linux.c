@@ -2803,6 +2803,8 @@ _dm_add_partition (PedDisk* disk, PedPartition* part)
 {
         char*           vol_name = NULL;
         const char*     dev_name = NULL;
+        char*           vol_uuid = NULL;
+        const char*     dev_uuid = NULL;
         char*           params = NULL;
         LinuxSpecific*  arch_specific = LINUX_SPECIFIC (disk->dev);
         uint32_t        cookie = 0;
@@ -2820,11 +2822,16 @@ _dm_add_partition (PedDisk* disk, PedPartition* part)
                 goto err;
 
         dev_name = dm_task_get_name (task);
+        dev_uuid = dm_task_get_uuid (task);
 
         if (isdigit (dev_name[strlen (dev_name) - 1])) {
                 if ( ! (vol_name = zasprintf ("%sp%d", dev_name, part->num)))
                         goto err;
         } else if ( ! (vol_name = zasprintf ("%s%d", dev_name, part->num)))
+                goto err;
+
+        if ( dev_uuid && (strlen(dev_uuid) > 0) \
+             && ! (vol_uuid = zasprintf ("part%d-%s", part->num, dev_uuid)))
                 goto err;
 
         /* Caution: dm_task_destroy frees dev_name.  */
@@ -2840,6 +2847,8 @@ _dm_add_partition (PedDisk* disk, PedPartition* part)
                 goto err;
 
         dm_task_set_name (task, vol_name);
+        if (vol_uuid)
+                dm_task_set_uuid (task, vol_uuid);
         dm_task_add_target (task, 0, part->geom.length,
                 "linear", params);
         if (!dm_task_set_cookie(task, &cookie, 0))
@@ -2850,6 +2859,7 @@ _dm_add_partition (PedDisk* disk, PedPartition* part)
                 dm_task_update_nodes();
                 dm_task_destroy(task);
                 free(params);
+                free(vol_uuid);
                 free(vol_name);
                 return 1;
         } else {
@@ -2861,6 +2871,7 @@ err:
         if (task)
                 dm_task_destroy (task);
         free (params);
+        free (vol_uuid);
         free (vol_name);
         return 0;
 }
