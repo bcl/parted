@@ -759,6 +759,13 @@ mac_read (PedDisk* disk)
 		mac_disk_data->block_size = raw_disk->block_size;
 	}
 
+	/* re-allocate buf in case _disk_analyse_block_size changed
+	* the sector_size */
+	free (buf);
+	buf = ped_malloc (disk->dev->sector_size);
+	if (!buf)
+		goto error;
+
 	for (num=1; num==1 || num <= last_part_entry_num; num++) {
 		void *raw_part = buf;
 		if (!ped_device_read (disk->dev, raw_part,
