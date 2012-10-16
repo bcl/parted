@@ -36,8 +36,7 @@ cleanup_() {
 }
 
 # create a file large enough to hold a GPT partition table
-dd if=/dev/null of=$loop_file bs=$ss seek=$ns || framework_failure
-dev=$(losetup --show -f $loop_file) || framework_failure
+dev=$(loop_setup_ $loop_file) || framework_failure
 dmsetup create $dm_name --table "0 $ns linear $dev 0" || framework_failure
 dmsetup rename $dm_name --setuuid f139317b-f98a-45d7-ab3b-9b4e0a336872 || framework_failure
 

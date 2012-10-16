@@ -16,34 +16,14 @@ export LVM_SUPPRESS_FD_WARNINGS=1
 ME=$(basename "$0")
 warn() { echo >&2 "$ME: $@"; }
 
-unsafe_losetup_()
-{
-  f=$1
-
-  test -n "$G_dev_" \
-    || fail_ "Internal error: unsafe_losetup_ called before init_root_dir_"
-
-  # Iterate through $G_dev_/loop{,/}{0,1,2,3,4,5,6,7,8,9}
-  for slash in '' /; do
-    for i in 0 1 2 3 4 5 6 7 8 9; do
-      dev=$G_dev_/loop$slash$i
-      losetup $dev > /dev/null 2>&1 && continue;
-      losetup "$dev" "$f" > /dev/null && { echo "$dev"; return 0; }
-      break
-    done
-  done
-
-  return 1
-}
-
 loop_setup_()
 {
   file=$1
-  dd if=/dev/zero of="$file" bs=1M count=1 seek=1000 > /dev/null 2>&1 \
+  dd if=/dev/null of="$file" bs=1M count=1 seek=1000 > /dev/null 2>&1 \
     || { warn "loop_setup_ failed: Unable to create tmp file $file"; return 1; }
 
   # NOTE: this requires a new enough version of losetup
-  dev=$(unsafe_losetup_ "$file") \
+  dev=$(losetup --show -f "$file") 2>/dev/null \
     || { warn "loop_setup_ failed: Unable to create loopback device"; return 1; }
 
   echo "$dev"
