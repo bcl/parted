@@ -1478,6 +1478,16 @@ error:
 }
 
 static int
+do_resize (PedDevice **dev, PedDisk** diskp)
+{
+        ped_exception_throw (
+                PED_EXCEPTION_ERROR,
+                PED_EXCEPTION_CANCEL,
+                _("The resize command has been removed in parted 3.0"));
+        return 0;
+}
+
+static int
 do_rm (PedDevice** dev)
 {
         PedDisk*                disk;
@@ -1889,6 +1899,20 @@ _("rescue START END                         rescue a lost partition near "
 "START and END"),
 NULL),
         str_list_create (_(start_end_msg), NULL), 1));
+
+command_register (commands, command_create (
+        str_list_create_unique ("resize", _("resize"), NULL),
+        do_resize,
+        NULL,
+        str_list_create (_(N_("The resize command was removed in parted 3.0\n")), NULL), 1));
+
+command_register (commands, command_create (
+        str_list_create_unique ("resizepart", _("resizepart"), NULL),
+        do_resizepart,
+        str_list_create (
+_("resizepart NUMBER END                    resize partition NUMBER"),
+NULL),
+        str_list_create (_(number_msg), _(end_msg), NULL), 1));
 
 command_register (commands, command_create (
         str_list_create_unique ("rm", _("rm"), NULL),
