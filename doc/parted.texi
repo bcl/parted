@@ -575,6 +575,7 @@ partition table.
 @item NTFS
 @item reiserfs
 @item ufs
+@item btrfs
 @end itemize
 
 Example:
