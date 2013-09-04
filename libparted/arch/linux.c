@@ -1579,9 +1579,7 @@ retry:
                 dev->read_only = 0;
         }
 
-        /* With kernels < 2.6 flush cache for cache coherence issues */
-        if (!_have_kern26())
-                _flush_cache (dev);
+        _flush_cache (dev);
 
         return 1;
 }
