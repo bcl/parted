@@ -1,5 +1,12 @@
 GNU parted NEWS                                    -*- outline -*-
 
+* Noteworthy changes in release 3.1-18 (2014-08-12) [RHEL7.1]
+
+** New features
+
+  Add support for prep flag to GPT to select PowerPC Reference Platform
+  boot partition type.
+
 * Noteworthy changes in release 3.1-16 (2014-01-22) [RHEL7]
 
 ** Bug Fixes

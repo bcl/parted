@@ -142,6 +142,10 @@ typedef struct
     ((efi_guid_t) { PED_CPU_TO_LE32 (0x5265636F), PED_CPU_TO_LE16 (0x7665), \
                     PED_CPU_TO_LE16 (0x11AA), 0xaa, 0x11, \
                     { 0x00, 0x30, 0x65, 0x43, 0xEC, 0xAC }})
+#define PARTITION_PREP_GUID \
+    ((efi_guid_t) { PED_CPU_TO_LE32 (0x9e1a2d38), PED_CPU_TO_LE16 (0xc612), \
+                    PED_CPU_TO_LE16 (0x4316), 0xaa, 0x26, \
+                    { 0x8b, 0x49, 0x52, 0x1e, 0x5a, 0x8b }})
 
 struct __attribute__ ((packed)) _GuidPartitionTableHeader_t
 {
@@ -283,6 +287,7 @@ typedef struct _GPTPartitionData
   int atvrecv;
   int msftrecv;
   int legacy_boot;
+  int prep;
 } GPTPartitionData;
 
 static PedDiskType gpt_disk_type;
@@ -782,6 +787,7 @@ _parse_part_entry (PedDisk *disk, GuidPartitionEntry_t *pte)
     = gpt_part_data->hidden = gpt_part_data->msftres
     = gpt_part_data->msftrecv
     = gpt_part_data->legacy_boot
+    = gpt_part_data->prep
     = gpt_part_data->bios_grub = gpt_part_data->atvrecv = 0;
 
   if (pte->Attributes.RequiredToFunction & 0x1)
@@ -805,6 +811,8 @@ _parse_part_entry (PedDisk *disk, GuidPartitionEntry_t *pte)
     gpt_part_data->msftrecv = 1;
   else if (!guid_cmp (gpt_part_data->type, PARTITION_APPLE_TV_RECOVERY_GUID))
     gpt_part_data->atvrecv = 1;
+  else if (!guid_cmp (gpt_part_data->type, PARTITION_PREP_GUID))
+    gpt_part_data->prep = 1;
 
   return part;
 }
@@ -1321,6 +1329,7 @@ gpt_partition_new (const PedDisk *disk,
   gpt_part_data->msftrecv = 0;
   gpt_part_data->atvrecv = 0;
   gpt_part_data->legacy_boot = 0;
+  gpt_part_data->prep = 0;
   uuid_generate ((unsigned char *) &gpt_part_data->uuid);
   swap_uuid_and_efi_guid ((unsigned char *) (&gpt_part_data->uuid));
   memset (gpt_part_data->name, 0, sizeof gpt_part_data->name);
@@ -1392,6 +1401,11 @@ gpt_partition_set_system (PedPartition *part,
   if (gpt_part_data->raid)
     {
       gpt_part_data->type = PARTITION_RAID_GUID;
+      return 1;
+    }
+  if (gpt_part_data->prep)
+    {
+      gpt_part_data->type = PARTITION_PREP_GUID;
       return 1;
     }
   if (gpt_part_data->boot)
@@ -1564,6 +1578,7 @@ gpt_partition_set_flag (PedPartition *part, PedPartitionFlag flag, int state)
           = gpt_part_data->hp_service
           = gpt_part_data->msftres
           = gpt_part_data->msftrecv
+          = gpt_part_data->prep
           = gpt_part_data->atvrecv = 0;
       return gpt_partition_set_system (part, part->fs_type);
     case PED_PARTITION_BIOS_GRUB:
@@ -1575,6 +1590,7 @@ gpt_partition_set_flag (PedPartition *part, PedPartitionFlag flag, int state)
           = gpt_part_data->hp_service
           = gpt_part_data->msftres
           = gpt_part_data->msftrecv
+          = gpt_part_data->prep
           = gpt_part_data->atvrecv = 0;
       return gpt_partition_set_system (part, part->fs_type);
     case PED_PARTITION_RAID:
@@ -1586,6 +1602,7 @@ gpt_partition_set_flag (PedPartition *part, PedPartitionFlag flag, int state)
           = gpt_part_data->hp_service
           = gpt_part_data->msftres
           = gpt_part_data->msftrecv
+          = gpt_part_data->prep
           = gpt_part_data->atvrecv = 0;
       return gpt_partition_set_system (part, part->fs_type);
     case PED_PARTITION_LVM:
@@ -1597,6 +1614,7 @@ gpt_partition_set_flag (PedPartition *part, PedPartitionFlag flag, int state)
           = gpt_part_data->hp_service
           = gpt_part_data->msftres
           = gpt_part_data->msftrecv
+          = gpt_part_data->prep
           = gpt_part_data->atvrecv = 0;
       return gpt_partition_set_system (part, part->fs_type);
     case PED_PARTITION_HPSERVICE:
@@ -1608,6 +1626,7 @@ gpt_partition_set_flag (PedPartition *part, PedPartitionFlag flag, int state)
           = gpt_part_data->bios_grub
           = gpt_part_data->msftres
           = gpt_part_data->msftrecv
+          = gpt_part_data->prep
           = gpt_part_data->atvrecv = 0;
       return gpt_partition_set_system (part, part->fs_type);
     case PED_PARTITION_MSFT_RESERVED:
@@ -1619,6 +1638,7 @@ gpt_partition_set_flag (PedPartition *part, PedPartitionFlag flag, int state)
           = gpt_part_data->bios_grub
           = gpt_part_data->hp_service
           = gpt_part_data->msftrecv
+          = gpt_part_data->prep
           = gpt_part_data->atvrecv = 0;
       return gpt_partition_set_system (part, part->fs_type);
     case PED_PARTITION_DIAG:
@@ -1630,6 +1650,7 @@ gpt_partition_set_flag (PedPartition *part, PedPartitionFlag flag, int state)
           = gpt_part_data->bios_grub
           = gpt_part_data->hp_service
           = gpt_part_data->msftres
+          = gpt_part_data->prep
           = gpt_part_data->atvrecv = 0;
       return gpt_partition_set_system (part, part->fs_type);
     case PED_PARTITION_APPLE_TV_RECOVERY:
@@ -1641,7 +1662,20 @@ gpt_partition_set_flag (PedPartition *part, PedPartitionFlag flag, int state)
           = gpt_part_data->bios_grub
           = gpt_part_data->hp_service
           = gpt_part_data->msftres
+          = gpt_part_data->prep
           = gpt_part_data->msftrecv = 0;
+      return gpt_partition_set_system (part, part->fs_type);
+    case PED_PARTITION_PREP:
+      gpt_part_data->prep = state;
+      if (state)
+        gpt_part_data->boot
+          = gpt_part_data->raid
+          = gpt_part_data->lvm
+          = gpt_part_data->bios_grub
+          = gpt_part_data->hp_service
+          = gpt_part_data->msftres
+          = gpt_part_data->msftrecv
+          = gpt_part_data->atvrecv = 0;
       return gpt_partition_set_system (part, part->fs_type);
     case PED_PARTITION_HIDDEN:
       gpt_part_data->hidden = state;
@@ -1687,6 +1721,8 @@ gpt_partition_get_flag (const PedPartition *part, PedPartitionFlag flag)
       return gpt_part_data->hidden;
     case PED_PARTITION_LEGACY_BOOT:
       return gpt_part_data->legacy_boot;
+    case PED_PARTITION_PREP:
+      return gpt_part_data->prep;
     case PED_PARTITION_SWAP:
     case PED_PARTITION_LBA:
     case PED_PARTITION_ROOT:
@@ -1712,6 +1748,7 @@ gpt_partition_is_flag_available (const PedPartition *part,
     case PED_PARTITION_APPLE_TV_RECOVERY:
     case PED_PARTITION_HIDDEN:
     case PED_PARTITION_LEGACY_BOOT:
+    case PED_PARTITION_PREP:
       return 1;
     case PED_PARTITION_SWAP:
     case PED_PARTITION_ROOT:
