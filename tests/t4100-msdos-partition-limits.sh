@@ -37,7 +37,7 @@ mp=`pwd`/mount-point
 n=4096
 
 # create an XFS file system
-dd if=/dev/zero of=$fs bs=1MB count=2 seek=20 || fail=1
+dd if=/dev/zero of=$fs bs=1MB count=2 seek=100 || fail=1
 mkfs.xfs -f -q $fs || fail=1
 mkdir "$mp" || fail=1
 
