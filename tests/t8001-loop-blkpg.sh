@@ -27,14 +27,6 @@ cleanup_fn_()
     && { udevadm settle --timeout=3; losetup -d "$loopdev"; }
 }
 
-# If the loop module is loaded, unload it first
-if lsmod | grep '^loop[[:space:]]'; then
-    rmmod loop || fail=1
-fi
-
-# Insert loop module with max_part > 1
-modprobe loop max_part=7 || fail=1
-
 # Create backing file
 dd if=/dev/zero of=backing_file bs=1M count=4 >/dev/null 2>&1 || fail=1
 
