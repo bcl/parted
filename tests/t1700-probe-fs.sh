@@ -31,8 +31,13 @@ for type in ext2 ext3 ext4 btrfs xfs nilfs2; do
       *) n_sectors=$((257*1024)) force=;; esac
 
   # create an $type file system
-  dd if=/dev/zero of=$dev bs=$ss count=$n_sectors >/dev/null || fail=1
-  mkfs.$type $force $dev || { warn_ $ME: mkfs.$type failed; fail=1; continue; }
+  if [ "$type" == "xfs" ]; then
+      # Work around a problem with s390
+      mkfs.xfs -ssize=$ss -dfile,name=$dev,size=${n_sectors}s || fail=1
+  else
+      dd if=/dev/zero of=$dev bs=$ss count=$n_sectors >/dev/null || fail=1
+      mkfs.$type $force $dev || { warn_ $ME: mkfs.$type failed; fail=1; continue; }
+  fi
 
   # probe the $type file system
   parted -m -s $dev u s print >out 2>&1 || fail=1
