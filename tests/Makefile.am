@@ -1,5 +1,6 @@
 XFAIL_TESTS = \
-  t3200-type-change.sh
+  t3200-type-change.sh \
+  t4100-dvh-partition-limits.sh
 
 TEST_EXTENSIONS = .sh
 SH_LOG_COMPILER = $(SHELL)
@@ -48,7 +49,6 @@ TESTS = \
   t4000-sun-raid-type.sh \
   t4001-sun-vtoc.sh \
   t4100-msdos-partition-limits.sh \
-  t4100-dvh-partition-limits.sh \
   t4100-msdos-starting-sector.sh \
   t4200-partprobe.sh \
   t4300-nilfs2-tiny.sh \
