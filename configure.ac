@@ -58,10 +58,10 @@ AM_SILENT_RULES([yes]) # make --enable-silent-rules the default.
 
 AC_CANONICAL_HOST
 case "$host_os" in
-	linux*) OS=linux ;;
+	linux*|uclinux*) OS=linux ;;
 	gnu*)	OS=gnu ;;
 	beos*)	OS=beos ;;
-	*)	AC_MSG_ERROR([Unknown or unsupported OS "$host_os".  Only "linux", "gnu" and "beos" are supported in this version of GNU Parted.]) ;;
+	*)	AC_MSG_ERROR([Unknown or unsupported OS "$host_os".  Only "linux", "uclinux", "gnu" and "beos" are supported in this version of GNU Parted.]) ;;
 esac
 AC_SUBST([OS])
 
