@@ -2878,9 +2878,6 @@ static int
 _dm_reread_part_table (PedDisk* disk)
 {
         int largest_partnum = ped_disk_get_last_partition_num (disk);
-        if (largest_partnum <= 0)
-          return 1;
-
         int     rc = 1;
         int     i;
 
