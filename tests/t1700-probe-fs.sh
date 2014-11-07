@@ -28,7 +28,7 @@ for type in ext2 ext3 ext4 btrfs xfs nilfs2; do
       || { warn_ "$ME: no $type support"; continue; }
 
   case $type in ext*) n_sectors=8000 force=-F;;
-      *) n_sectors=$((257*1024)) force=;; esac
+      *) n_sectors=$((512*1024)) force=;; esac
 
   # create an $type file system
   if [ "$type" == "xfs" ]; then
