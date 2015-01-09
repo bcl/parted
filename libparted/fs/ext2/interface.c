@@ -41,7 +41,7 @@ _ext2_generic_probe (PedGeometry* geom, int expect_ext_ver)
 	struct ext2_super_block *sb = (struct ext2_super_block *)(sb_v + 1024);
 
 	if (EXT2_SUPER_MAGIC(*sb) == EXT2_SUPER_MAGIC_CONST) {
-		PedSector block_size = 1 << (EXT2_SUPER_LOG_BLOCK_SIZE(*sb) + 1);
+		PedSector block_size = (EXT2_MIN_BLOCK_SIZE << (EXT2_SUPER_LOG_BLOCK_SIZE(*sb))) / geom->dev->sector_size;
 		PedSector block_count = EXT2_SUPER_BLOCKS_COUNT(*sb);
 		PedSector group_blocks = EXT2_SUPER_BLOCKS_PER_GROUP(*sb);
 		PedSector group_nr = EXT2_SUPER_BLOCK_GROUP_NR(*sb);
