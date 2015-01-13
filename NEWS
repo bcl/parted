@@ -4,6 +4,9 @@ GNU parted NEWS                                    -*- outline -*-
 
 ** Bug Fixes
 
+  Fix rescue command: the rescue command often failed to find
+  filesystems due to leaving on cylinder alignment.
+
   libparted-fs-resize: Prevent crash resizing FAT file systems with very
   deep directories with path names over 512 bytes long.
 
@@ -15,6 +18,7 @@ GNU parted NEWS                                    -*- outline -*-
 
   libparted-fs-resize: Prevent crash resizing FAT16 file systems.
 
+  libparted-fs-resize: Prevent crash resizing FAT16 file systems.
 
 * Noteworthy changes in release 3.2 (2014-07-28) [stable]
 

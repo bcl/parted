@@ -1472,6 +1472,10 @@ do_rescue (PedDevice** dev, PedDisk** diskp)
         disk = ped_disk_new (*dev);
         if (!disk)
                 goto error;
+        if (ped_disk_is_flag_available(disk, PED_DISK_CYLINDER_ALIGNMENT))
+                if (!ped_disk_set_flag(disk, PED_DISK_CYLINDER_ALIGNMENT,
+                                       0))
+                        goto error;
 
         if (!command_line_get_sector (_("Start?"), *dev, &start, NULL, NULL))
                 goto error_destroy_disk;
