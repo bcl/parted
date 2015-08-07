@@ -55,7 +55,7 @@ parted -s $dev mklabel msdos mkpart primary fat32 1m 5m > out 2>&1 || fail=1
 compare /dev/null out || fail=1
 
 #make sure device name is correct
-test -e ${dev}p1 || fail=1
+wait_for_dev_to_appear_ ${dev}p1 || fail=1
 
 #repeat on name not ending in a digit
 # setup: create a mapping
@@ -67,7 +67,7 @@ parted -s $dev mklabel msdos mkpart primary fat32 1m 5m > out 2>&1 || fail=1
 compare /dev/null out || fail=1
 
 #make sure device name is correct
-test -e ${dev}1 || fail=1
+wait_for_dev_to_appear_ ${dev}1 || fail=1
 
 if [ -n "$fail" ]; then
     ls /dev/mapper
