@@ -1,5 +1,5 @@
 /*
-    reiserfs.c -- libparted / libreiserfs glue
+    reiserfs.c -- ReiserFS detection
     Copyright (C) 2001-2002, 2007, 2009-2014 Free Software Foundation, Inc.
 
     This program is free software; you can redistribute it and/or modify
@@ -14,17 +14,6 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-    This is all rather complicated.  There are a few combinations:
-	* shared libraries full support
-	* dynamic libraries present full support (via dlopen)
-	* dynamic libraries absent (full support disabled) (via dlopen)
-	* discover only
-
-    We'd love to hear comments...
-
-    So far, we've opted for maximum flexibility for the user.  Is it
-    all worth it?
 */
 
 #include <config.h>
@@ -48,9 +37,6 @@
 
 static PedSector reiserfs_super_offset[] = { 128, 16, -1 };
 static PedFileSystemType* reiserfs_type;
-
-#define FPTR
-#define FCLASS extern
 
 static PedGeometry *reiserfs_probe(PedGeometry *geom)
 {

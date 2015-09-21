@@ -35,5 +35,4 @@ $(TEST_LOGS): prereq
 TESTS_ENVIRONMENT = \
   top_srcdir='$(top_srcdir)' \
   abs_top_srcdir='$(abs_top_srcdir)' \
-  DYNAMIC_LOADING=$(DYNAMIC_LOADING) \
   ENABLE_DEVICE_MAPPER=$(ENABLE_DEVICE_MAPPER)

@@ -178,13 +178,6 @@ internationalisation support is desired.
 
 	@uref{ftp://ftp.gnu.org/gnu/gettext}
 
-@item libreiserfs, if you want reiserfs support:
-
-	@uref{http://reiserfs.osdn.org.ua}
-
-Note that parted will automatically detect libreiserfs at runtime, and enable
-reiserfs support.  libreiserfs is new, and hasn't been widely tested yet.
-
 @end itemize
 
 @node Supported Platforms
@@ -241,14 +234,6 @@ etc., where few libraries are available.
 
 @item --disable-debug
 don't include assertions
-
-@item --disable-dynamic-loading
-disables dynamic loading of some libraries (only libreiserfs for now,
-although we hope to expand this).  Dynamic loading is useful because it
-allows you to reuse libparted shared libraries even when you don't know
-if some libraries will be available.  It has a small overhead (mainly
-linking with libdl), so it may be useful to disable it on bootdisks if
-you don't need the flexibility.
 
 @item --disable-nls
 turns off native language support.  This is useful for use with old
