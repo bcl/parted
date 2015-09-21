@@ -60,8 +60,7 @@ Parted library, you need to install this package.
 %endif
    --enable-part-static \
    --enable-pc98=no \
-   --enable-Werror=no \
-   --disable-dynamic-loading
+   --enable-Werror=no
 %{__make} %{?_smp_mflags}
 
 %install

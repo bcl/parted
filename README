@@ -56,10 +56,5 @@ dangerous bugs before they would have done damage, so we think it's worth
 it.  Also, it means we get more bug reports ;)
 
 
-(2) When doing dependencies, remember that libreiserfs is a *soft* dependency,
-so I guess that means Debian-look-alikes should do a "suggests", but
-not a "requires".
-
-
-(3) When space is important, we suggest --without-readline, --disable-shared,
-and possibly --disable-nls and --disable-dynamic-loading.
+(2) When space is important, we suggest --without-readline, --disable-shared,
+and possibly --disable-nls.

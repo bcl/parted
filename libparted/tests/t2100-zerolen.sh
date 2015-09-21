@@ -28,9 +28,6 @@ init_root_dir_
 test "$(uname -s)" = Linux \
   || skip_ "not on Linux"
 
-test "x$DYNAMIC_LOADING" = xyes \
-  || skip_ "no dynamic loading support"
-
 test "x$ENABLE_DEVICE_MAPPER" = xyes \
   || skip_ "no device-mapper support"
 
