@@ -17,6 +17,8 @@ GNU parted NEWS                                    -*- outline -*-
 
 ** New Features
 
+  Added new partition type flag, nonfs, to set the type to 0xDA on MS-DOS.
+
   Add resizepart command to resize a partition.  This works even on
   mounted partitions.
 

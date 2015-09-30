@@ -861,6 +861,9 @@ partition.
 (MS-DOS, GPT) - this flag identifies a UEFI System Partition. On GPT
 it is an alias for boot.
 
+@item nonfs
+(MS-DOS) - this flag identifies a non-fs partition.
+
 @item lba
 (MS-DOS) - this flag can be enabled to tell MS DOS, MS Windows 9x and
 MS Windows ME based operating systems to use Linear (LBA) mode.
