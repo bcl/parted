@@ -73,10 +73,10 @@ Create a new disklabel (partition table) of \fIlabel-type\fP.  \fIlabel-type\fP
 should be one of "aix", "amiga", "bsd", "dvh", "gpt", "loop", "mac", "msdos",
 "pc98", or "sun".
 .TP
-.B mkpart \fIpart-type\fP \fI[fs-type]\fP \fIstart\fP \fIend\fP
-Make a \fIpart-type\fP partition for filesystem \fIfs-type\fP (if specified),
-beginning at \fIstart\fP and ending at \fIend\fP (by default in megabytes).
-\fIpart-type\fP should be one of "primary", "logical", or "extended".
+.B mkpart [\fIpart-type\fP \fIname\fP \fIfs-type\fP] \fIstart\fP \fIend\fP
+Create a new partition. \fIpart-type\fP may be specified only with msdos and
+dvh partition tables, it should be one of "primary", "logical", or "extended".
+\fIname\fP is required for GPT partition tables and \fIfs-type\fP is optional.
 .TP
 .B name \fIpartition\fP \fIname\fP
 Set the name of \fIpartition\fP to \fIname\fP. This option works only on Mac,

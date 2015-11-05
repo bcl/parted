@@ -550,7 +550,7 @@ PCs.
 @cindex mkpart, command description
 @cindex command description, mkpart
 
-@deffn Command mkpart [@var{part-type} @var{fs-type} @var{name}] @var{start} @var{end}
+@deffn Command mkpart [@var{part-type} @var{name} @var{fs-type}] @var{start} @var{end}
 
 Creates a new partition, @emph{without} creating a new file system on
 that partition.  This is useful for creating partitions for file systems
