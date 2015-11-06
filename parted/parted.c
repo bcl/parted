@@ -183,7 +183,8 @@ static TimerContext timer_context;
 static int _print_list ();
 static void _done (PedDevice* dev, PedDisk *diskp);
 static bool partition_align_check (PedDisk const *disk,
-                        PedPartition const *part, enum AlignmentType a_type);
+                        PedPartition const *part, enum AlignmentType a_type,
+                        char *align_err);
 
 static void
 _timer_handler (PedTimer* timer, void* context)
@@ -783,21 +784,24 @@ do_mkpart (PedDevice** dev, PedDisk** diskp)
                         }
                 }
 
+                char *align_err = NULL;
                 if ((alignment == ALIGNMENT_OPTIMAL &&
-                     !partition_align_check(disk, part, PA_OPTIMUM)) ||
+                     !partition_align_check(disk, part, PA_OPTIMUM, &align_err)) ||
                     (alignment == ALIGNMENT_MINIMAL &&
-                     !partition_align_check(disk, part, PA_MINIMUM))) {
+                     !partition_align_check(disk, part, PA_MINIMUM, &align_err))) {
                         if (ped_exception_throw(
                                 PED_EXCEPTION_WARNING,
                                 (opt_script_mode
                                  ? PED_EXCEPTION_OK
                                  : PED_EXCEPTION_IGNORE_CANCEL),
                                 _("The resulting partition is not properly "
-                                  "aligned for best performance.")) ==
+                                  "aligned for best performance: %s"), align_err) ==
                             PED_EXCEPTION_CANCEL) {
+                                free(align_err);
                                 /* undo partition addition */
                                 goto error_remove_part;
                         }
+                    free(align_err);
                 }
         } else {
                 ped_exception_leave_all();
@@ -1625,10 +1629,15 @@ do_select (PedDevice** dev, PedDisk** diskp)
    offset and alignment requirements.  Also return true if there is
    insufficient kernel support to determine DISK's alignment requirements.
    Otherwise, return false.  A_TYPE selects whether to check for minimal
-   or optimal alignment requirements.  */
+   or optimal alignment requirements.
+
+   If align_err is not NULL a string describing why the check failed
+   will be allocated and returned. It is up to the caller to free this.
+   Pass NULL if not error description is needed.
+*/
 static bool
 partition_align_check (PedDisk const *disk, PedPartition const *part,
-		       enum AlignmentType a_type)
+		       enum AlignmentType a_type, char *align_err)
 {
   PED_ASSERT (part->disk == disk);
   PedDevice const *dev = disk->dev;
@@ -1641,6 +1650,13 @@ partition_align_check (PedDisk const *disk, PedPartition const *part,
 
   PED_ASSERT (pa->grain_size != 0);
   bool ok = (part->geom.start % pa->grain_size == pa->offset);
+
+  /* If it isn't aligned and the caller wants an explanation,
+     show them the math.  */
+  if (!ok && align_err)
+      asprintf(align_err, "%llds %% %llds != %llds", part->geom.start,
+                                                     pa->grain_size,
+                                                     pa->offset);
   free (pa);
   return ok;
 }
@@ -1661,7 +1677,7 @@ do_align_check (PedDevice **dev, PedDisk** diskp)
   if (!command_line_get_partition (_("Partition number?"), *diskp, &part))
     goto error;
 
-  bool aligned = partition_align_check (*diskp, part, align_type);
+  bool aligned = partition_align_check (*diskp, part, align_type, NULL);
   if (!opt_script_mode)
     printf(aligned ? _("%d aligned\n") : _("%d not aligned\n"), part->num);
 
