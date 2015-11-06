@@ -550,7 +550,7 @@ PCs.
 @cindex mkpart, command description
 @cindex command description, mkpart
 
-@deffn Command mkpart [@var{part-type} @var{fs-type} @var{name}] @var{start} @var{end}
+@deffn Command mkpart [@var{part-type} @var{name} @var{fs-type}] @var{start} @var{end}
 
 Creates a new partition, @emph{without} creating a new file system on
 that partition.  This is useful for creating partitions for file systems
@@ -628,7 +628,9 @@ $ @kbd{mkfs.vfat /dev/sdX2}
 @deffn Command name @var{number} @var{name}
 
 Sets the name for the partition @var{number} (GPT, Mac, MIPS and PC98 only).
-The name can be placed in quotes.
+The name can be placed in quotes. And depending on the shell may need to also
+be wrapped in single quotes so that the shell doesn't strip off the double
+quotes.
 
 Example:
 
