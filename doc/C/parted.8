@@ -82,7 +82,9 @@ dvh partition tables, it should be one of "primary", "logical", or "extended".
 .TP
 .B name \fIpartition\fP \fIname\fP
 Set the name of \fIpartition\fP to \fIname\fP. This option works only on Mac,
-PC98, and GPT disklabels. The name can be placed in quotes, if necessary.
+PC98, and GPT disklabels. The name can be placed in double quotes, if necessary.
+And depending on the shell may need to also be wrapped in single quotes so that
+the shell doesn't strip off the double quotes.
 .TP
 .B print
 Display the partition table.
