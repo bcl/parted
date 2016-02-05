@@ -1021,13 +1021,20 @@ fdasd_get_geometry (const PedDevice *dev, fdasd_anchor_t *anc, int f)
 			goto error;
 		}
 
-		if (ioctl(f, HDIO_GETGEO, &anc->geo) != 0)
+		if (ioctl(f, HDIO_GETGEO, &anc->geo) != 0 ||
+		        anc->geo.heads == 0 ||
+		        anc->geo.sectors == 0 ||
+		        anc->geo.cylinders == 0 ) {
 			fdasd_error(anc, unable_to_ioctl,
 			    _("Could not retrieve disk geometry information."));
+			goto error;
+		}
 
-		if (ioctl(f, BLKSSZGET, &blksize) != 0)
+		if (ioctl(f, BLKSSZGET, &blksize) != 0) {
 			fdasd_error(anc, unable_to_ioctl,
 			    _("Could not retrieve blocksize information."));
+			goto error;
+		}
 
 		/* get disk type */
 		if (ioctl(f, BIODASDINFO, &dasd_info) != 0) {
