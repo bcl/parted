@@ -46,6 +46,13 @@ device_sectors_required=$(echo $default_end | sed 's/s$//')
 # Ensure that $dev is large enough for this test
 test $device_sectors_required -le $dev_n_sectors || fail=1
 
+# create mount point dir
+mount_point="`pwd`/mnt"
+mkdir "$mount_point" || fail=1
+
+# be sure to unmount upon interrupt, failure, etc.
+cleanup_fn_() { umount "${dev}1" > /dev/null 2>&1; }
+
 for fs_type in hfs+ fat32 fat16; do
   echo "fs_type=$fs_type"
 
@@ -68,6 +75,15 @@ for fs_type in hfs+ fat32 fat16; do
 
   # create the file system
   $mkfs_cmd ${dev}1 || fail=1
+
+  # create 500 deep directory tree with longest name 4000 characters
+  # to catch core dump in libparted/fs/r/fat/count.c flag_traverse_dir()
+  # overflowing 512 byte file_name local buffer.
+  mount "${dev}1" "$mount_point" || fail=1
+  cat /dev/null > exp
+  ( cd "$mount_point"; for d in `seq 500`; do mkdir TESTDIR; cd TESTDIR; done ) > out
+  compare exp out || fail=1   # Ensure no errors creating directory tree
+  umount "${dev}1" || fail=1
 
   # NOTE: shrinking is the only type of resizing that works.
   # resize that file system to be one cylinder (8MiB) smaller
