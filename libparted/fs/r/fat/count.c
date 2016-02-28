@@ -219,7 +219,7 @@ flag_traverse_dir (FatTraverseInfo* trav_info) {
 	PedFileSystem*		fs = trav_info->fs;
 	FatDirEntry*		this_entry;
 	FatTraverseInfo*	subdir_trav_info;
-	char			file_name [512];
+	char			file_name [4096];
 	char*			file_name_start;
 	FatCluster		first_cluster;
 	PedSector		size;
