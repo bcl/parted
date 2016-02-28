@@ -4,6 +4,9 @@ GNU parted NEWS                                    -*- outline -*-
 
 ** Bug Fixes
 
+  libparted-fs-resize: Prevent crash resizing FAT file systems with very
+  deep directories with path names over 512 bytes long.
+
   Use 512b sector size when communicating with device-mapper. Fixes
   problems with partitions being created too small on dm devices
   with sector sizes > 5121b
