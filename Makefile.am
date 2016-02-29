@@ -6,6 +6,7 @@ EXTRA_DIST =				\
   .prev-version				\
   BUGS					\
   libparted.pc.in			\
+  libparted-fs-resize.pc.in		\
   parted.spec.in			\
   parted.spec				\
   scripts/data/abi/baseline_symbols.txt \
@@ -18,7 +19,7 @@ EXTRA_DIST =				\
 aclocaldir=$(datadir)/aclocal
 
 pcdir = $(libdir)/pkgconfig
-pc_DATA = libparted.pc
+pc_DATA = libparted.pc libparted-fs-resize.pc
 
 # This is best not done via configure.ac, because automake's
 # make distcheck target does not like auto-generated files

@@ -613,6 +613,7 @@ libparted/labels/Makefile
 libparted/fs/Makefile
 libparted/tests/Makefile
 libparted.pc
+libparted-fs-resize.pc
 parted/Makefile
 partprobe/Makefile
 doc/Makefile
