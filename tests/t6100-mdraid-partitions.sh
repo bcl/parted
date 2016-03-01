@@ -38,6 +38,7 @@ parted -s "$scsi_dev" mklabel gpt \
     mkpart p1 ext2 1M 4M \
     mkpart p2 ext2 5M 8M > out 2>&1 || fail=1
 compare /dev/null out || fail=1
+wait_for_dev_to_appear_ ${scsi_dev}2 || { fail=1; cat /proc/partitions; }
 
 cleanup_fn_() {
   # stop mdraid array

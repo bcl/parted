@@ -47,6 +47,7 @@ wait_for_dev_to_appear_()
   local i=0
   local incr=1
   while :; do
+    udevadm settle
     ls "$file" > /dev/null 2>&1 && return 0
     sleep .1 2>/dev/null || { sleep 1; incr=10; }
     i=$(expr $i + $incr); test $i = 20 && break
@@ -110,6 +111,7 @@ scsi_debug_setup_()
   local i=0
   local new_dev
   while :; do
+    udevadm settle
     new_dev=$(new_sdX_) && break
     sleep .1 2>/dev/null || { sleep 1; incr=10; }
     i=$(expr $i + $incr); test $i = 20 && break
