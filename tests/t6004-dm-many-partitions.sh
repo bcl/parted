@@ -20,6 +20,7 @@
 . "${srcdir=.}/init.sh"; path_prepend_ ../parted
 
 require_root_
+require_udevadm_settle_
 (dmsetup --help) > /dev/null 2>&1 || skip_test_ "No dmsetup installed"
 
 ss=$sector_size_
