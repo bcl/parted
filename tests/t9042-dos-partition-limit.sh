@@ -44,8 +44,8 @@ printf '%s\n' "BYT;" \
     "1:$((start-2))s:$((n-1))s:$((n-start+2))s:::lba;" \
   > exp || fail=1
 
-parted -s $scsi_dev mklabel msdos || fail=1
-parted -s -a min $scsi_dev mkpart extended $((start-2))s 100% || fail=1
+parted -s -a min $scsi_dev mklabel msdos mkpart extended $((start-2))s 100% || fail=1
+wait_for_dev_to_appear_ ${scsi_dev}1 || fail=1
 
 i=1
 while :; do
