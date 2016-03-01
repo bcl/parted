@@ -53,9 +53,7 @@ while :; do
 done
 
 # Time the actual command:
-t0=$(date +%s.%N)
 parted -m -a min -s $scsi_dev mklabel gpt $cmd u s p > out 2>&1 || fail=1
-t_final=$(date +%s.%N)
 
 i=1
 while :; do
@@ -64,14 +62,6 @@ while :; do
     printf "$i:${s}s:${e}s:${partition_sectors}s::p$i:;\n" >> exp
     test $i = $n_partitions && break; i=$((i+1))
 done
-
-# Fail the test if it takes too long.
-# On Fedora 16, this takes about 10 seconds for me.
-# With Fedora-12-era kernels, it typically took more than 150 seconds.
-$AWK "BEGIN {d = $t_final - $t0; n = $n_partitions; st = 60 < d;"\
-' printf "created %d partitions in %.2f seconds\n", n, d; exit st }' /dev/null \
-    || fail=1
-
 compare exp out || fail=1
 
 Exit $fail
