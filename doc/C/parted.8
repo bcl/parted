@@ -76,6 +76,8 @@ should be one of "aix", "amiga", "bsd", "dvh", "gpt", "loop", "mac", "msdos",
 .B mkpart \fIpart-type\fP \fI[fs-type]\fP \fIstart\fP \fIend\fP
 Make a \fIpart-type\fP partition for filesystem \fIfs-type\fP (if specified),
 beginning at \fIstart\fP and ending at \fIend\fP (by default in megabytes).
+\fIfs-type\fP can be one of "btrfs", "ext2", "ext3", "ext4", "fat16", "fat32",
+"hfs", "hfs+", "linux-swap", "ntfs", "reiserfs", or "xfs".
 \fIpart-type\fP should be one of "primary", "logical", or "extended".
 .TP
 .B name \fIpartition\fP \fIname\fP
