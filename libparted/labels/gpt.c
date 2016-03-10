@@ -1139,7 +1139,7 @@ _write_pmbr (PedDevice *dev, bool pmbr_boot)
 
   pmbr->Signature = PED_CPU_TO_LE16 (MSDOS_MBR_SIGNATURE);
   pmbr->PartitionRecord[0].OSType = EFI_PMBR_OSTYPE_EFI;
-  pmbr->PartitionRecord[0].StartSector = 1;
+  pmbr->PartitionRecord[0].StartSector = 2;
   pmbr->PartitionRecord[0].EndHead = 0xFE;
   pmbr->PartitionRecord[0].EndSector = 0xFF;
   pmbr->PartitionRecord[0].EndTrack = 0xFF;
