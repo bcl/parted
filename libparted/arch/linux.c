@@ -852,6 +852,7 @@ _device_probe_geometry (PedDevice* dev)
         LinuxSpecific*          arch_specific = LINUX_SPECIFIC (dev);
         struct stat             dev_stat;
         struct hd_geometry      geometry;
+        int                     sector_size = 0;
 
         if (!_device_stat (dev, &dev_stat))
                 return 0;
@@ -863,26 +864,35 @@ _device_probe_geometry (PedDevice* dev)
         if (!dev->length)
                 return 0;
 
-        /* The GETGEO ioctl is no longer useful (as of linux 2.6.x).  We could
-         * still use it in 2.4.x, but this is contentious.  Perhaps we should
-         * move to EDD. */
-        dev->bios_geom.sectors = 63;
-        dev->bios_geom.heads = 255;
-        dev->bios_geom.cylinders
-                = dev->length / (63 * 255);
+        /* initialize the bios_geom values to something */
+        dev->bios_geom.sectors = 0;
+        dev->bios_geom.heads = 0;
+        dev->bios_geom.cylinders = 0;
 
-        /* FIXME: what should we put here?  (TODO: discuss on linux-kernel) */
-        if (!ioctl (arch_specific->fd, HDIO_GETGEO, &geometry)
+        if (!ioctl (arch_specific->fd, BLKSSZGET, &sector_size)) {
+                /* get the sector count first */
+                dev->bios_geom.sectors = 1 + (sector_size / PED_SECTOR_SIZE_DEFAULT);
+                dev->bios_geom.heads = 255;
+        } else if (!ioctl (arch_specific->fd, HDIO_GETGEO, &geometry)
                         && geometry.sectors && geometry.heads) {
-                dev->hw_geom.sectors = geometry.sectors;
-                dev->hw_geom.heads = geometry.heads;
-                dev->hw_geom.cylinders
-                        = dev->length / (dev->hw_geom.heads
-                                         * dev->hw_geom.sectors);
+                /* if BLKSSZGET failed, try the deprecated HDIO_GETGEO */
+                dev->bios_geom.sectors = geometry.sectors;
+                dev->bios_geom.heads = geometry.heads;
         } else {
-                dev->hw_geom = dev->bios_geom;
+                ped_exception_throw (
+                        PED_EXCEPTION_WARNING,
+                        PED_EXCEPTION_OK,
+                        _("Could not determine sector size for %s: %s.\n"
+                          "Using the default sector size (%lld)."),
+                        dev->path, strerror (errno), PED_SECTOR_SIZE_DEFAULT);
+                dev->bios_geom.sectors = 2;
+                dev->bios_geom.heads = 255;
         }
 
+        dev->bios_geom.cylinders
+                = dev->length / (dev->bios_geom.heads
+                                 * dev->bios_geom.sectors);
+        dev->hw_geom = dev->bios_geom;
         return 1;
 }
 
