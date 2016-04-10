@@ -281,8 +281,13 @@ fat_boot_sector_analyse (FatBootSector* bs, PedFileSystem* fs)
 
 #ifndef DISCOVER_ONLY
 int
-fat_boot_sector_set_boot_code (FatBootSector* bs)
+fat_boot_sector_set_boot_code (FatBootSector** bsp, const PedFileSystem* fs)
 {
+	FatSpecific*	fs_info = FAT_SPECIFIC (fs);
+
+	PED_ASSERT (bsp != NULL);
+	*bsp = ped_malloc (fs->geom->dev->sector_size);
+	FatBootSector *bs = *bsp;
 	PED_ASSERT (bs != NULL);
 
 	memset (bs, 0, 512);
@@ -297,8 +302,8 @@ fat_boot_sector_generate (FatBootSector** bsp, const PedFileSystem* fs)
 	FatSpecific*	fs_info = FAT_SPECIFIC (fs);
 
 	PED_ASSERT (bsp != NULL);
-	*bsp = ped_malloc (fs->geom->dev->sector_size);
 	FatBootSector *bs = *bsp;
+	PED_ASSERT (bs != NULL);
 
 	memcpy (bs->system_id, "MSWIN4.1", 8);
 	bs->sector_size = PED_CPU_TO_LE16 (fs_info->logical_sector_size * 512);

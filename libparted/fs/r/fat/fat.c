@@ -310,7 +310,7 @@ fat_create (PedGeometry* geom, FatType fat_type, PedTimer* timer)
 
 	fs_info->serial_number = generate_random_uint32 ();
 
-	if (!fat_boot_sector_set_boot_code (fs_info->boot_sector))
+	if (!fat_boot_sector_set_boot_code (&fs_info->boot_sector, fs))
 		goto error_free_buffers;
 	if (!fat_boot_sector_generate (&fs_info->boot_sector, fs))
 		goto error_free_buffers;
