@@ -948,7 +948,6 @@ dasd_alloc_metadata (PedDisk* disk)
 	PedPartition* part = NULL; /* initialize solely to placate gcc */
 	PedPartition* new_part2;
 	PedSector trailing_meta_start, trailing_meta_end;
-	struct fdasd_anchor anchor;
 
 	PED_ASSERT (disk != NULL);
 	PED_ASSERT (disk->dev != NULL);
@@ -998,10 +997,7 @@ dasd_alloc_metadata (PedDisk* disk)
 	      backed up, then restored to a larger size disk, etc.
 	   */
 	   trailing_meta_start = part->geom.end + 1;
-	   fdasd_initialize_anchor(&anchor);
-	   fdasd_get_geometry(disk->dev, &anchor, arch_specific->fd);
 	   trailing_meta_end = (long long) disk->dev->length - 1;
-	   fdasd_cleanup(&anchor);
 	   if (trailing_meta_end >= trailing_meta_start) {
 		new_part2 = ped_partition_new (disk,PED_PARTITION_METADATA,
 		   NULL, trailing_meta_start, trailing_meta_end);
