@@ -43,6 +43,7 @@ TESTS = \
   t1102-loop-label.sh \
   t1104-remove-and-add-partition.sh \
   t1700-probe-fs.sh \
+  t1701-rescue-fs.sh \
   t2200-dos-label-recog.sh \
   t2201-pc98-label-recog.sh \
   t2300-dos-label-extended-bootcode.sh \
