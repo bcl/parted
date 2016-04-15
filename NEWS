@@ -4,6 +4,9 @@ GNU parted NEWS                                    -*- outline -*-
 
 ** Bug Fixes
 
+  Fix fat resize to preverve boot code, and thus not render the
+  filesystem unreconized by Windows.
+
   Fix rescue command: the rescue command often failed to find
   filesystems due to leaving on cylinder alignment.
 
