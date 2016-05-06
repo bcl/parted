@@ -34,22 +34,10 @@
 #  define _(String) (String)
 #endif /* ENABLE_NLS */
 
-#define	AIX_LABEL_MAGIC		0xc9c2d4c1
+#define	AIX_LABEL_MAGIC		(0xc9c2d4c1UL)
 #define	MAX_TOTAL_PART		16
 
 static PedDiskType aix_disk_type;
-
-static inline int
-aix_label_magic_get (const char *label)
-{
-	return *(unsigned int *)label;
-}
-
-static inline void
-aix_label_magic_set (char *label, int magic_val)
-{
-	*(unsigned int *)label = magic_val;
-}
 
 static int
 aix_probe (const PedDevice *dev)
@@ -59,9 +47,9 @@ aix_probe (const PedDevice *dev)
 	void *label;
 	if (!ptt_read_sector (dev, 0, &label))
 		return 0;
-	unsigned int magic = aix_label_magic_get (label);
+	bool found = PED_BE32_TO_CPU(*(uint32_t *)label) == AIX_LABEL_MAGIC;
 	free (label);
-	return magic == AIX_LABEL_MAGIC;
+	return found;
 }
 
 static PedDisk*
