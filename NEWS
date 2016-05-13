@@ -6,6 +6,10 @@ GNU parted NEWS                                    -*- outline -*-
 
 ** Bug Fixes
 
+  Fix resizepart to adjust the end to be -1 sector when using iec
+  power of 2 units so that the next partition can start immediately
+  following the new end, just like mkpart does.
+
   Fix set and disk_set to not crash when there are no flags to set.
 
   Fix a udev cookie leak when using resizepart on device-mapper devices.
