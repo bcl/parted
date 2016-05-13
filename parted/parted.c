@@ -1562,8 +1562,11 @@ do_resizepart (PedDevice** dev, PedDisk** diskp)
 
         start = part->geom.start;
         end = oldend = part->geom.end;
-        if (!command_line_get_sector (_("End?"), *dev, &end, &range_end, NULL))
+        char *end_input;
+        if (!command_line_get_sector (_("End?"), *dev, &end, &range_end, &end_input))
                 goto error;
+        _adjust_end_if_iec(&start, &end, range_end, end_input);
+        free(end_input);
         /* Do not move start of the partition */
         constraint = constraint_from_start_end_fixed_start (*dev, start, range_end);
         if (!ped_disk_set_partition_geom (disk, part, constraint,
