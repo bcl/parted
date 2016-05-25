@@ -108,6 +108,9 @@ process_dev (PedDevice* dev)
 	PedDiskType*	disk_type;
 	PedDisk*	disk;
 
+	if (!ped_device_open (dev))
+		return 0;
+
 	disk_type = ped_disk_probe (dev);
 	if (!disk_type || !strcmp (disk_type->name, "loop"))
 		return 1;
@@ -122,11 +125,13 @@ process_dev (PedDevice* dev)
 	if (opt_summary)
 		summary (disk);
 	ped_disk_destroy (disk);
+	ped_device_close (dev);
 	return 1;
 
 error_destroy_disk:
 	ped_disk_destroy (disk);
 error:
+	ped_device_close (dev);
 	return 0;
 }
 
