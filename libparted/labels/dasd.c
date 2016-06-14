@@ -829,6 +829,7 @@ _primary_constraint (PedDisk* disk)
 	PedSector sector_size;
 	LinuxSpecific* arch_specific;
 	DasdDiskSpecific* disk_specific;
+	PedSector start;
 
 	PDEBUG;
 
@@ -842,7 +843,12 @@ _primary_constraint (PedDisk* disk)
 	if (!ped_alignment_init (&end_align, -1,
 						     disk->dev->hw_geom.sectors * sector_size))
 		return NULL;
-	if (!ped_geometry_init (&max_geom, disk->dev, 0, disk->dev->length))
+
+	start = (FIRST_USABLE_TRK * (long long) disk->dev->hw_geom.sectors
+			    * (long long) arch_specific->real_sector_size
+			    / (long long) disk->dev->sector_size);
+
+	if (!ped_geometry_init (&max_geom, disk->dev, start, disk->dev->length))
 		return NULL;
 
 	return ped_constraint_new(&start_align, &end_align, &max_geom,
