@@ -49,7 +49,8 @@ typedef enum {
         PED_DEVICE_VIRTBLK      = 15,
         PED_DEVICE_AOE          = 16,
         PED_DEVICE_MD           = 17,
-        PED_DEVICE_LOOP         = 18
+        PED_DEVICE_LOOP         = 18,
+        PED_DEVICE_NVME         = 19
 } PedDeviceType;
 
 typedef struct _PedDevice PedDevice;
