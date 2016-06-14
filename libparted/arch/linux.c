@@ -275,6 +275,7 @@ struct blkdev_ioctl_param {
 #define SDMMC_MAJOR             179
 #define LOOP_MAJOR              7
 #define MD_MAJOR                9
+#define BLKEXT_MAJOR            259
 
 #define SCSI_BLK_MAJOR(M) (                                             \
                 (M) == SCSI_DISK0_MAJOR                                 \
@@ -435,6 +436,12 @@ static int
 _is_virtblk_major (int major)
 {
         return _major_type_in_devices (major, "virtblk");
+}
+
+static int
+_is_blkext_major (int major)
+{
+        return _major_type_in_devices (major, "blkext");
 }
 
 #ifdef ENABLE_DEVICE_MAPPER
@@ -600,6 +607,8 @@ _device_probe_type (PedDevice* dev)
                 dev->type = PED_DEVICE_LOOP;
         } else if (dev_major == MD_MAJOR) {
                 dev->type = PED_DEVICE_MD;
+        } else if (_is_blkext_major(dev_major) && dev->path && strstr(dev->path, "nvme")) {
+                dev->type = PED_DEVICE_NVME;
         } else {
                 dev->type = PED_DEVICE_UNKNOWN;
         }
@@ -1369,6 +1378,11 @@ linux_new (const char* path)
 
         case PED_DEVICE_CPQARRAY:
                 if (!init_generic (dev, _("Compaq Smart Array")))
+                        goto error_free_arch_specific;
+                break;
+
+        case PED_DEVICE_NVME:
+                if (!init_generic (dev, _("NVMe Device")))
                         goto error_free_arch_specific;
                 break;
 
