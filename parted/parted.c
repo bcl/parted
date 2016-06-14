@@ -979,7 +979,7 @@ _print_disk_info (const PedDevice *dev, const PedDisk *diskp)
                                          "cpqarray", "file", "ataraid", "i2o",
                                          "ubd", "dasd", "viodasd", "sx8", "dm",
                                          "xvd", "sd/mmc", "virtblk", "aoe",
-                                         "md", "loopback"};
+                                         "md", "loopback", "nvme"};
 
         char* start = ped_unit_format (dev, 0);
         PedUnit default_unit = ped_unit_get_default ();
