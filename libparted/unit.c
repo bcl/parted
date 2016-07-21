@@ -481,12 +481,6 @@ parse_unit_suffix (const char* suffix, PedUnit suggested_unit)
 	return suggested_unit;
 }
 
-static bool
-is_power_of_2 (long long n)
-{
-  return (n & (n - 1)) == 0;
-}
-
 /**
  * If \p str contains a valid description of a location on \p dev, then
  * \p *sector is modified to describe the location and a geometry is created
@@ -540,16 +534,23 @@ ped_unit_parse_custom (const char* str, const PedDevice* dev, PedUnit unit,
         }
 
 	unit_size = ped_unit_get_size (dev, unit);
-	radius = (ped_div_round_up (unit_size, dev->sector_size) / 2) - 1;
-	if (radius < 0)
-		radius = 0;
-	/* If the user specifies units in a power of 2, e.g., 4MiB, as in
-	       parted -s -- $dev mklabel gpt mkpart P-NAME 4MiB -34s
-	   do not use 4MiB as the range.  Rather, presume that they
-	   are specifying precisely the starting or ending number,
-	   and treat "4MiB" just as we would treat "4194304B".  */
-	if (is_power_of_2 (unit_size) && unit != PED_UNIT_PERCENT)
-		radius = 0;
+	switch (unit) {
+		/* If the user specifies the address using IEC units e.g., 4MiB, as in
+		   parted -s -- $dev mklabel gpt mkpart P-NAME 4MiB -34s
+		   do not use size of the unit as the range.  Rather, presume that they
+		   are specifying precisely the starting or ending number,
+		   and treat "4MiB" just as we would treat "4194304B".  */
+		case PED_UNIT_KIBIBYTE:
+		case PED_UNIT_MEBIBYTE:
+		case PED_UNIT_GIBIBYTE:
+		case PED_UNIT_TEBIBYTE:
+			radius = 0;
+			break;
+		default:
+			radius = (ped_div_round_up (unit_size, dev->sector_size) / 2) - 1;
+			if (radius < 0)
+				radius = 0;
+	}
 
 	*sector = num * unit_size / dev->sector_size;
 	/* negative numbers count from the end */
