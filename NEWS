@@ -4,6 +4,10 @@ GNU parted NEWS                                    -*- outline -*-
 
   Parted now recognizes NVMe devices
 
+  If the user specifies start/end of the partition as cylinders
+  and a cylinder has a size which is power of 2, then such address
+  does not trigger exact placement.
+
 * Noteworthy changes in release 3.2 (2014-07-28) [stable]
 
 ** New Features
