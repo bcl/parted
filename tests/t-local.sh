@@ -98,7 +98,7 @@ scsi_debug_setup_()
   # It is not trivial to determine the name of the device we're creating.
   # Record the names of all /sys/block/sd* devices *before* probing:
   touch stamp
-  modprobe scsi_debug "$@" || { rm -f stamp; return 1; }
+  modprobe scsi_debug opt_blks=64 "$@" || { rm -f stamp; return 1; }
   scsi_debug_modprobe_succeeded_=1
   test "$VERBOSE" = yes \
     && warn_ $ME_ modprobe scsi_debug succeeded
