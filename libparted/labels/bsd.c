@@ -488,6 +488,7 @@ bsd_partition_set_flag (PedPartition* part, PedPartitionFlag flag, int state)
 				bsd_data->raid = 0;
 			}
 			bsd_data->lvm = state;
+			return 1;
 		default:
 			;
 	}
