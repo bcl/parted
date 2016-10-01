@@ -49,15 +49,10 @@ for table_type in msdos gpt; do
 
   for mode in on_only on_and_off ; do
     for flag in $flags; do
-
-      # Exclude the supplemental flags.
-      # These are not boolean, like the others.
-      case $flag in boot|lba|hidden) continue;; esac
-
       # Turn on each flag, one at a time.
       parted -m -s $dev set 1 $flag on unit s print > raw 2> err || fail=1
       extract_flags raw > out
-      grep -F "$flag" out \
+      grep -w "$flag" out \
         || { warn_ "$ME_: $table_type: flag '$flag' not turned on: $(cat out)"; fail=1; }
       compare /dev/null err || fail=1
 
@@ -65,7 +60,7 @@ for table_type in msdos gpt; do
         # Turn it off
         parted -m -s $dev set 1 $flag off unit s print > raw 2> err || fail=1
         extract_flags raw > out
-        grep -F "$flag" out \
+        grep -w "$flag" out \
           && { warn_ "$ME_: $table_type: flag '$flag' not turned off: $(cat out)"; fail=1; }
         compare /dev/null err || fail=1
       fi
