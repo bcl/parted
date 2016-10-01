@@ -12,11 +12,12 @@ main (int argc, char **argv)
 	PedDevice *dev;
 	PedDisk *disk;
 	PedPartition *part;
+	int partnum;
 
 	set_program_name (argv[0]);
 
-	if (argc != 2 ) {
-		fprintf (stderr, "Usage: %s <device>\n", argv[0]);
+	if (argc != 3 ) {
+		fprintf (stderr, "Usage: %s <device> <ptnnum>\n", argv[0]);
 		return EXIT_FAILURE;
 	}
 
@@ -38,11 +39,12 @@ main (int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	part = ped_disk_get_partition (disk, 1);
+	partnum = atoi (argv[2]);
+	part = ped_disk_get_partition (disk, partnum);
 	if (!part) {
 		fprintf (stderr,
-		         "Error: failed to get partition 1 from device %s\n",
-		         argv[1]);
+		         "Error: failed to get partition %d from device %s\n",
+		         partnum, argv[1]);
 		return EXIT_FAILURE;
 	}
 
