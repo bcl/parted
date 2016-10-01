@@ -22,14 +22,16 @@ dev=dev-file
 
 extract_flags()
 {
-  perl -nle '/^[^:]*:2048s:4095s:2048s::[^:]*:(.+);$/ and print $1' "$@"
+  perl -nle '/^[^:]*:4096s:6143s:2048s::[^:]*:(.+);$/ and print $1' "$@"
 }
 
-for table_type in bsd gpt mac msdos; do
+for table_type in bsd dvh gpt mac msdos; do
   ptn_num=1
 
   case $table_type in
     bsd)   primary_or_name=''
+           ;;
+    dvh)   primary_or_name='primary'
            ;;
     gpt)   primary_or_name='PTNNAME'
            ;;
@@ -42,11 +44,11 @@ for table_type in bsd gpt mac msdos; do
            ;;
   esac
 
-  n_sectors=5000
+  n_sectors=8192
   dd if=/dev/null of=$dev bs=$ss seek=$n_sectors || fail=1
 
   parted -s $dev mklabel $table_type \
-    mkpart $primary_or_name ext2 $((1*2048))s $((2*2048-1))s \
+    mkpart $primary_or_name ext2 $((4*1024))s $((6*1024-1))s \
       > out 2> err || fail=1
   compare /dev/null out || fail=1
 
@@ -55,6 +57,11 @@ for table_type in bsd gpt mac msdos; do
     || { warn_ "$ME_: $table_type: failed to get available flags";
          fail=1; continue; }
   case $table_type in
+    dvh)   # FIXME: Exclude boot flag as that can only be set on logical
+           # partitions in the DVH disk label and this test only uses
+           # primary partitions.
+           flags=`echo "$flags" | egrep -v 'boot'`
+           ;;
     mac)   # FIXME: Setting root or swap flags also sets the partition
            # name to root or swap respectively.  Probably intended
            # behaviour.  Setting lvm or raid flags after root or swap
