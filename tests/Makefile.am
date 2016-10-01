@@ -92,7 +92,8 @@ EXTRA_DIST = \
   init.cfg init.sh t-lib-helpers.sh gpt-header-munge \
   gpt-header-move msdos-overlap
 
-check_PROGRAMS = print-align print-max dup-clobber duplicate fs-resize
+check_PROGRAMS = print-align print-flags print-max dup-clobber duplicate \
+  fs-resize
 fs_resize_LDADD = \
   $(top_builddir)/libparted/fs/libparted-fs-resize.la \
   $(top_builddir)/libparted/libparted.la

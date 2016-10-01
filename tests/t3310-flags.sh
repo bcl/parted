@@ -1,5 +1,5 @@
 #!/bin/sh
-# Exercise the exclusive, single-bit flags.
+# Exercise partition flags.
 
 # Copyright (C) 2010-2014 Free Software Foundation, Inc.
 
@@ -16,34 +16,36 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-. "${srcdir=.}/init.sh"; path_prepend_ ../parted
+. "${srcdir=.}/init.sh"; path_prepend_ ../parted .
 ss=$sector_size_
 dev=dev-file
 
 extract_flags()
 {
-  perl -nle '/^1:2048s:4095s:2048s::(?:P1)?:(.+);$/ and print $1' "$@"
+  perl -nle '/^1:2048s:4095s:2048s::(?:PTNNAME)?:(.+);$/ and print $1' "$@"
 }
 
 for table_type in msdos gpt; do
 
-  # Extract flag names of type $table_type from the texinfo documentation.
   case $table_type in
-      msdos) search_term=MS-DOS; pri_or_name=pri;;
-      gpt)   search_term=GPT;    pri_or_name=P1;;
+    gpt)   primary_or_name='PTNNAME'
+           ;;
+    msdos) primary_or_name='primary'
+           ;;
   esac
-  flags=$(sed -n '/^@node set/,/^@node/p' \
-                    "$abs_top_srcdir/doc/parted.texi" \
-                | perl -00 -ne \
-                    '/^\@item (\w+).*'"$search_term"'/s and print lc($1), "\n"')
 
   n_sectors=5000
   dd if=/dev/null of=$dev bs=$ss seek=$n_sectors || fail=1
 
   parted -s $dev mklabel $table_type \
-    mkpart $pri_or_name ext2 $((1*2048))s $((2*2048-1))s \
+    mkpart $primary_or_name ext2 $((1*2048))s $((2*2048-1))s \
       > out 2> err || fail=1
   compare /dev/null out || fail=1
+
+  # Query libparted for the available flags for this test partition.
+  flags=`print-flags $dev` \
+    || { warn_ "$ME_: $table_type: failed to get available flags";
+         fail=1; continue; }
 
   for mode in on_only on_and_off ; do
     for flag in $flags; do
@@ -53,18 +55,18 @@ for table_type in msdos gpt; do
       case $flag in boot|lba|hidden) continue;; esac
 
       # Turn on each flag, one at a time.
-      parted -m -s $dev set 1 $flag on u s print > raw 2> err || fail=1
+      parted -m -s $dev set 1 $flag on unit s print > raw 2> err || fail=1
       extract_flags raw > out
       grep -F "$flag" out \
-        || { warn_ "$ME: flag not turned on: $(cat out)"; fail=1; }
+        || { warn_ "$ME_: $table_type: flag '$flag' not turned on: $(cat out)"; fail=1; }
       compare /dev/null err || fail=1
 
       if test $mode = on_and_off; then
         # Turn it off
-        parted -m -s $dev set 1 $flag off u s print > raw 2> err || fail=1
+        parted -m -s $dev set 1 $flag off unit s print > raw 2> err || fail=1
         extract_flags raw > out
         grep -F "$flag" out \
-          && { warn_ "$ME: flag not turned off: $(cat out)"; fail=1; }
+          && { warn_ "$ME_: $table_type: flag '$flag' not turned off: $(cat out)"; fail=1; }
         compare /dev/null err || fail=1
       fi
     done
