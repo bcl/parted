@@ -25,10 +25,16 @@ extract_flags()
   perl -nle '/^[^:]*:4096s:6143s:2048s::[^:]*:(.+);$/ and print $1' "$@"
 }
 
-for table_type in bsd dvh gpt mac msdos; do
+for table_type in aix amiga bsd dvh gpt mac msdos pc98 sun loop; do
   ptn_num=1
 
   case $table_type in
+    aix)   # Support for writing AIX disk labels and adding partitions
+           # is not yet implemented.
+           continue
+           ;;
+    amiga) primary_or_name='PTNNAME'
+           ;;
     bsd)   primary_or_name=''
            ;;
     dvh)   primary_or_name='primary'
@@ -41,6 +47,14 @@ for table_type in bsd dvh gpt mac msdos; do
            ptn_num=2
            ;;
     msdos) primary_or_name='primary'
+           ;;
+    pc98)  primary_or_name='PTNNAME'
+           ;;
+    sun)   primary_or_name=''
+           ;;
+    loop)  # LOOP table doesn't support creation of a partition nor any
+           # flags.
+           continue
            ;;
   esac
 
