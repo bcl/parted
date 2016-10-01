@@ -25,9 +25,11 @@ extract_flags()
   perl -nle '/^1:2048s:4095s:2048s::(?:PTNNAME)?:(.+);$/ and print $1' "$@"
 }
 
-for table_type in msdos gpt; do
+for table_type in bsd gpt msdos; do
 
   case $table_type in
+    bsd)   primary_or_name=''
+           ;;
     gpt)   primary_or_name='PTNNAME'
            ;;
     msdos) primary_or_name='primary'
