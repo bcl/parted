@@ -931,6 +931,7 @@ init_ide (PedDevice* dev)
         PedExceptionOption      ex_status;
         char                    hdi_buf[41];
         int                     sector_multiplier = 0;
+        int                     r;
 
         if (!_device_stat (dev, &dev_stat))
                 goto error;
@@ -938,7 +939,11 @@ init_ide (PedDevice* dev)
         if (!_device_open_ro (dev))
                 goto error;
 
-        if (ioctl (arch_specific->fd, HDIO_GET_IDENTITY, &hdi)) {
+        r = ioctl (arch_specific->fd, HDIO_GET_IDENTITY, &hdi);
+        if (r && errno == EINVAL) {
+                /* silently ignore unsupported ioctl */
+                dev->model = strdup(_("Generic IDE"));
+        } else if (r) {
                 ex_status = ped_exception_throw (
                                 PED_EXCEPTION_WARNING,
                                 PED_EXCEPTION_IGNORE_CANCEL,
