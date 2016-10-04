@@ -49,6 +49,8 @@ for table_type in aix amiga bsd dvh gpt mac msdos pc98 sun loop; do
     msdos) primary_or_name='primary'
            ;;
     pc98)  primary_or_name='PTNNAME'
+           # pc98 only supports 512b sectors
+           [ $ss -ne 512 ] && continue
            ;;
     sun)   primary_or_name=''
            ;;
