@@ -1320,4 +1320,127 @@ fdasd_add_partition (fdasd_anchor_t *anc, unsigned int start,
 	return p;
 }
 
+/*
+ * Check for valid volume serial characters (max. 6) - remove invalid.
+ * If volser is empty, fill with default volser.
+ */
+void fdasd_check_volser (char *volser, int devno)
+{
+	int from, to;
+
+	for (from = 0, to = 0; volser[from] && from < VOLSER_LENGTH; from++) {
+
+			if ((volser[from] >= 0x23 &&
+			     volser[from] <= 0x25) ||
+			    (volser[from] >= 0x30 &&
+			     volser[from] <= 0x39) ||
+			    (volser[from] >= 0x40 &&
+			     volser[from] <= 0x5a) ||
+			    (volser[from] >= 0x61 &&
+			     volser[from] <= 0x7a))
+				volser[to++] = toupper(volser[from]);
+	}
+
+	volser[to] = 0x00;
+
+	if (volser[0] == 0x00)
+		sprintf(volser, "0X%04x", devno);
+}
+
+/*
+ * get volser from vtoc
+ */
+int fdasd_get_volser (fdasd_anchor_t *anc, char *volser, int fd)
+{
+	volume_label_t vlabel;
+
+	vtoc_read_volume_label(fd, anc->label_pos, &vlabel);
+	vtoc_volume_label_get_volser(&vlabel, volser);
+	return 0;
+}
+
+/* Changes the volume serial (menu option)
+ *
+ */
+void fdasd_change_volser (fdasd_anchor_t *anc, char *str)
+{
+	fdasd_check_volser(str, anc->devno);
+	vtoc_volume_label_set_volser(anc->vlabel, str);
+
+	vtoc_set_cchhb(&anc->vlabel->vtoc, VTOC_START_CC, VTOC_START_HH, 0x01);
+	anc->vlabel_changed++;
+	anc->vtoc_changed++;
+}
+
+/*
+ * re-create all VTOC labels, but use the partition information
+ * from existing VTOC
+ */
+void fdasd_reuse_vtoc (fdasd_anchor_t *anc)
+{
+	partition_info_t *part_info = anc->first;
+	struct fdasd_hd_geometry geo = anc->geo;
+	format1_label_t f1;
+	format4_label_t f4;
+	format5_label_t f5;
+	format7_label_t f7;
+
+	vtoc_init_format4_label(&f4, geo.cylinders, anc->formatted_cylinders,
+				geo.heads, geo.sectors,
+				anc->blksize, anc->dev_type);
+
+	/* reuse some FMT4 values */
+	f4.DS4HPCHR = anc->f4->DS4HPCHR;
+	f4.DS4DSREC = anc->f4->DS4DSREC;
+
+	/* re-initialize both free-space labels */
+	vtoc_init_format5_label(&f5);
+	vtoc_init_format7_label(&f7);
+
+	if (anc->fspace_trk > 0)
+		vtoc_set_freespace(&f4, &f5, &f7, '+', anc->verbose,
+				   FIRST_USABLE_TRK,
+				   FIRST_USABLE_TRK + anc->fspace_trk - 1,
+				   anc->formatted_cylinders, geo.heads);
+
+	while (part_info != NULL) {
+		if (part_info->used != 0x01) {
+			part_info = part_info->next;
+			continue;
+		}
+
+		if (anc->formatted_cylinders > LV_COMPAT_CYL)
+			vtoc_init_format8_label(anc->blksize,
+						&part_info->f1->DS1EXT1, &f1);
+		else
+			vtoc_init_format1_label(anc->blksize,
+						&part_info->f1->DS1EXT1, &f1);
+
+
+		strncpy(f1.DS1DSNAM, part_info->f1->DS1DSNAM, 44);
+		strncpy((char *)f1.DS1DSSN, (char *)part_info->f1->DS1DSSN, 6);
+		f1.DS1CREDT = part_info->f1->DS1CREDT;
+
+		memcpy(part_info->f1, &f1, sizeof(format1_label_t));
+
+		if (part_info->fspace_trk > 0)
+			vtoc_set_freespace(&f4, &f5, &f7, '+', anc->verbose,
+					   part_info->end_trk + 1,
+					   part_info->end_trk +
+					   part_info->fspace_trk,
+					   anc->formatted_cylinders, geo.heads);
+
+		part_info = part_info->next;
+	}
+
+	/* over-write old labels with new ones */
+	memcpy(anc->f4, &f4, sizeof(format4_label_t));
+	memcpy(anc->f5, &f5, sizeof(format5_label_t));
+	memcpy(anc->f7, &f7, sizeof(format7_label_t));
+
+	anc->vtoc_changed++;
+
+	return;
+}
+
 /* vim:set tabstop=4 shiftwidth=4 softtabstop=4: */

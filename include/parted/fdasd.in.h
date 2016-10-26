@@ -293,5 +293,9 @@ void fdasd_recreate_vtoc(fdasd_anchor_t *anc);
 partition_info_t * fdasd_add_partition (fdasd_anchor_t *anc,
                                         unsigned int start, unsigned int stop);
 int fdasd_prepare_labels (fdasd_anchor_t *anc, int fd) ;
+void fdasd_check_volser(char *volser, int devno);
+int fdasd_get_volser(fdasd_anchor_t *anc, char *volser, int fd);
+void fdasd_change_volser(fdasd_anchor_t *anc, char *str);
+void fdasd_reuse_vtoc(fdasd_anchor_t *anc);
 
 #endif /* FDASD_H */
