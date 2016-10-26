@@ -150,7 +150,7 @@ enum failure {
 	unable_to_read
 };
 
-static char buffer[89];
+static char buffer[93];
 
 static void
 vtoc_error (enum failure why, char const *s1, char const *s2)
@@ -329,7 +329,7 @@ void
 vtoc_volume_label_init (volume_label_t *vlabel)
 {
 	PDEBUG
-	sprintf(buffer, "%88s", " ");
+	sprintf(buffer, "%92s", " ");
 	vtoc_ebcdic_enc(buffer, buffer, sizeof *vlabel);
 	memcpy(vlabel, buffer, sizeof *vlabel);
 }
@@ -348,8 +348,8 @@ vtoc_read_volume_label (int f, unsigned long vlabel_start,
 	typedef union vollabel vollabel_t;
 
 	union __attribute__((packed)) vollabel {
+		/* cdl and ldl have the same data struct */
 		volume_label_t cdl;
-		ldl_volume_label_t ldl;
 		cms_volume_label_t cms;
 	};
 
@@ -373,9 +373,7 @@ vtoc_read_volume_label (int f, unsigned long vlabel_start,
 	}
 
 	rc = read(f, vlabel, sizeof(volume_label_t));
-	if (rc != sizeof(volume_label_t) &&
-	/* For CDL we ask to read 88 bytes, but only get 84 */
-            rc != sizeof(volume_label_t) - 4) {
+	if (rc != sizeof(volume_label_t)) {
 		vtoc_error(unable_to_read, "vtoc_read_volume_label",
 			   _("Could not read volume label."));
 		return 1;
@@ -427,10 +425,8 @@ vtoc_write_volume_label (int f, unsigned long vlabel_start,
 		vtoc_error(unable_to_seek, "vtoc_write_volume_label",
 			   _("Could not write volume label."));
 
-	rc = write(f, vlabel, sizeof(volume_label_t) - 4);
-	/* Subtract 4 to leave off the "fudge" variable when writing.
-           We only write CDL volume labels, never LDL or CMS.  */
-	if (rc != sizeof(volume_label_t) - 4)
+	rc = write(f, vlabel, sizeof(volume_label_t));
+	if (rc != sizeof(volume_label_t))
 		vtoc_error(unable_to_write, "vtoc_write_volume_label",
 			   _("Could not write volume label."));
 
@@ -632,7 +628,7 @@ vtoc_write_label (int f, unsigned long position,
  * initializes a format4 label
  */
 void
-vtoc_init_format4_label (format4_label_t *f4, unsigned int usable_partitions,
+vtoc_init_format4_label (format4_label_t *f4,
                          unsigned int compat_cylinders,
                          unsigned int real_cylinders, unsigned int tracks,
                          unsigned int blocks, unsigned int blksize,
@@ -740,7 +736,7 @@ vtoc_init_format7_label (format7_label_t *f7)
  * format1 or format 8 label, all but the field DS1FMTID
  */
 void
-vtoc_init_format_1_8_label (char *volid, unsigned int blksize,
+vtoc_init_format_1_8_label (unsigned int blksize,
                             extent_t *part_extent, format1_label_t *f1)
 {
 	PDEBUG
@@ -794,18 +790,18 @@ vtoc_init_format_1_8_label (char *volid, unsigned int blksize,
 }
 
 void
-vtoc_init_format1_label (char *volid, unsigned int blksize,
+vtoc_init_format1_label (unsigned int blksize,
                          extent_t *part_extent, format1_label_t *f1)
 {
-	vtoc_init_format_1_8_label(volid, blksize, part_extent, f1);
+	vtoc_init_format_1_8_label(blksize, part_extent, f1);
 	f1->DS1FMTID = 0xf1;
 }
 
 void
-vtoc_init_format8_label (char *volid, unsigned int blksize,
+vtoc_init_format8_label (unsigned int blksize,
                          extent_t *part_extent, format1_label_t *f8)
 {
-	vtoc_init_format_1_8_label(volid, blksize, part_extent, f8);
+	vtoc_init_format_1_8_label(blksize, part_extent, f8);
 	f8->DS1FMTID = 0xf8;
 }
 
@@ -886,7 +882,7 @@ vtoc_reorganize_FMT5_extents (format5_label_t *f5)
  * add a free space extent description to the VTOC FMT5 DSCB
  */
 void
-vtoc_update_format5_label_add (format5_label_t *f5, int verbose, int cyl,
+vtoc_update_format5_label_add (format5_label_t *f5, int verbose,
                                int trk, u_int16_t a, u_int16_t b, u_int8_t c)
 {
 	PDEBUG
@@ -974,7 +970,7 @@ vtoc_update_format5_label_add (format5_label_t *f5, int verbose, int cyl,
  * remove a free space extent description from the VTOC FMT5 DSCB
  */
 void
-vtoc_update_format5_label_del (format5_label_t *f5, int verbose, int cyl,
+vtoc_update_format5_label_del (format5_label_t *f5, int verbose,
                                int trk, u_int16_t a, u_int16_t b, u_int8_t c)
 {
 	PDEBUG
@@ -1054,7 +1050,7 @@ vtoc_update_format5_label_del (format5_label_t *f5, int verbose, int cyl,
 			ext->ft = (a - ext->t) % trk;
 
 			vtoc_update_format5_label_add(f5, verbose,
-						      cyl, trk, x, y, z);
+						      trk, x, y, z);
 
 			if (verbose)
 				puts ("FMT5 del extent: 2 pieces");
@@ -1322,9 +1318,9 @@ vtoc_set_freespace(format4_label_t *f4, format5_label_t *f5,
 		z =  (u_int8_t) ((stop - start + 1) % trk);
 
 		if (ch == '+')
-			vtoc_update_format5_label_add(f5, verbose, cyl, trk, x, y, z);
+			vtoc_update_format5_label_add(f5, verbose, trk, x, y, z);
 		else if (ch == '-')
-			vtoc_update_format5_label_del(f5, verbose, cyl, trk, x, y, z);
+			vtoc_update_format5_label_del(f5, verbose, trk, x, y, z);
 		else
 			puts ("BUG: syntax error in vtoc_set_freespace call");
 

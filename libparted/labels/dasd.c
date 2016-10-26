@@ -330,13 +330,12 @@ dasd_read (PedDisk* disk)
 		DasdPartitionData* dasd_data;
 
 		union vollabel {
-			volume_label_t unused;
-			ldl_volume_label_t ldl;
+			volume_label_t ldl;
 			cms_volume_label_t cms;
 		};
 		union vollabel *cms_ptr1 = (union vollabel *) anchor.vlabel;
 		cms_volume_label_t *cms_ptr = &cms_ptr1->cms;
-		ldl_volume_label_t *ldl_ptr = &cms_ptr1->ldl;
+		volume_label_t *ldl_ptr = &cms_ptr1->ldl;
 		int partition_start_block;
 
 		disk_specific->format_type = 1;
@@ -360,8 +359,7 @@ dasd_read (PedDisk* disk)
 				* (long long) cms_ptr->disk_offset;
 
 		if (is_ldl)
-		   if (strncmp(ldl_ptr->ldl_version,
-			       vtoc_ebcdic_enc("2", str, 1), 1) >= 0)
+		   if (ldl_ptr->ldl_version >= 0xf2)
 		      end = (long long) arch_specific->real_sector_size
 			    / (long long) disk->dev->sector_size
 			    * (long long) ldl_ptr->formatted_blocks - 1;
