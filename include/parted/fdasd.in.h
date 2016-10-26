@@ -186,6 +186,7 @@ typedef struct format_data_t {
 /*****************************************************************************
  * SECTION: Further IOCTL Definitions  (see fs.h)                            *
  *****************************************************************************/
+#define BLKROGET   _IO(0x12,94) /* get read-only status (0 = read_write) */
 /* re-read partition table */
 #define BLKRRPART  _IO(0x12,95)
 /* get block device sector size */
@@ -198,15 +199,14 @@ typedef struct format_data_t {
 /*****************************************************************************
  * SECTION: FDASD internal types                                             *
  *****************************************************************************/
+#define PARTN_MASK ((1 << DASD_PARTN_BITS) - 1)
+#define USABLE_PARTITIONS ((1 << DASD_PARTN_BITS) - 1)
 
 #define DASD_MIN_API_VERSION 0
 
 #define DEFAULT_FDASD_CONF "/etc/fdasd.conf" /* default config file */
 
-#define PARTN_MASK ((1 << DASD_PARTN_BITS) - 1)
-#define USABLE_PARTITIONS ((1 << DASD_PARTN_BITS) - 1)
-
-#define FDASD_VERSION "1.05"
+#define FDASD_VERSION "1.32.0"
 #define DEVICE "device"
 #define DISC   "disc"
 #define PART   "part"
@@ -233,9 +233,6 @@ typedef struct config_data {
 typedef struct fdasd_anchor {
 	int vlabel_changed;
 	int vtoc_changed;
-	int devname_specified;
-	int volid_specified;
-	int config_specified;
 	int auto_partition;
 	int print_table;
 	int big_disk;
@@ -282,7 +279,8 @@ enum fdasd_failure {
 	vlabel_corrupted,
 	dsname_corrupted,
 	malloc_failed,
-	device_verification_failed
+	device_verification_failed,
+	volser_not_found
 };
 
 void fdasd_cleanup (fdasd_anchor_t *anchor);
