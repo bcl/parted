@@ -62,7 +62,6 @@ typedef struct cchh             cchh_t;
 typedef struct labeldate        labeldate_t;
 typedef struct volume_label     volume_label_t;
 typedef struct cms_volume_label cms_volume_label_t;
-typedef struct ldl_volume_label ldl_volume_label_t;
 typedef struct extent           extent_t;
 typedef struct dev_const        dev_const_t;
 typedef struct format1_label    format1_label_t;
@@ -94,6 +93,19 @@ struct __attribute__ ((packed)) labeldate {
         u_int16_t day;
 };
 
+/*
+ * The following structure is a merger of the cdl and ldl volume label.
+ * On an ldl disk there is no key information, so when reading an
+ * ldl label from disk, the data should be copied at the address of vollbl.
+ * On the other side, the field ldl_version is reserved in a cdl record
+ * and the field formatted_blocks exists only for ldl labels. So when
+ * reading a cdl label from disk, the formatted_blocks field will contain
+ * arbitrary data.
+ * This layout may be a bit awkward, but the advantage of having the
+ * same label type for both disk layout types is bigger than the effort
+ * for taking a bit of extra care at the fringes.
+ */
+
 struct __attribute__ ((packed)) volume_label {
 	char volkey[4];         /* volume key = volume label                 */
 	char vollbl[4];	        /* volume label ("VOL1" in EBCDIC)           */
@@ -107,15 +119,8 @@ struct __attribute__ ((packed)) volume_label {
 	char labperci[4];       /* no of labels per CI (FBA), blanks for CKD */
 	char res2[4];	        /* reserved                                  */
 	char lvtoc[14];	        /* owner code for LVTOC                      */
-	char res3[29];	        /* reserved                                  */
-        char fudge[4];          /* filler to match length of ldl label       */
-};
-
-struct __attribute__ ((packed)) ldl_volume_label {
-	char vollbl[4];         /* Label identifier ("LNX1" in EBCDIC)       */
-        char volid[6];          /* Volume identifier                         */
-        char res3[69];          /* Reserved field                            */
-        char ldl_version[1];    /* Version number, valid for ldl format      */
+        char res3[28];	        /* reserved                                  */
+        char ldl_version;       /* version number, valid for ldl format      */
         u_int64_t formatted_blocks;  /* valid when ldl_version >= "2" (in
                                         EBCDIC)                              */
 };
@@ -335,11 +340,10 @@ void vtoc_write_label (int fd, unsigned long position,
                        format7_label_t const *f7,
                        format9_label_t const *f9);
 
-void vtoc_init_format1_label (char *volid, unsigned int blksize,
+void vtoc_init_format1_label (unsigned int blksize,
                               extent_t *part_extent, format1_label_t *f1);
 
 void vtoc_init_format4_label (format4_label_t *f4lbl,
-                              unsigned int usable_partitions,
                               unsigned int compat_cylinders,
                               unsigned int real_cylinders,
                               unsigned int tracks,
@@ -352,11 +356,11 @@ void vtoc_update_format4_label (format4_label_t *f4, cchhb_t *highest_f1,
 
 void vtoc_init_format5_label (format5_label_t *f5);
 
-void vtoc_update_format5_label_add (format5_label_t *f5, int verbose, int cyl,
+void vtoc_update_format5_label_add (format5_label_t *f5, int verbose,
                                     int trk, u_int16_t a, u_int16_t b,
                                     u_int8_t c);
 
-void vtoc_update_format5_label_del (format5_label_t *f5, int verbose, int cyl,
+void vtoc_update_format5_label_del (format5_label_t *f5, int verbose,
                                     int trk, u_int16_t a, u_int16_t b,
                                     u_int8_t c);
 
@@ -368,7 +372,7 @@ void vtoc_update_format7_label_add (format7_label_t *f7, int verbose,
 void vtoc_update_format7_label_del (format7_label_t *f7, int verbose,
                                     u_int32_t a, u_int32_t b);
 
-void vtoc_init_format8_label (char *volid, unsigned int blksize,
+void vtoc_init_format8_label (unsigned int blksize,
                               extent_t *part_extent, format1_label_t *f1);
 
 void vtoc_update_format8_label (cchhb_t *associated_f9, format1_label_t *f8);
