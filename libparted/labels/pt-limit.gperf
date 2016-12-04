@@ -25,3 +25,4 @@ pc98,UINT32_MAX,UINT32_MAX
 #
 # FIXME: not verified.  looks like these are cylinder aligned, too
 amiga,UINT32_MAX,UINT32_MAX
+atari,INT32_MAX,INT32_MAX

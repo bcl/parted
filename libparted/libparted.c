@@ -75,6 +75,7 @@ extern void ped_disk_pc98_init ();
 extern void ped_disk_sun_init ();
 extern void ped_disk_amiga_init ();
 extern void ped_disk_dasd_init ();
+extern void ped_disk_atari_init ();
 
 static void
 init_disk_types ()
@@ -96,6 +97,7 @@ init_disk_types ()
 	ped_disk_bsd_init ();
 	ped_disk_amiga_init ();
 	ped_disk_aix_init ();
+	ped_disk_atari_init ();
 }
 
 extern void ped_file_system_amiga_init (void);
@@ -139,6 +141,7 @@ extern void ped_disk_pc98_done ();
 extern void ped_disk_sun_done ();
 extern void ped_disk_amiga_done ();
 extern void ped_disk_dasd_done ();
+extern void ped_disk_atari_done ();
 
 static void
 done_disk_types ()
@@ -158,6 +161,7 @@ done_disk_types ()
 	ped_disk_bsd_done ();
 	ped_disk_amiga_done ();
 	ped_disk_aix_done ();
+	ped_disk_atari_done ();
 }
 
 static void _init() __attribute__ ((constructor));

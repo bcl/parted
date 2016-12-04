@@ -37,6 +37,7 @@ max_n_partitions()
     mac) m=65536;;
     bsd) m=8;;
     amiga) m=128;;
+    atari) m=12;;
     loop) m=1;;
     pc98) case $ss in 512) m=16;; *) m=64;; esac;;
     *) warn_ invalid partition table type: $1 1>&2; exit 1;;
@@ -45,8 +46,9 @@ max_n_partitions()
 }
 
 # FIXME: add aix when/if it's supported again
-for t in msdos gpt dvh sun mac bsd amiga loop pc98; do
+for t in msdos gpt dvh sun mac bsd amiga atari loop pc98; do
     echo $t
+    [ $t == 'atari' ] && [ $ss != 512 ] && continue
     rm -f $dev
     dd if=/dev/zero of=$dev bs=$ss count=1 seek=10000 || { fail=1; continue; }
     parted -s $dev mklabel $t || { fail=1; continue; }
@@ -56,6 +58,7 @@ for t in msdos gpt dvh sun mac bsd amiga loop pc98; do
     max_start=4294967295
     max_len=4294967295
     case $t in
+	atari) max_start=2147483647; max_len=$max_start;;
 	gpt|loop) max_start=18446744073709551615; max_len=$max_start;;
 	sun) max_start=549755813760;; # 128 * (2^32-1)
     esac
