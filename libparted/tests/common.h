@@ -1,5 +1,10 @@
 #include <parted/parted.h>
 
+/* Determine sector size from environment
+ *
+ */
+size_t get_sector_size (void);
+
 /* Create an empty disk image
  *
  * filename: file (with full path) where to write the disk image
