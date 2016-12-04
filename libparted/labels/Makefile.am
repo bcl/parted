@@ -19,6 +19,7 @@ noinst_LTLIBRARIES    =	liblabels.la
 liblabels_la_SOURCES = \
   $(S390_SRCS)	\
   aix.c		\
+  atari.c	\
   bsd.c		\
   dos.c		\
   dvh.c		\

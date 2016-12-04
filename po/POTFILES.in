@@ -27,6 +27,7 @@ libparted/debug.c
 libparted/disk.c
 libparted/exception.c
 libparted/labels/aix.c
+libparted/labels/atari.c
 libparted/labels/bsd.c
 libparted/labels/dasd.c
 libparted/labels/dos.c

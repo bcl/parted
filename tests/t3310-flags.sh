@@ -25,7 +25,7 @@ extract_flags()
   perl -nle '/^[^:]*:4096s:6143s:2048s::[^:]*:(.+);$/ and print $1' "$@"
 }
 
-for table_type in aix amiga bsd dvh gpt mac msdos pc98 sun loop; do
+for table_type in aix amiga atari bsd dvh gpt mac msdos pc98 sun loop; do
   ptn_num=1
 
   case $table_type in
@@ -34,6 +34,10 @@ for table_type in aix amiga bsd dvh gpt mac msdos pc98 sun loop; do
            continue
            ;;
     amiga) primary_or_name='PTNNAME'
+           ;;
+    atari)  primary_or_name='primary'
+           # atari only supports 512b sectors
+           [ $ss -ne 512 ] && continue
            ;;
     bsd)   primary_or_name=''
            ;;
