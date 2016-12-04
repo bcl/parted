@@ -7,8 +7,22 @@
 #include <check.h>
 
 #include "common.h"
+#include "xstrtol.h"
 
 #define STREQ(a, b) (strcmp (a, b) == 0)
+
+size_t get_sector_size (void)
+{
+  char *p = getenv ("PARTED_SECTOR_SIZE");
+  size_t ss = 512;
+  unsigned long val;
+  if (p
+      && xstrtoul (p, NULL, 10, &val, NULL) == LONGINT_OK
+      && val % 512 == 0)
+    ss = val;
+
+  return ss;
+}
 
 PedExceptionOption
 _test_exception_handler (PedException* e)
