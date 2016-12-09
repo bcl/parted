@@ -411,14 +411,14 @@ _rawpart_has_driver (const MacRawPartition* raw_part, MacDiskData* mac_disk_data
 {
 	MacDeviceDriver *driverlist;
 	uint16_t i;
-	uint32_t driver_bs, driver_be, part_be;
+	uint32_t start_block, block_count;
 
+	start_block = PED_BE32_TO_CPU(raw_part->start_block);
+	block_count = PED_BE32_TO_CPU(raw_part->block_count);
 	driverlist = &mac_disk_data->driverlist[0];
 	for (i = 0; i < mac_disk_data->driver_count; i++) {
-		driver_bs = driverlist->block;
-		driver_be = driver_bs + driverlist->size;
-		part_be = raw_part->start_block + raw_part->block_count;
-		if (driver_bs >= raw_part->start_block && driver_be <= part_be)
+		if (start_block == PED_BE32_TO_CPU(driverlist->block) &&
+                    block_count == PED_BE16_TO_CPU(driverlist->size))
 			return 1;
 		driverlist++;
 	}
@@ -751,11 +751,12 @@ mac_read (PedDisk* disk)
 	if (!ped_disk_delete_all (disk))
 		goto error;
 
-	if (raw_disk->driver_count && raw_disk->driver_count < 62) {
+	if (PED_BE16_TO_CPU(raw_disk->driver_count) &&
+            PED_BE16_TO_CPU(raw_disk->driver_count) < 62) {
 		memcpy(&mac_disk_data->driverlist[0], &raw_disk->driverlist[0],
 				sizeof(mac_disk_data->driverlist));
-		mac_disk_data->driver_count = raw_disk->driver_count;
-		mac_disk_data->block_size = raw_disk->block_size;
+		mac_disk_data->driver_count = PED_BE16_TO_CPU(raw_disk->driver_count);
+		mac_disk_data->block_size = PED_BE16_TO_CPU(raw_disk->block_size);
 	}
 
 	/* If _disk_analyse_block_size has increased the sector_size,
@@ -877,17 +878,16 @@ static void
 _update_driver_count (MacRawPartition* part_map_entry,
 		      MacDiskData *mac_driverdata, const MacDiskData* mac_disk_data)
 {
-	uint16_t	i, count_orig, count_cur;
-	uint32_t	driver_bs, driver_be, part_be;
+	uint16_t	i;
+	uint32_t	start_block, block_count;
 
-	count_cur = mac_driverdata->driver_count;
-	count_orig = mac_disk_data->driver_count;
-	for (i = 0; i < count_orig; i++) {
-		driver_bs = mac_disk_data->driverlist[i].block;
-		driver_be = driver_bs + mac_disk_data->driverlist[i].size;
-		part_be = part_map_entry->start_block + part_map_entry->block_count;
-		if (driver_bs >= part_map_entry->start_block
-				&& driver_be <= part_be) {
+	start_block = PED_BE32_TO_CPU(part_map_entry->start_block);
+	block_count = PED_BE32_TO_CPU(part_map_entry->block_count);
+
+	for (i = 0; i < mac_disk_data->driver_count; i++) {
+		if (start_block == PED_BE32_TO_CPU(mac_disk_data->driverlist[i].block) &&
+		    block_count == PED_BE16_TO_CPU(mac_disk_data->driverlist[i].size)) {
+		        uint16_t count_cur = mac_driverdata->driver_count;
 			mac_driverdata->driverlist[count_cur].block
 				= mac_disk_data->driverlist[i].block;
 			mac_driverdata->driverlist[count_cur].size
@@ -934,7 +934,6 @@ _generate_raw_part (PedDisk* disk, PedPartition* part,
 	strncpy (part_map_entry->type, mac_part_data->system_name, 32);
 
 	if (mac_part_data->is_driver) {
-		mac_part_data->boot_region_length = part->geom.length;
 		if (mac_part_data->has_driver)
 			_update_driver_count(part_map_entry, mac_driverdata,
 					mac_disk_data);
@@ -1042,7 +1041,7 @@ write_block_zero (PedDisk* disk, MacDiskData* mac_driverdata)
 	raw_disk->block_size = PED_CPU_TO_BE16 (dev->sector_size);
 	raw_disk->block_count = PED_CPU_TO_BE32 (dev->length);
 
-	raw_disk->driver_count = mac_driverdata->driver_count;
+	raw_disk->driver_count = PED_CPU_TO_BE16(mac_driverdata->driver_count);
 	memcpy(&raw_disk->driverlist[0], &mac_driverdata->driverlist[0],
 			sizeof(raw_disk->driverlist));
 
