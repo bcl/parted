@@ -742,7 +742,7 @@ do_mkpart (PedDevice** dev, PedDisk** diskp)
                 ped_constraint_destroy (constraint_any);
 
                 if (!added_ok)
-                        goto error_remove_part;
+                        goto error_destroy_simple_constraints;
 
                 if (!ped_geometry_test_sector_inside(range_start, part->geom.start) ||
                     !ped_geometry_test_sector_inside(range_end, part->geom.end)) {
@@ -817,12 +817,12 @@ do_mkpart (PedDevice** dev, PedDisk** diskp)
         free (part_name);  /* avoid double-free upon failure */
         part_name = NULL;
         if (!ped_partition_set_system (part, fs_type))
-                goto error;
+                goto error_remove_part;
         if (ped_partition_is_flag_available (part, PED_PARTITION_LBA))
                 ped_partition_set_flag (part, PED_PARTITION_LBA, 1);
 
         if (!ped_disk_commit (disk))
-                goto error;
+                goto error_remove_part;
 
         /* clean up */
         if (range_start != NULL)
@@ -845,7 +845,8 @@ error_remove_part:
 error_destroy_simple_constraints:
         ped_partition_destroy (part);
 error:
-        free (part_name);
+        if (part_name)
+                free (part_name);
         if (range_start != NULL)
                 ped_geometry_destroy (range_start);
         if (range_end != NULL)
