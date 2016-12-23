@@ -1627,8 +1627,14 @@ interactive_mode (PedDevice** dev, PedDisk** disk, Command* cmd_list[])
                         cmd = command_get (commands, word);
                         free (word);
                         if (cmd) {
-                                if (!command_run (cmd, dev, disk))
+                                if (!command_run (cmd, dev, disk)) {
                                         command_line_flush ();
+
+                                        if (*disk) {
+                                                ped_disk_destroy (*disk);
+                                                *disk = 0;
+                                        }
+                                }
                         } else
                                 print_commands_help ();
                 }
