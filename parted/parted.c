@@ -1390,8 +1390,12 @@ _rescue_add_partition (PedPartition* part)
                 default: break;
         }
 
-        ped_partition_set_system (part, fs_type);
-        ped_disk_commit (part->disk);
+        if (!ped_partition_set_system (part, fs_type))
+                return 0;
+
+        if (!ped_disk_commit (part->disk))
+                return 0;
+
         return 1;
 }
 
@@ -1601,8 +1605,10 @@ do_rm (PedDevice** dev, PedDisk** diskp)
         if (!_partition_warn_busy (part))
                 goto error;
 
-        ped_disk_delete_partition (*diskp, part);
-        ped_disk_commit (*diskp);
+        if (!ped_disk_delete_partition (*diskp, part))
+                goto error;
+        if (!ped_disk_commit (*diskp))
+                goto error;
 
         if ((*dev)->type != PED_DEVICE_FILE)
                 disk_is_modified = 1;
