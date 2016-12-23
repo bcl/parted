@@ -56,7 +56,11 @@ printf "BYT;\n$dev:${n_sectors}s:file:$ss:$ss:gpt::;\n" > exp
 i=1
 for type in $fs_types; do
   end=$(expr $start + $part_size - 1)
-  case $type in fat*|NTFS) flag=msftdata;; *) flag=;; esac
+  case $type in
+     fat*|NTFS) flag=msftdata;;
+     linux-swap) flag=swap;;
+     *) flag=;;
+  esac
   echo "$i:${start}s:${end}s:${part_size}s::$type:$flag;" >> exp || fail=1
   parted -s $dev mkpart p-name $type ${start}s ${end}s > err 2>&1 || fail=1
   compare /dev/null err || fail=1
