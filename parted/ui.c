@@ -29,6 +29,8 @@
 #include <unistd.h>
 #include <setjmp.h>
 #include <assert.h>
+#include <limits.h>
+#include <errno.h>
 
 #include "command.h"
 #include "strlist.h"
@@ -909,16 +911,30 @@ command_line_get_integer (const char* prompt, int* value)
 {
         char     def_str [10];
         char*    input;
-        int      valid;
+        long     ret;
 
         snprintf (def_str, 10, "%d", *value);
         input = command_line_get_word (prompt, *value ? def_str : NULL,
                                        NULL, 1);
         if (!input)
                 return 0;
-        valid = sscanf (input, "%d", value);
+
+        errno = 0;
+        ret = strtol (input, (char**) NULL, 10);
+        if (errno)
+                goto error;
+
+        if ((ret > INT_MAX) || (ret < INT_MIN))
+                goto error;
+        else
+                *value = (int) ret;
+
         free (input);
-        return valid;
+        return 1;
+
+error:
+        free (input);
+        return 0;
 }
 
 int
@@ -1029,6 +1045,7 @@ command_line_get_partition (const char* prompt, PedDisk* disk,
                             PedPartition** value)
 {
         PedPartition*    part;
+        int ret;
 
         /* Flawed logic, doesn't seem to work?!
         check = ped_disk_next_partition (disk, part);
@@ -1045,7 +1062,8 @@ command_line_get_partition (const char* prompt, PedDisk* disk,
         */
         int num = (*value) ? (*value)->num : 0;
 
-        if (!command_line_get_integer (prompt, &num)) {
+        ret = command_line_get_integer (prompt, &num);
+        if ((!ret) || (num < 0)) {
                 ped_exception_throw (PED_EXCEPTION_ERROR,
                                      PED_EXCEPTION_CANCEL,
                                      _("Expecting a partition number."));
