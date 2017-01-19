@@ -210,8 +210,8 @@ hfsc_cache_move_extent(HfsCPrivateCache* cache, uint32_t old_start,
 		ped_exception_throw (
 			PED_EXCEPTION_BUG,
 			PED_EXCEPTION_CANCEL,
-			_("Trying to move an extent from block Ox%X to block "
-			  "Ox%X, but another one already exists at this "
+			_("Trying to move an extent from block 0x%X to block "
+			  "0x%X, but another one already exists at this "
 			  "position.  This should not happen!"),
 			old_start, new_start);
 		return NULL;
