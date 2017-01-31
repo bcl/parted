@@ -1276,7 +1276,7 @@ do_print (PedDevice** dev, PedDisk** diskp)
                         putchar (':');
 
                     if (has_name)
-                        printf ("%s:", _(ped_partition_get_name (part)));
+                        printf ("%s:", ped_partition_get_name (part));
                     else
                         putchar (':');
 
