@@ -27,13 +27,14 @@ scsi_debug_cleanup_()
     # "Module scsi_debug is in use".
     i=0
     udevadm settle
-    while [ $i -lt 10 ] ; do
+    while [ $i -lt 40 ] ; do
       rmmod scsi_debug \
 	&& { test "$VERBOSE" = yes && warn_ $ME_ rmmod scsi_debug...; break; }
       sleep .2 || sleep 1
       i=$((i + 1))
     done
     udevadm settle
+    test $i = 40 && framework_failure_ rmmod scsi_debug failed.
   fi
   rm -fr $scsi_debug_lock_dir_
 }
