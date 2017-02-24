@@ -30,6 +30,7 @@ scsi_dev=$(cat dev-name)
     || { warn_ "$ME: no ext4 support"; Exit $fail; }
 
 parted -s $scsi_dev mklabel msdos mkpart primary ext2 1m 100%
+wait_for_dev_to_appear_ ${scsi_dev}1 || fail=1
 mkfs.ext4 ${scsi_dev}1 || { warn_ $ME: mkfs.ext4 failed; fail=1; Exit $fail; }
 
 # remove the partition
