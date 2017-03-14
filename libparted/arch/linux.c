@@ -279,6 +279,7 @@ struct blkdev_ioctl_param {
 #define LOOP_MAJOR              7
 #define MD_MAJOR                9
 #define BLKEXT_MAJOR            259
+#define RAM_MAJOR               1
 
 #define SCSI_BLK_MAJOR(M) (                                             \
                 (M) == SCSI_DISK0_MAJOR                                 \
@@ -701,6 +702,8 @@ _device_probe_type (PedDevice* dev)
                 dev->type = PED_DEVICE_MD;
         } else if (_is_blkext_major(dev_major) && dev->path && strstr(dev->path, "nvme")) {
                 dev->type = PED_DEVICE_NVME;
+        } else if (dev_major == RAM_MAJOR) {
+                dev->type = PED_DEVICE_RAM;
         } else {
                 dev->type = PED_DEVICE_UNKNOWN;
         }
@@ -1547,6 +1550,11 @@ linux_new (const char* path)
                         goto error_free_arch_specific;
                 break;
 
+        case PED_DEVICE_RAM:
+                if (!init_generic (dev, _("RAM Drive")))
+                        goto error_free_arch_specific;
+                break;
+
         default:
                 ped_exception_throw (PED_EXCEPTION_NO_FEATURE,
                                 PED_EXCEPTION_CANCEL,
@@ -1619,9 +1627,9 @@ _flush_cache (PedDevice* dev)
 {
         LinuxSpecific*  arch_specific = LINUX_SPECIFIC (dev);
         int             i;
-	int             lpn = _device_get_partition_range(dev);
+        int             lpn = _device_get_partition_range(dev);
 
-        if (dev->read_only)
+        if (dev->read_only || dev->type == PED_DEVICE_RAM)
                 return;
         dev->dirty = 0;
 
