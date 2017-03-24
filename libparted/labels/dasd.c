@@ -619,8 +619,12 @@ dasd_write (const PedDisk* disk)
 	PDEBUG;
 
 	/* If not formated in CDL, don't write anything. */
-	if (disk_specific->format_type == 1)
+	if (disk_specific->format_type == 1) {
+		ped_exception_throw (PED_EXCEPTION_ERROR,
+				     PED_EXCEPTION_CANCEL,
+				     _("The partition table of DASD-LDL device cannot be changed.\n"));
 		return 1;
+	}
 
 	/* initialize the anchor */
 	fdasd_initialize_anchor(&anchor);
