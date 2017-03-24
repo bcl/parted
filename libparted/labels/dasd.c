@@ -773,10 +773,24 @@ dasd_partition_get_flag (const PedPartition* part, PedPartitionFlag flag)
 	}
 }
 
+/*
+ * The DASD-LDL does not support flags now.
+ * So just return 0.
+*/
 static int
 dasd_partition_is_flag_available (const PedPartition* part,
                                   PedPartitionFlag flag)
 {
+	DasdDiskSpecific* disk_specific;
+	PED_ASSERT (part != NULL);
+	PED_ASSERT (part->disk != NULL);
+	PED_ASSERT (part->disk->disk_specific != NULL);
+
+	disk_specific = part->disk->disk_specific;
+
+	if (disk_specific->format_type == 1)
+		return 0;
+
 	switch (flag) {
 		case PED_PARTITION_RAID:
 			return 1;
