@@ -871,6 +871,13 @@ do_name (PedDevice** dev, PedDisk** diskp)
         if (!*diskp)
                 goto error;
 
+        if (!ped_disk_type_check_feature((*diskp)->type, PED_DISK_TYPE_PARTITION_NAME)) {
+                ped_exception_throw (PED_EXCEPTION_ERROR, PED_EXCEPTION_CANCEL,
+                                     _("%s disk labels do not support partition name."),
+				     (*diskp)->type->name);
+                goto error;
+        }
+
         if (!command_line_get_partition (_("Partition number?"), *diskp, &part))
                 goto error;
 
