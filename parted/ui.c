@@ -1270,6 +1270,7 @@ command_line_get_ex_opt (const char* prompt, PedExceptionOption options)
         PedExceptionOption    opt;
         char*                 opt_name;
 
+        command_line_flush ();
         for (opt = option_get_next (options, 0); opt;
              opt = option_get_next (options, opt)) {
                 options_strlist = str_list_append_unique (options_strlist,
