@@ -111,6 +111,15 @@ ptt_geom_clear_sectors (PedGeometry *geom, PedSector start, PedSector n)
   return ptt_clear_sectors (geom->dev, geom->start + start, n);
 }
 
+/* Since pt-limit.c is generated code from gperf, put this here to keep gcc happy */
+struct partition_limit
+{
+  char const *name;
+  uint64_t max_start_sector;
+  uint64_t max_length;
+};
+
+const struct partition_limit *pt_limit_lookup(char const *, size_t);
 #include "pt-limit.c"
 
 /* Throw an exception and return 0 if PART's starting sector number or
