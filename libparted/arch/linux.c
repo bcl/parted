@@ -2933,6 +2933,7 @@ _dm_resize_partition (PedDisk* disk, const PedPartition* part)
         char*           vol_name = NULL;
         const char*     dev_name = NULL;
         uint32_t        cookie = 0;
+        int             rc = 0;
 
         /* Get map name from devicemapper */
         struct dm_task *task = dm_task_create (DM_DEVICE_INFO);
@@ -2973,8 +2974,9 @@ _dm_resize_partition (PedDisk* disk, const PedPartition* part)
         /* device-mapper uses 512b units, not the device's sector size */
         dm_task_add_target (task, 0, part->geom.length * (disk->dev->sector_size / PED_SECTOR_SIZE_DEFAULT),
                 "linear", params);
-        if (!dm_task_set_cookie (task, &cookie, 0))
-                goto err;
+        /* NOTE: DM_DEVICE_RELOAD doesn't generate udev events, so no cookie is needed (it will freeze).
+         *       DM_DEVICE_RESUME does, so get a cookie and synchronize with udev.
+         */
         if (dm_task_run (task)) {
                 dm_task_destroy (task);
                 task = dm_task_create (DM_DEVICE_RESUME);
@@ -2983,10 +2985,8 @@ _dm_resize_partition (PedDisk* disk, const PedPartition* part)
                 dm_task_set_name (task, vol_name);
                 if (!dm_task_set_cookie (task, &cookie, 0))
                         goto err;
-                if (dm_task_run (task)) {
-                        free (params);
-                        free (vol_name);
-                        return 1;
+                if (_dm_task_run_wait (task, cookie)) {
+                        rc = 1;
                 }
         }
 err:
@@ -2995,7 +2995,7 @@ err:
                 dm_task_destroy (task);
         free (params);
         free (vol_name);
-        return 0;
+        return rc;
 }
 
 #endif
