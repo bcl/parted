@@ -5,6 +5,9 @@ GNU parted NEWS                                    -*- outline -*-
 * Noteworthy changes in release ?.? (????-??-??) [?]
 
 ** Bug Fixes
+
+  Fix a udev cookie leak when using resizepart on device-mapper devices.
+
   Fix a gettext crash/error sometimes when using localized languages.
 
   Fix fat resize to preverve boot code, and thus not render the
