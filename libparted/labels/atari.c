@@ -37,7 +37,6 @@
 #include <parted/endian.h>
 #include <string.h>
 #include <locale.h>
-#include <xlocale.h>
 #include <stdint.h>
 #include <ctype.h>
 #include <stddef.h>
