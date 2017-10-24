@@ -704,6 +704,8 @@ _device_probe_type (PedDevice* dev)
                 dev->type = PED_DEVICE_NVME;
         } else if (dev_major == RAM_MAJOR) {
                 dev->type = PED_DEVICE_RAM;
+        } else if (_is_blkext_major(dev_major) && dev->path && strstr(dev->path, "pmem")) {
+                dev->type = PED_DEVICE_PMEM;
         } else {
                 dev->type = PED_DEVICE_UNKNOWN;
         }
@@ -1484,6 +1486,11 @@ linux_new (const char* path)
 
         case PED_DEVICE_NVME:
                 if (!init_generic (dev, _("NVMe Device")))
+                        goto error_free_arch_specific;
+                break;
+
+        case PED_DEVICE_PMEM:
+                if (!init_generic (dev, _("NVDIMM Device")))
                         goto error_free_arch_specific;
                 break;
 
