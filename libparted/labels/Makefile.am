@@ -36,7 +36,7 @@ liblabels_la_SOURCES = \
   rdb.c		\
   sun.c
 
-liblabels_la_LIBADD = $(OS_LIBS) $(INTLLIBS)
+liblabels_la_LIBADD = $(OS_LIBS) $(INTLLIBS) $(LIBICONV)
 
 AM_CPPFLAGS = $(partedincludedir) $(INTLINCS)
 
