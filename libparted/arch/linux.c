@@ -41,6 +41,7 @@
 #include <sys/utsname.h>        /* for uname() */
 #include <scsi/scsi.h>
 #include <assert.h>
+#include <sys/sysmacros.h>
 #ifdef ENABLE_DEVICE_MAPPER
 #include <libdevmapper.h>
 #endif
