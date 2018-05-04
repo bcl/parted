@@ -47,6 +47,7 @@ cleanup_fn_() {
 
 # create mdraid on top of both partitions
 mdadm -C $md_dev --force -R -l1 -n2 "${scsi_dev}1" "${scsi_dev}2"
+wait_for_dev_to_appear_ ${md_dev} || { fail=1; cat /proc/partitions; }
 
 # create gpt and two partitions on the raid device
 parted -s $md_dev mklabel gpt \
