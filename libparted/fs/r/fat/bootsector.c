@@ -125,18 +125,6 @@ fat_boot_sector_analyse (FatBootSector* bs, PedFileSystem* fs)
 
 	PED_ASSERT (bs != NULL);
 
-	if (PED_LE16_TO_CPU (bs->sector_size) != 512) {
-		if (ped_exception_throw (
-			PED_EXCEPTION_BUG,
-			PED_EXCEPTION_IGNORE_CANCEL,
-			_("This file system has a logical sector size of %d.  "
-			"GNU Parted is known not to work properly with sector "
-			"sizes other than 512 bytes."),
-			(int) PED_LE16_TO_CPU (bs->sector_size))
-				!= PED_EXCEPTION_IGNORE)
-			return 0;
-	}
-
 	fs_info->logical_sector_size = PED_LE16_TO_CPU (bs->sector_size) / 512;
 
 	fs_info->sectors_per_track = PED_LE16_TO_CPU (bs->secs_track);

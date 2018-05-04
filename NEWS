@@ -45,6 +45,8 @@ GNU parted NEWS                                    -*- outline -*-
 
 ** New Features
 
+  libparted-fs-resize: Work on non 512 byte sectors.
+
   Add resizepart command to resize a partition.  This works even on
   mounted partitions.
 
