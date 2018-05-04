@@ -14,6 +14,8 @@
 #include "common.h"
 #include "progname.h"
 
+#if defined __s390__ || defined __s390x__
+
 /* set dasd first */
 static char vol_devno[7] = {0};
 static char *tmp_disk;
@@ -75,7 +77,6 @@ END_TEST
 
 START_TEST (test_check_volser)
 {
-        char vol[7] = {0};
         char vol_long[] = "abcdefg";
         char vol_short[] = "ab_c   ";
         char vol_null[] = "      ";
@@ -134,6 +135,8 @@ START_TEST (test_reuse_vtoc)
         }
 }
 END_TEST
+
+#endif
 
 int main (int argc, char **argv)
 {
