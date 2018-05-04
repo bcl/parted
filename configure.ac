@@ -226,7 +226,7 @@ if test "$gl_gcc_warnings" = yes; then
   nw="$nw -Wpacked"
   nw="$nw -Wmissing-prototypes"
   nw="$nw -Wmissing-declarations"
-  nw="$nw -Wmissing-noreturn"
+  nw="$nw -Wsuggest-attribute=noreturn"
   # things I might fix soon:
   nw="$nw -Wfloat-equal"            # sort.c, seq.c
   nw="$nw -Wmissing-format-attribute" # copy.c
