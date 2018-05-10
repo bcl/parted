@@ -114,4 +114,17 @@ for table_type in aix amiga atari bsd dvh gpt mac msdos pc98 sun loop; do
   done
 done
 
+# loop filesystems support no flags.  Make sure this doesn't crash
+
+if [ $ss == 512 ]; then
+   # only test on 512 byte ss since mke2fs assumes this on a file
+   truncate -s 5m img || framework_failure
+   mke2fs img || framework_failure
+   echo Error: No flags supported > out.exp
+   parted -s img set 1 foo on > out 2>&1
+   compare out.exp out || fail=1
+   parted -s img disk_set foo on > out 2>&1
+   compare out.exp out || fail=1
+fi
+
 Exit $fail

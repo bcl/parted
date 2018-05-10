@@ -6,6 +6,8 @@ GNU parted NEWS                                    -*- outline -*-
 
 ** Bug Fixes
 
+  Fix set and disk_set to not crash when there are no flags to set.
+
   Fix a udev cookie leak when using resizepart on device-mapper devices.
 
   Fix a gettext crash/error sometimes when using localized languages.
