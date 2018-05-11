@@ -80,12 +80,13 @@ extern void ped_disk_atari_init ();
 static void
 init_disk_types ()
 {
+	/* Note that probing is done in the reverse order of init */
 	ped_disk_loop_init ();	/* must be last in the probe list */
 
 #if defined __s390__ || defined __s390x__
 	ped_disk_dasd_init();
 #endif
-
+	ped_disk_atari_init (); /* easy false positives, so probe others first */
 	ped_disk_sun_init ();
 #ifdef ENABLE_PC98
 	ped_disk_pc98_init ();
@@ -97,7 +98,6 @@ init_disk_types ()
 	ped_disk_bsd_init ();
 	ped_disk_amiga_init ();
 	ped_disk_aix_init ();
-	ped_disk_atari_init ();
 }
 
 extern void ped_file_system_amiga_init (void);

@@ -6,6 +6,8 @@ GNU parted NEWS                                    -*- outline -*-
 
 ** Bug Fixes
 
+  Fix atari disklabel false positives by probing other labels first.
+
   Fix resizepart to adjust the end to be -1 sector when using iec
   power of 2 units so that the next partition can start immediately
   following the new end, just like mkpart does.
