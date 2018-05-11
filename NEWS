@@ -8,6 +8,8 @@ GNU parted NEWS                                    -*- outline -*-
   and a cylinder has a size which is power of 2, then such address
   does not trigger exact placement.
 
+  mkpart: Allow negative start value when FS-TYPE is not given
+
 * Noteworthy changes in release 3.2 (2014-07-28) [stable]
 
 ** New Features
