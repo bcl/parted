@@ -682,7 +682,7 @@ do_mkpart (PedDevice** dev, PedDisk** diskp)
 
         peek_word = command_line_peek_word ();
         if (part_type == PED_PARTITION_EXTENDED
-            || (peek_word && isdigit (peek_word[0]))) {
+            || (peek_word && (isdigit (peek_word[0]) || peek_word[0] == '-'))) {
                 fs_type = NULL;
         } else {
                 if (!command_line_get_fs_type (_("File system type?"),
