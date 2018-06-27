@@ -14,12 +14,11 @@ BAD_ENTRY = (0x72, 0xf5, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 OFFSET = 0x1b8
 
 if len(sys.argv) < 2:
-    print "%s: <image or device>"
+    print("%s: <image or device>" % sys.argv[0])
     sys.exit(1)
 
-data = "".join(chr(c) for c in BAD_ENTRY)
 with open(sys.argv[1], "rb+") as f:
     f.seek(OFFSET, 0)
-    f.write(data)
+    f.write(bytes(bytearray(BAD_ENTRY)))
 
 sys.exit(0)
