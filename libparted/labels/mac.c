@@ -930,8 +930,10 @@ _generate_raw_part (PedDisk* disk, PedPartition* part,
 		= PED_CPU_TO_BE32 (mac_disk_data->last_part_entry_num);
 	part_map_entry->start_block = PED_CPU_TO_BE32 (part->geom.start);
 	part_map_entry->block_count = PED_CPU_TO_BE32 (part->geom.length);
-	strncpy (part_map_entry->name, mac_part_data->volume_name, 32);
-	strncpy (part_map_entry->type, mac_part_data->system_name, 32);
+	strncpy (part_map_entry->name, mac_part_data->volume_name, 31);
+	part_map_entry->name[31] = '\0';
+	strncpy (part_map_entry->type, mac_part_data->system_name, 31);
+	part_map_entry->type[31] = '\0';
 
 	if (mac_part_data->is_driver) {
 		if (mac_part_data->has_driver)
@@ -954,7 +956,8 @@ _generate_raw_part (PedDisk* disk, PedPartition* part,
 	part_map_entry->boot_cksum =
 		PED_CPU_TO_BE32 (mac_part_data->boot_checksum);
 
-	strncpy (part_map_entry->processor, mac_part_data->processor_name, 16);
+	strncpy (part_map_entry->processor, mac_part_data->processor_name, 15);
+	part_map_entry->processor[15] = '\0';
 
 	if (!_pad_raw_part (disk, part->num, part_map))
 		goto error;

@@ -2571,9 +2571,12 @@ _blkpg_add_partition (PedDisk* disk, const PedPartition *part)
                 linux_part.length = part->geom.length * disk->dev->sector_size;
         }
         linux_part.pno = part->num;
-        strncpy (linux_part.devname, dev_name, BLKPG_DEVNAMELTH);
-        if (vol_name)
-                strncpy (linux_part.volname, vol_name, BLKPG_VOLNAMELTH);
+        strncpy (linux_part.devname, dev_name, BLKPG_DEVNAMELTH-1);
+        linux_part.devname[BLKPG_DEVNAMELTH-1] = '\0';
+        if (vol_name) {
+                strncpy (linux_part.volname, vol_name, BLKPG_VOLNAMELTH-1);
+                linux_part.volname[BLKPG_VOLNAMELTH-1] = '\0';
+        }
 
         free (dev_name);
 
@@ -2629,7 +2632,8 @@ static int _blkpg_resize_partition (PedDisk* disk, const PedPartition *part)
         else
                 linux_part.length = part->geom.length * disk->dev->sector_size;
         linux_part.pno = part->num;
-        strncpy (linux_part.devname, dev_name, BLKPG_DEVNAMELTH);
+        strncpy (linux_part.devname, dev_name, BLKPG_DEVNAMELTH-1);
+        linux_part.devname[BLKPG_DEVNAMELTH-1] = '\0';
 
         free (dev_name);
 
