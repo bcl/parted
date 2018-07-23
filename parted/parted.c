@@ -684,12 +684,13 @@ do_mkpart (PedDevice** dev, PedDisk** diskp)
         if (part_type == PED_PARTITION_EXTENDED
             || (peek_word && (isdigit (peek_word[0]) || peek_word[0] == '-'))) {
                 fs_type = NULL;
+                free (peek_word);
         } else {
+                free (peek_word);
                 if (!command_line_get_fs_type (_("File system type?"),
                                                &fs_type))
                         goto error;
         }
-        free (peek_word);
 
         if (!command_line_get_sector (_("Start?"), *dev, &start, &range_start, NULL))
                 goto error;
