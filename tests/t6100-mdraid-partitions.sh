@@ -45,8 +45,8 @@ cleanup_fn_() {
   mdadm -S $md_dev || warn_ "Failed to stop MD array, $md_dev"
 }
 
-# create mdraid on top of both partitions
-mdadm -C $md_dev --force -R -l1 -n2 "${scsi_dev}1" "${scsi_dev}2"
+# create mdraid on top of both partitions with v0.90 metadata
+mdadm -C $md_dev -e0 --force -R -l1 -n2 "${scsi_dev}1" "${scsi_dev}2"
 wait_for_dev_to_appear_ ${md_dev} || { fail=1; cat /proc/partitions; }
 
 # create gpt and two partitions on the raid device
