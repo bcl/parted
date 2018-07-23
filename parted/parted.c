@@ -1100,6 +1100,7 @@ do_print (PedDevice** dev, PedDisk** diskp)
         if (has_devices_arg) {
                 char*           dev_name;
                 PedDevice*      current_dev = NULL;
+                int             status = 0;
 
                 ped_device_probe_all();
 
@@ -1115,14 +1116,11 @@ do_print (PedDevice** dev, PedDisk** diskp)
                 ped_device_free_all ();
 
                 *dev = ped_device_get (dev_name);
-                if (!*dev)
-		        return 0;
-                if (!ped_device_open (*dev))
-                        return 0;
-
+                if (*dev && ped_device_open (*dev))
+                    status = 1;
                 free (dev_name);
 
-                return 1;
+                return status;
         }
 
         else if (has_list_arg)
