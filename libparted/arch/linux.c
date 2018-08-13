@@ -36,6 +36,7 @@
 #include <stdbool.h>
 #include <dirent.h>
 #include <sys/ioctl.h>
+#include <sys/sysmacros.h>      /* for major() and minor() */
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/utsname.h>        /* for uname() */
