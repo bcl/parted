@@ -726,7 +726,7 @@ command_line_push_line (const char* line, int multi_word)
                         line++;
 
                 i = 0;
-                for (; *line; line++) {
+                for (; *line && i < sizeof (this_word) - 1; line++) {
                         if (*line == ' ' && !quoted) {
                                 if (multi_word)
                                         break;
