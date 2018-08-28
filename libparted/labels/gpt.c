@@ -1513,6 +1513,7 @@ gpt_partition_set_system (PedPartition *part,
   if (fs_type)
     {
       if (strncmp (fs_type->name, "fat", 3) == 0
+          || strcmp (fs_type->name, "udf") == 0
           || strcmp (fs_type->name, "ntfs") == 0)
         {
           gpt_part_data->type = PARTITION_BASIC_DATA_GUID;

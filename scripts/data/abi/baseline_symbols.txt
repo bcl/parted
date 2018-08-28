@@ -340,6 +340,8 @@ FUNC:ped_file_system_type_get
 FUNC:ped_file_system_type_get_next
 FUNC:ped_file_system_type_register
 FUNC:ped_file_system_type_unregister
+FUNC:ped_file_system_udf_init
+FUNC:ped_file_system_udf_done
 FUNC:ped_file_system_ufs_done
 FUNC:ped_file_system_ufs_init
 FUNC:ped_file_system_xfs_done
