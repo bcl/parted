@@ -65,6 +65,7 @@ static const char MBR_BOOT_CODE[] = {
 #define PARTITION_FAT16		0x06
 #define PARTITION_NTFS		0x07
 #define PARTITION_HPFS		0x07
+#define PARTITION_UDF		0x07
 #define PARTITION_FAT32		0x0b
 #define PARTITION_FAT32_LBA	0x0c
 #define PARTITION_FAT16_LBA	0x0e
@@ -1498,6 +1499,8 @@ msdos_partition_set_system (PedPartition* part,
 	} else if (!strcmp (fs_type->name, "hfs")
 		   || !strcmp (fs_type->name, "hfs+"))
 		dos_data->system = PARTITION_HFS;
+	else if (!strcmp (fs_type->name, "udf"))
+		dos_data->system = PARTITION_UDF;
 	else if (!strcmp (fs_type->name, "sun-ufs"))
 		dos_data->system = PARTITION_SUN_UFS;
 	else if (is_linux_swap (fs_type->name))
