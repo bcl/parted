@@ -961,6 +961,7 @@ init_ide (PedDevice* dev)
 
                         case PED_EXCEPTION_UNHANDLED:
                                 ped_exception_catch ();
+                                /* FALLTHROUGH */
                         case PED_EXCEPTION_IGNORE:
                                 dev->model = strdup(_("Generic IDE"));
                                 break;
@@ -998,6 +999,7 @@ init_ide (PedDevice* dev)
 
                                 case PED_EXCEPTION_UNHANDLED:
                                         ped_exception_catch ();
+                                        /* FALLTHROUGH */
                                 case PED_EXCEPTION_IGNORE:
                                         break;
                                 default:
@@ -1347,6 +1349,7 @@ init_generic (PedDevice* dev, const char* model_name)
 
                         case PED_EXCEPTION_UNHANDLED:
                                 ped_exception_catch ();
+                                /* FALLTHROUGH */
                         case PED_EXCEPTION_IGNORE:
                                 break;
                         default:
@@ -1890,6 +1893,7 @@ linux_read (const PedDevice* dev, void* buffer, PedSector start,
 
                         case PED_EXCEPTION_UNHANDLED:
                                 ped_exception_catch ();
+                                /* FALLTHROUGH */
                         case PED_EXCEPTION_CANCEL:
                                 return 0;
                         default:
@@ -1933,6 +1937,7 @@ linux_read (const PedDevice* dev, void* buffer, PedSector start,
 
                         case PED_EXCEPTION_UNHANDLED:
                                 ped_exception_catch ();
+                                /* FALLTHROUGH */
                         case PED_EXCEPTION_CANCEL:
                                 free(diobuf);
                                 return 0;
@@ -2032,6 +2037,7 @@ linux_write (PedDevice* dev, const void* buffer, PedSector start,
 
                         case PED_EXCEPTION_UNHANDLED:
                                 ped_exception_catch ();
+                                /* FALLTHROUGH */
                         case PED_EXCEPTION_CANCEL:
                                 return 0;
                         default:
@@ -2075,6 +2081,7 @@ linux_write (PedDevice* dev, const void* buffer, PedSector start,
 
                         case PED_EXCEPTION_UNHANDLED:
                                 ped_exception_catch ();
+                                /* FALLTHROUGH */
                         case PED_EXCEPTION_CANCEL:
                                 free(diobuf_start);
                                 return 0;
@@ -2146,6 +2153,7 @@ _do_fsync (PedDevice* dev)
 
                         case PED_EXCEPTION_UNHANDLED:
                                 ped_exception_catch ();
+                                /* FALLTHROUGH */
                         case PED_EXCEPTION_CANCEL:
                                 return 0;
                         default:

@@ -175,6 +175,7 @@ _amiga_read_block (const PedDevice *dev, struct AmigaBlock *blk,
 				_amiga_calculate_checksum(AMIGA(blk));
 				if (!ped_device_write ((PedDevice*)dev, blk, block, 1))
 					return NULL;
+				/* FALLTHROUGH */
 			case PED_EXCEPTION_IGNORE :
 			case PED_EXCEPTION_UNHANDLED :
 			default :
