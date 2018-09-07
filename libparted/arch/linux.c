@@ -1405,6 +1405,22 @@ init_sdmmc (PedDevice* dev)
         return init_generic(dev, id);
 }
 
+static int
+init_nvme (PedDevice* dev)
+{
+        int ret;
+        char *model = read_device_sysfs_file (dev, "model");
+
+        if (!model)
+                ret = init_generic (dev, _("NVMe Device"));
+        else {
+                ret = init_generic (dev, model);
+                free (model);
+        }
+
+        return ret;
+}
+
 static PedDevice*
 linux_new (const char* path)
 {
@@ -1489,7 +1505,7 @@ linux_new (const char* path)
                 break;
 
         case PED_DEVICE_NVME:
-                if (!init_generic (dev, _("NVMe Device")))
+                if (!init_nvme (dev))
                         goto error_free_arch_specific;
                 break;
 
