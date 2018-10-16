@@ -23,7 +23,7 @@ dev=loop-file
 ss=$sector_size_
 n_sectors=$((512*1024))
 
-for type in ext2 ext3 ext4 btrfs xfs nilfs2 ntfs vfat hfsplus; do
+for type in ext2 ext3 ext4 btrfs xfs nilfs2 ntfs vfat hfsplus udf; do
 
   ( mkfs.$type 2>&1 | grep -i '^usage' ) > /dev/null \
       || { warn_ "$ME: no $type support"; continue; }
