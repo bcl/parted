@@ -116,7 +116,7 @@ done
 
 # loop filesystems support no flags.  Make sure this doesn't crash
 
-if [ $ss == 512 ]; then
+if [ $ss = 512 ]; then
    # only test on 512 byte ss since mke2fs assumes this on a file
    truncate -s 5m img || framework_failure
    mke2fs img || framework_failure
