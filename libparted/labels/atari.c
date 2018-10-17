@@ -759,10 +759,10 @@ atari_clobber (PedDevice* dev)
 
 /* Computes the checksum of the root sector */
 static uint16_t
-atr_calc_rs_sum (const AtariRawTable* table)
+atr_calc_rs_sum (const void* table)
 {
 	const uint16_t* word = (uint16_t*)(table);
-	const uint16_t* end  = (uint16_t*)(table + 1);
+	const uint16_t* end  = word + 1;
 	uint16_t sum;
 
 	for (sum = 0; word < end; word++)
