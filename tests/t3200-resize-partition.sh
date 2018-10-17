@@ -2,7 +2,7 @@
 # exercise the resize sub-command
 # based on t3000-resize-fs.sh test
 
-# Copyright (C) 2009-2011 Free Software Foundation, Inc.
+# Copyright (C) 2009-2011, 2018 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
