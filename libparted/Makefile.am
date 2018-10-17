@@ -23,7 +23,7 @@ lib_LTLIBRARIES	= libparted.la
 # For details, see the "Updating library version information" section of
 # "info libtool".
 CURRENT = 2
-REVISION = 1
+REVISION = 2
 AGE = 0
 
 libparted_la_LDFLAGS  = -version-info $(CURRENT):$(REVISION):$(AGE)
