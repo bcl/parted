@@ -241,6 +241,9 @@ if test "$gl_gcc_warnings" = yes; then
 
   gl_WARN_ADD([-fdiagnostics-show-option])
 
+  # Make sure it recognizes /* FALLTHROUGH */ comment
+  gl_WARN_ADD([-Wimplicit-fallthrough=3])
+
   AC_SUBST([WARN_CFLAGS])
 
   AC_DEFINE([lint], [1], [Define to 1 if the compiler is checking for lint.])
