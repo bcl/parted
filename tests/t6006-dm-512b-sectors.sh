@@ -39,7 +39,7 @@ cleanup_fn_() {
       sleep .2
       [ -e "/dev/mapper/$linear_" ] && dmsetup remove $linear_
       sleep .2
-      [ -e "/dev/mapper/${linear_}1" -o -e "/dev/mapper/$linear_" ] || i=10
+      [ -e "/dev/mapper/${linear_}1" ] || [ -e "/dev/mapper/$linear_" ] || i=10
       i=$((i + 1))
     done
     udevadm settle

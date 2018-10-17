@@ -49,5 +49,5 @@ EOF
 mv out o2 && sed -e "s,   *,,g;s, $,," \
                       -e "s,^.*/lt-parted: ,parted: ," o2 > out
 echo '' >> exp
-compare out exp || fail=1
+compare exp out || fail=1
 Exit $fail
