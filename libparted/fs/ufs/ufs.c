@@ -97,7 +97,7 @@ struct ufs_super_block {
 			uint32_t	fs_npsect;	/* # sectors/track including spares */
 		} fs_sun;
 		struct {
-			int32_t		fs_state;	/* file system state time stamp */
+			int32_t		fs_state;	/* file system state timestamp */
 		} fs_sunx86;
 	} fs_u1;
 	uint32_t	fs_interleave;	/* hardware sector interleave */
@@ -140,7 +140,7 @@ struct ufs_super_block {
 			int32_t		fs_sparecon[53];/* reserved for future constants */
 			int32_t		fs_reclaim;
 			int32_t		fs_sparecon2[1];
-			int32_t		fs_state;	/* file system state time stamp */
+			int32_t		fs_state;	/* file system state timestamp */
 			uint32_t	fs_qbmask[2];	/* ~usb_bmask */
 			uint32_t	fs_qfmask[2];	/* ~usb_fmask */
 		} fs_sun;
@@ -160,7 +160,7 @@ struct ufs_super_block {
 			uint32_t	fs_maxfilesize[2];	/* max representable file size */
 			uint32_t	fs_qbmask[2];	/* ~usb_bmask */
 			uint32_t	fs_qfmask[2];	/* ~usb_fmask */
-			int32_t		fs_state;	/* file system state time stamp */
+			int32_t		fs_state;	/* file system state timestamp */
 		} fs_44;
 	} fs_u2;
 	int32_t	fs_postblformat;	/* format of positional layout tables */
