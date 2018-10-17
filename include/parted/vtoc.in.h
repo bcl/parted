@@ -242,9 +242,9 @@ struct __attribute__ ((packed)) format4_label {
 	                           cylinders. can be zero. valid
 	                           only if DS4DEVAV on.                    */
 	dev_const_t DS4DEVCT;   /* device constants                        */
-	char DS4AMTIM[8];       /* VSAM time stamp                         */
+	char DS4AMTIM[8];       /* VSAM timestamp                          */
 	char DS4AMCAT[3];       /* VSAM catalog indicator                  */
-	char DS4R2TIM[8];       /* VSAM volume/catalog match time stamp    */
+	char DS4R2TIM[8];       /* VSAM volume/catalog match timestamp     */
 	char res1[5];           /* reserved                                */
 	char DS4F6PTR[5];       /* pointer to first format 6 DSCB          */
 	extent_t DS4VTOCE;      /* VTOC extent description                 */
