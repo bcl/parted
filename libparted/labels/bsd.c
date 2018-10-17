@@ -121,14 +121,14 @@ typedef struct {
 static PedDiskType bsd_disk_type;
 
 /* XXX fixme: endian? */
-static unsigned short
+static uint16_t
 xbsd_dkcksum (BSDRawLabel *lp) {
-	unsigned short *start, *end;
-	unsigned short sum = 0;
+	uint16_t *start, *end;
+	uint16_t sum = 0;
 
 	lp->d_checksum = 0;
-	start = (u_short*) lp;
-	end = (u_short*) &lp->d_partitions [
+	start = (void *) lp;
+	end = (void *) &lp->d_partitions [
 				PED_LE16_TO_CPU (lp->d_npartitions)];
 	while (start < end)
 		sum ^= *start++;
@@ -137,7 +137,7 @@ xbsd_dkcksum (BSDRawLabel *lp) {
 
 /* XXX fixme: endian? */
 static void
-alpha_bootblock_checksum (char *boot) {
+alpha_bootblock_checksum (void *boot) {
 	uint64_t *dp, sum;
 	int i;
 
