@@ -117,7 +117,7 @@ static PedDiskType sun_disk_type;
 static void
 sun_compute_checksum (SunRawLabel *label)
 {
-	u_int16_t *ush = (u_int16_t *)label;
+	u_int16_t *ush = (void *)label;
 	u_int16_t csum = 0;
 
         while(ush < (u_int16_t *)(&label->csum))
@@ -129,10 +129,11 @@ sun_compute_checksum (SunRawLabel *label)
 static int
 sun_verify_checksum (SunRawLabel const *label)
 {
-	u_int16_t *ush = ((u_int16_t *)(label + 1)) - 1;
+	u_int16_t *ush = (void *)(&label->magic);
+	u_int16_t *start = (void *)label;
 	u_int16_t csum = 0;
 
-	while (ush >= (u_int16_t *)label)
+	while (ush >= start)
 		csum ^= *ush--;
 
 	return !csum;
