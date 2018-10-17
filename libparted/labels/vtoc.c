@@ -669,7 +669,7 @@ vtoc_init_format4_label (format4_label_t *f4,
 			f4->DS4DEVCT.DS4DEVTK = DASD_9345_VALUE;
 			break;
 		default:
-			f4->DS4DEVCT.DS4DEVTK = blocks * blksize;;
+			f4->DS4DEVCT.DS4DEVTK = blocks * blksize;
 	}
 
 	f4->DS4DEVCT.DS4DEVI  = 0x00;
