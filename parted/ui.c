@@ -1155,7 +1155,7 @@ command_line_get_disk_flag (const char* prompt, const PedDisk* disk,
                 ped_exception_throw (PED_EXCEPTION_ERROR,
                                      PED_EXCEPTION_OK,
                                      _("No flags supported"));
-        
+
                 return 0;
         }
         flag_name = command_line_get_word (prompt, NULL, opts, 1);
@@ -1191,7 +1191,7 @@ command_line_get_part_flag (const char* prompt, const PedPartition* part,
                 ped_exception_throw (PED_EXCEPTION_ERROR,
                                      PED_EXCEPTION_OK,
                                      _("No flags supported"));
-        
+
                 return 0;
         }
         flag_name = command_line_get_word (prompt, NULL, opts, 1);
