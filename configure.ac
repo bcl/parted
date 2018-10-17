@@ -222,6 +222,7 @@ if test "$gl_gcc_warnings" = yes; then
   nw="$nw -Wstack-protector"        # libparted/label/gpt.c
   # ?? -Wstrict-overflow
   nw="$nw -Wsuggest-attribute=format" # suggests to use gnu_printf for vsnprintf
+  nw="$nw -Wsuggest-attribute=pure"   # suggests to use pure
 
   gl_MANYWARN_ALL_GCC([ws])
   gl_MANYWARN_COMPLEMENT([ws], [$ws], [$nw])
@@ -243,6 +244,9 @@ if test "$gl_gcc_warnings" = yes; then
   gl_WARN_ADD([-Wno-logical-op])
 
   gl_WARN_ADD([-fdiagnostics-show-option])
+
+  # Make sure it recognizes /* FALLTHROUGH */ comment
+  gl_WARN_ADD([-Wimplicit-fallthrough=3])
 
   AC_SUBST([WARN_CFLAGS])
 
