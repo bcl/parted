@@ -412,7 +412,7 @@ pth_get_raw (const PedDevice *dev, const GuidPartitionTableHeader_t *pth)
 static void
 swap_uuid_and_efi_guid (uuid_t uuid)
 {
-  efi_guid_t *guid = (efi_guid_t *) uuid;
+  efi_guid_t *guid = (void *) uuid;
 
   PED_ASSERT (uuid != NULL);
   guid->time_low = PED_SWAP32 (guid->time_low);
