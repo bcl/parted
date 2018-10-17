@@ -211,7 +211,7 @@ bsd_alloc (const PedDevice* dev)
 				   * dev->bios_geom.cylinders);
 
 	label->d_rpm = PED_CPU_TO_LE16 (3600);
-	label->d_interleave = PED_CPU_TO_LE16 (1);;
+	label->d_interleave = PED_CPU_TO_LE16 (1);
 	label->d_trackskew = 0;
 	label->d_cylskew = 0;
 	label->d_headswitch = 0;
