@@ -799,12 +799,10 @@ do_mkpart (PedDevice** dev, PedDisk** diskp)
                                   "aligned for best performance: %s"),
                                 align_err ? align_err : _("unknown (malloc failed)")) ==
                             PED_EXCEPTION_CANCEL) {
-                                if (align_err)
-                                    free(align_err);
+                                free(align_err);
                                 /* undo partition addition */
                                 goto error_remove_part;
                         }
-                    if (align_err)
                         free(align_err);
                 }
         } else {
@@ -848,8 +846,7 @@ error_remove_part:
 error_destroy_simple_constraints:
         ped_partition_destroy (part);
 error:
-        if (part_name)
-                free (part_name);
+        free (part_name);
         if (range_start != NULL)
                 ped_geometry_destroy (range_start);
         if (range_end != NULL)
@@ -1714,8 +1711,7 @@ do_align_check (PedDevice **dev, PedDisk** diskp)
 
   /* Don't print the error in script mode */
   if (opt_script_mode) {
-      if (align_err)
-          free(align_err);
+      free(align_err);
       return aligned ? 1 : 0;
   }
 
@@ -1726,8 +1722,7 @@ do_align_check (PedDevice **dev, PedDisk** diskp)
              part->num,
              align_err ? align_err : _("unknown (malloc failed)"));
 
-  if (align_err)
-      free(align_err);
+  free(align_err);
 
   /* Always return 1 in interactive mode, to be consistent
      with the other modes.  */
