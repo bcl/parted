@@ -19,10 +19,6 @@
 . "${srcdir=.}/init.sh"; path_prepend_ ../parted
 
 require_root_
-lvm_init_root_dir_
-
-test "x$ENABLE_DEVICE_MAPPER" = xyes \
-  || skip_ "no device-mapper support"
 
 # Device maps names - should be random to not conflict with existing ones on
 # the system
@@ -71,7 +67,7 @@ for type in linear ; do
 
   # setup: create a mapping
   echo "$dmsetup_cmd" | dmsetup create "$type_kwd" || fail=1
-  dev="$DM_DEV_DIR/mapper/$type_kwd"
+  dev="/dev/mapper/$type_kwd"
 
   # Create msdos partition table
   parted -s $dev mklabel msdos > out 2>&1 || fail=1
