@@ -861,8 +861,8 @@ flag can only be removed within parted by replacing it with a competing
 flag, such as boot or msftres.
 
 @item msftres
-(GPT) - This flag identifies a "Microsoft Reserved" partition, which is
-used by Windows on GPT disks.  Note that this flag should not normally be
+(MS-DOS,GPT) - This flag identifies a "Microsoft Reserved" partition, which
+is used by Windows.  Note that this flag should not normally be
 set on Windows filesystem partitions (those that contain NTFS or FAT
 filesystems).
 
