@@ -156,6 +156,7 @@ typedef struct {
 	unsigned char	system;
 	int		boot;
 	int		hidden;
+	int		msftres;
 	int		raid;
 	int		lvm;
 	int		lba;
@@ -949,8 +950,8 @@ raw_part_parse (const PedDisk* disk, const DosRawPartition* raw_part,
 	dos_data->system = raw_part->type;
 	dos_data->boot = raw_part->boot_ind != 0;
 	dos_data->diag = raw_part->type == PARTITION_COMPAQ_DIAG ||
-			 raw_part->type == PARTITION_MSFT_RECOVERY ||
 			 raw_part->type == PARTITION_DELL_DIAG;
+	dos_data->msftres = raw_part->type == PARTITION_MSFT_RECOVERY;
 	dos_data->hidden = raw_part_is_hidden (raw_part);
 	dos_data->raid = raw_part->type == PARTITION_LINUX_RAID;
 	dos_data->lvm = raw_part->type == PARTITION_LINUX_LVM_OLD
@@ -1345,6 +1346,7 @@ msdos_partition_new (const PedDisk* disk, PedPartitionType part_type,
 		dos_data->orig = NULL;
 		dos_data->system = PARTITION_LINUX;
 		dos_data->hidden = 0;
+		dos_data->msftres = 0;
 		dos_data->boot = 0;
 		dos_data->diag = 0;
 		dos_data->raid = 0;
@@ -1384,6 +1386,7 @@ msdos_partition_duplicate (const PedPartition* part)
 	new_dos_data->boot = old_dos_data->boot;
 	new_dos_data->diag = old_dos_data->diag;
 	new_dos_data->hidden = old_dos_data->hidden;
+	new_dos_data->msftres = old_dos_data->msftres;
 	new_dos_data->raid = old_dos_data->raid;
 	new_dos_data->lvm = old_dos_data->lvm;
 	new_dos_data->lba = old_dos_data->lba;
@@ -1433,6 +1436,11 @@ msdos_partition_set_system (PedPartition* part,
 		    && strcmp (fs_type->name, "ntfs") != 0)
 		dos_data->hidden = 0;
 
+	if (dos_data->msftres
+		    && fs_type
+		    && strcmp (fs_type->name, "ntfs") != 0)
+		dos_data->msftres = 0;
+
 	if (part->type & PED_PARTITION_EXTENDED) {
 		dos_data->diag = 0;
 		dos_data->raid = 0;
@@ -1452,9 +1460,12 @@ msdos_partition_set_system (PedPartition* part,
 		/* Don't change the system if it already is a diag type,
 		   otherwise use Compaq as almost all vendors use that. */
 		if (dos_data->system != PARTITION_COMPAQ_DIAG &&
-		    dos_data->system != PARTITION_MSFT_RECOVERY &&
 		    dos_data->system != PARTITION_DELL_DIAG)
 			dos_data->system = PARTITION_COMPAQ_DIAG;
+		return 1;
+	}
+	if (dos_data->msftres) {
+		dos_data->system = PARTITION_MSFT_RECOVERY;
 		return 1;
 	}
 	if (dos_data->lvm) {
@@ -1516,6 +1527,7 @@ clear_flags (DosPartitionData *dos_data)
 {
   dos_data->diag = 0;
   dos_data->hidden = 0;
+  dos_data->msftres = 0;
   dos_data->lvm = 0;
   dos_data->palo = 0;
   dos_data->prep = 0;
@@ -1550,6 +1562,18 @@ msdos_partition_set_flag (PedPartition* part,
 			return 0;
 		}
 		dos_data->hidden = state;
+		return ped_partition_set_system (part, part->fs_type);
+
+	case PED_PARTITION_MSFT_RESERVED:
+		if (part->type == PED_PARTITION_EXTENDED) {
+			ped_exception_throw (
+				PED_EXCEPTION_ERROR,
+				PED_EXCEPTION_CANCEL,
+				_("Extended partitions cannot be recovery partitions on "
+				  "msdos disk labels."));
+			return 0;
+		}
+		dos_data->msftres = state;
 		return ped_partition_set_system (part, part->fs_type);
 
 	case PED_PARTITION_BOOT:
@@ -1632,6 +1656,12 @@ msdos_partition_get_flag (const PedPartition* part, PedPartitionFlag flag)
 		else
 			return dos_data->hidden;
 
+	case PED_PARTITION_MSFT_RESERVED:
+		if (part->type == PED_PARTITION_EXTENDED)
+			return 0;
+		else
+			return dos_data->msftres;
+
 	case PED_PARTITION_BOOT:
 		return dos_data->boot;
 
@@ -1670,6 +1700,12 @@ msdos_partition_is_flag_available (const PedPartition* part,
 {
 	switch (flag) {
 	case PED_PARTITION_HIDDEN:
+		if (part->type == PED_PARTITION_EXTENDED)
+			return 0;
+		else
+			return 1;
+
+	case PED_PARTITION_MSFT_RESERVED:
 		if (part->type == PED_PARTITION_EXTENDED)
 			return 0;
 		else
