@@ -203,9 +203,9 @@ Linux versions 2.0 and up, on Alpha, x86 PCs, PC98, Macintosh PowerPC, Sun hardw
 @cindex gpl
 
 GNU Parted is free software, covered by the GNU General Public License
-Version 2.  This should have been included with the Parted distribution,
-in the COPYING file.  If not, write to the Free Software Foundation,
-Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+Version 3, or (at your option) any later version.  This should have been
+included with the Parted distribution, in the COPYING file.  If not,
+see <http://www.gnu.org/licenses/>.
 
 Libparted is considered part of GNU Parted.  It is covered by the GNU
 General Public License.  It is NOT released under the GNU Lesser General

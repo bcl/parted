@@ -240,9 +240,9 @@ necessidade.  Á fazer: checar se funciona na libc 2.0!)
 @cindex gpl
 
 O GNU Parted é software livre, previsto pela GNU General Public
-Licese Version 2. Ela deve vir com a distribuição do Parted, no arquivo
-COPYING. Se não, escreva para a Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+Licese Version 3, ou (a seu critério) qualquer versão posterior.
+Ela deve vir com a distribuição do Parted, no arquivo COPYING.
+Se não, veja <http://www.gnu.org/licenses/>.
 
 Libparted é considerada parte do GNU Parted. Ela é prevista pela GNU
 General Public License. NÃO é lançada sobre a GNU Lesser General Public
