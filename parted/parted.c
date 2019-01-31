@@ -814,9 +814,11 @@ do_mkpart (PedDevice** dev, PedDisk** diskp)
 
         /* set minor attributes */
         if (part_name)
-                PED_ASSERT (ped_partition_set_name (part, part_name));
+            if (!ped_partition_set_name (part, part_name))
+                goto error_remove_part;
         free (part_name);  /* avoid double-free upon failure */
         part_name = NULL;
+
         if (!ped_partition_set_system (part, fs_type))
                 goto error_remove_part;
         if (ped_partition_is_flag_available (part, PED_PARTITION_LBA))
