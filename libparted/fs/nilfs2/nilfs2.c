@@ -89,7 +89,7 @@ is_valid_nilfs_sb(struct nilfs2_super_block *sb)
 		return 0;
 
 	bytes = PED_LE16_TO_CPU(sb->s_bytes);
-	if (bytes > 1024)
+	if (bytes > 1024 || bytes < sumoff - 4)
 		return 0;
 
 	crc = __efi_crc32(sb, sumoff, PED_LE32_TO_CPU(sb->s_crc_seed));
@@ -113,11 +113,13 @@ nilfs2_probe (PedGeometry* geom)
 	const int sectors = (4096 + geom->dev->sector_size - 1) /
 			     geom->dev->sector_size;
 	char *buf = alloca (sectors * geom->dev->sector_size);
-	void *buff2 = alloca (geom->dev->sector_size);
+	const int sectors2 = (1024 + geom->dev->sector_size -1 ) /
+			      geom->dev->sector_size;
+	void *buff2 = alloca (sectors2 * geom->dev->sector_size);
 
 	if (ped_geometry_read(geom, buf, 0, sectors))
 		sb = (struct nilfs2_super_block *)(buf+1024);
-	if (ped_geometry_read(geom, buff2, sb2off, 1))
+	if (ped_geometry_read(geom, buff2, sb2off, sectors2))
 		sb2 = buff2;
 
 	if ((!sb || !is_valid_nilfs_sb(sb)) &&
