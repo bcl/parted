@@ -1975,7 +1975,7 @@ _init_commands ()
 		     do_align_check,
 		     str_list_create (
 				      _("align-check TYPE N"
-					"                        "
+					"                       "
 					"check partition N for"
 					" TYPE(min|opt) alignment"), NULL),
 
