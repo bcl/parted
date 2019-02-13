@@ -66,6 +66,8 @@ TESTS = \
   t4100-msdos-starting-sector.sh \
   t4200-partprobe.sh \
   t4300-nilfs2-tiny.sh \
+  t4301-nilfs2-badsb2.sh \
+  t4302-nilfs2-lessbadsb2.sh \
   t5000-tags.sh \
   t6000-dm.sh \
   t6001-psep.sh \
