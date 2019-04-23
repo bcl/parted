@@ -63,6 +63,8 @@ parted -m -s $dev u s p > out 2>&1 || fail=1
 wait_for_dev_to_appear_ ${dev}1 || { warn_ "${dev}1 did not appear"  fail=1; }
 sleep 1
 
+# Running it without end should not core-dump or prompt
+parted -s $dev resizepart 1 > out 2> err || fail=1
 
 # extend the filesystem to end on sector 4096
 new_end=4096s
