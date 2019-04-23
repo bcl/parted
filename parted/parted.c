@@ -1541,6 +1541,7 @@ do_resizepart (PedDevice** dev, PedDisk** diskp)
         PedGeometry             *range_end = NULL;
         PedConstraint*          constraint;
         int rc = 0;
+        char*                   end_input = NULL;
 
         if (!disk) {
                 disk = ped_disk_new (*dev);
@@ -1561,7 +1562,6 @@ do_resizepart (PedDevice** dev, PedDisk** diskp)
 
         start = part->geom.start;
         end = oldend = part->geom.end;
-        char *end_input;
         if (!command_line_get_sector (_("End?"), *dev, &end, &range_end, &end_input))
                 goto error;
         _adjust_end_if_iec(&start, &end, range_end, end_input);
