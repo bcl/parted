@@ -231,6 +231,7 @@ if test "$gl_gcc_warnings" = yes; then
   gl_WARN_ADD([-Wno-unused-parameter]) # Too many warnings for now
   gl_WARN_ADD([-Wno-unused-macros]) # Too many warnings for now
   gl_WARN_ADD([-Wno-format-nonliteral])
+  gl_WARN_ADD([-Wabi=2])               # Avoid compile failure with GCC8
 
   # FIXME: investigate these
   gl_WARN_ADD([-Wno-jump-misses-init])
