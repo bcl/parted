@@ -111,6 +111,7 @@ ptt_geom_clear_sectors (PedGeometry *geom, PedSector start, PedSector n)
   return ptt_clear_sectors (geom->dev, geom->start + start, n);
 }
 
+#define pt_limit_lookup _GL_ATTRIBUTE_PURE __pt_limit_lookup
 #include "pt-limit.c"
 
 /* Throw an exception and return 0 if PART's starting sector number or
@@ -120,7 +121,7 @@ int
 ptt_partition_max_start_len (char const *pt_type, const PedPartition *part)
 {
   struct partition_limit const *pt_lim
-    = pt_limit_lookup (pt_type, strlen (pt_type));
+    = __pt_limit_lookup (pt_type, strlen (pt_type));
 
   /* If we don't have info on the type, return "true".  */
   if (pt_lim == NULL)
@@ -162,7 +163,7 @@ int
 ptt_partition_max_start_sector (char const *pt_type, PedSector *max)
 {
   struct partition_limit const *pt_lim
-    = pt_limit_lookup (pt_type, strlen (pt_type));
+    = __pt_limit_lookup (pt_type, strlen (pt_type));
   if (pt_lim == NULL)
     return -1;
 
@@ -176,7 +177,7 @@ int
 ptt_partition_max_length (char const *pt_type, PedSector *max)
 {
   struct partition_limit const *pt_lim
-    = pt_limit_lookup (pt_type, strlen (pt_type));
+    = __pt_limit_lookup (pt_type, strlen (pt_type));
   if (pt_lim == NULL)
     return -1;
 
