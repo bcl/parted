@@ -21,7 +21,8 @@
 require_root_
 require_udevadm_settle_
 
-(dmsetup --help) > /dev/null 2>&1 || skip_test_ "No dmsetup installed"
+test "x$ENABLE_DEVICE_MAPPER" = xyes \
+  || skip_ "no device-mapper support"
 
 # Device maps names - should be random to not conflict with existing ones on
 # the system
