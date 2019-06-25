@@ -25,7 +25,8 @@ require_scsi_debug_module_
 grep '^#define USE_BLKID 1' "$CONFIG_HEADER" > /dev/null ||
   skip_ 'this system lacks a new-enough libblkid'
 
-(dmsetup --help) > /dev/null 2>&1 || skip_test_ "No dmsetup installed"
+test "x$ENABLE_DEVICE_MAPPER" = xyes \
+  || skip_ "no device-mapper support"
 
 # Device maps names - should be random to not conflict with existing ones on
 # the system
