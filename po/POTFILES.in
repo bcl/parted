@@ -6,6 +6,7 @@
 
 # lib
 lib/argmatch.c
+lib/argmatch.h
 lib/closeout.c
 lib/error.c
 lib/getopt.c
