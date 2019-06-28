@@ -250,7 +250,7 @@ _parse_boot_file (PedDisk* disk, struct volume_directory* vd)
 	dvh_part_data = part->disk_specific;
 	dvh_part_data->real_file_size = length;
 
-	strncpy (dvh_part_data->name, vd->vd_name, VDNAMESIZE);
+	memcpy (dvh_part_data->name, vd->vd_name, VDNAMESIZE);
 	dvh_part_data->name[VDNAMESIZE] = 0;
 	return part;
 }
@@ -314,8 +314,8 @@ dvh_read (PedDisk* disk)
 	PED_ASSERT (PED_BE32_TO_CPU (vh.vh_magic) == VHMAGIC);
 
 	dvh_disk_data->dev_params = vh.vh_dp;
-	strncpy (boot_name, vh.vh_bootfile, BFNAMESIZE);
 	boot_name[BFNAMESIZE] = 0;
+	strncpy (boot_name, vh.vh_bootfile, BFNAMESIZE);
 
 	/* normal partitions */
 	for (i = 0; i < NPARTAB; i++) {
@@ -430,7 +430,7 @@ _generate_boot_file (PedPartition* part, struct volume_directory* vd)
 	vd->vd_lbn = PED_CPU_TO_BE32 (part->geom.start);
 
 	memset (vd->vd_name, 0, VDNAMESIZE);
-	strncpy (vd->vd_name, dvh_part_data->name, VDNAMESIZE);
+	memcpy (vd->vd_name, dvh_part_data->name, VDNAMESIZE);
 }
 
 static int
@@ -708,7 +708,7 @@ dvh_partition_set_name (PedPartition* part, const char* name)
 
 	if (part->type == PED_PARTITION_LOGICAL) {
 		/* Bootfile */
-		strncpy (dvh_part_data->name, name, VDNAMESIZE);
+		memcpy (dvh_part_data->name, name, VDNAMESIZE);
 		dvh_part_data->name[VDNAMESIZE] = 0;
 	} else {
 #ifndef DISCOVER_ONLY
