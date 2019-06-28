@@ -142,7 +142,7 @@ struct __attribute__ ((packed)) _AtariRawPartition {
 };
 typedef struct _AtariRawPartition AtariRawPartition;
 
-struct __attribute__ ((packed)) _AtariRawTable {
+struct __attribute__ ((packed,aligned(2))) _AtariRawTable {
 	uint8_t		  boot_code[0x156]; /* room for boot code */
 	AtariRawPartition icd_part[N_ICD];  /* info for ICD-partitions 5..12 */
 	uint8_t		  unused[0xc];
@@ -304,6 +304,7 @@ atari_probe (const PedDevice *dev)
 	int		num_sign, total_count = 0;
 
 	PED_ASSERT (dev != NULL);
+	PED_ASSERT (sizeof(table) == 512);
 
 	/* Device Spec ok for Atari label? */
 	if (!atr_can_use_dev (dev))
