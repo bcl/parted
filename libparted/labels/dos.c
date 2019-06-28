@@ -219,7 +219,7 @@ maybe_FAT (unsigned char const *s)
   if (! (s[0] == 0xeb || s[0] == 0xe9))
     return false;
 
-  unsigned int sector_size = PED_LE16_TO_CPU (*(uint16_t *) (s + 11));
+  uint16_t sector_size = (s[12] << 8) | s[11];
   switch (sector_size)
     {
     case 512:
