@@ -44,7 +44,6 @@
 #define BSD_DISKMAGIC	(0x82564557UL)	/* The disk magic number */
 #define BSD_MAXPARTITIONS	8
 #define BSD_FS_UNUSED		0	/* disklabel unused partition entry ID */
-#define BSD_LABEL_OFFSET	64
 
 #define	BSD_DTYPE_SMD		1		/* SMD, XSMD; VAX hp/up */
 #define	BSD_DTYPE_MSCP		2		/* MSCP */
@@ -61,6 +60,7 @@
 
 typedef struct _BSDRawPartition		BSDRawPartition;
 typedef struct _BSDRawLabel		BSDRawLabel;
+typedef struct _BSDDiskData		BSDDiskData;
 
 struct _BSDRawPartition {		/* the partition table */
 	uint32_t	p_size;		/* number of sectors in partition */
@@ -104,12 +104,15 @@ struct _BSDRawLabel {
 	uint16_t	d_npartitions;		/* number of partitions in following */
 	uint32_t	d_bbsize;		/* size of boot area at sn0, bytes */
 	uint32_t	d_sbsize;		/* max size of fs superblock, bytes */
+#define D_PARTITIONS_WORDS	59
 	BSDRawPartition d_partitions[BSD_MAXPARTITIONS];	/* actually may be more */
-} __attribute__((packed));
+} __attribute__((packed, aligned(2)));
 
-typedef struct {
-	char		boot_code [512];
-} BSDDiskData;
+struct _BSDDiskData {
+	char		boot_code[64];
+	BSDRawLabel	label;			/* label is offset by 64 bytes */
+	char		unused[172];		/* May contain more partitions */
+} __attribute__((packed, aligned(2)));
 
 typedef struct {
 	uint8_t		type;
@@ -123,52 +126,49 @@ static PedDiskType bsd_disk_type;
 /* XXX fixme: endian? */
 static unsigned short
 xbsd_dkcksum (BSDRawLabel *lp) {
-	unsigned short *start, *end;
-	unsigned short sum = 0;
+	const u_short* word = (u_short*)(lp);
+	const u_short* end = word + D_PARTITIONS_WORDS + PED_LE16_TO_CPU(lp->d_npartitions);
+	u_short sum;
 
 	lp->d_checksum = 0;
-	start = (u_short*) lp;
-	end = (u_short*) &lp->d_partitions [
-				PED_LE16_TO_CPU (lp->d_npartitions)];
-	while (start < end)
-		sum ^= *start++;
+	for(sum=0; word < end; word++)
+		sum ^= PED_LE16_TO_CPU(*word);
 	return sum;
 }
 
 /* XXX fixme: endian? */
 static void
-alpha_bootblock_checksum (char *boot) {
-	uint64_t *dp, sum;
+alpha_bootblock_checksum (void *boot) {
+	uint64_t* dp = (uint64_t *)boot;
+	uint64_t sum=0;
 	int i;
 
-	dp = (uint64_t *)boot;
-	sum = 0;
 	for (i = 0; i < 63; i++)
-		sum += dp[i];
-	dp[63] = sum;
+		sum += *dp++;
+	*dp = sum;
 }
 
 static int
 bsd_probe (const PedDevice *dev)
 {
-	BSDRawLabel	*partition;
+	BSDRawLabel	*label;
 
 	PED_ASSERT (dev != NULL);
 
         if (dev->sector_size < 512)
                 return 0;
 
-	void *label;
-	if (!ptt_read_sector (dev, 0, &label))
+	void *s0;
+	if (!ptt_read_sector (dev, 0, &s0))
 		return 0;
 
-	partition = (BSDRawLabel *) ((char *) label + BSD_LABEL_OFFSET);
+	label = &((BSDDiskData*) s0)->label;
 
 	alpha_bootblock_checksum(label);
 
 	/* check magic */
-        bool found = PED_LE32_TO_CPU (partition->d_magic) == BSD_DISKMAGIC;
-	free (label);
+        bool found = PED_LE32_TO_CPU (label->d_magic) == BSD_DISKMAGIC;
+	free (s0);
 	return found;
 }
 
@@ -177,25 +177,19 @@ bsd_alloc (const PedDevice* dev)
 {
 	PedDisk*	disk;
 	BSDDiskData*	bsd_specific;
-	BSDRawLabel*	label;
+	BSDRawLabel 	*label;
 
 	PED_ASSERT(dev->sector_size % PED_SECTOR_SIZE_DEFAULT == 0);
 
 	disk = _ped_disk_alloc ((PedDevice*)dev, &bsd_disk_type);
 	if (!disk)
 		goto error;
-	disk->disk_specific = bsd_specific = ped_malloc (sizeof (BSDDiskData));
+	disk->disk_specific = bsd_specific = ped_calloc (sizeof (BSDDiskData));
 	if (!bsd_specific)
 		goto error_free_disk;
-        /* Initialize the first byte to zero, so that the code in bsd_write
-           knows to call _probe_and_add_boot_code.  Initializing all of the
-           remaining buffer is a little wasteful, but the alternative is to
-           figure out why a block at offset 340 would otherwise be used
-           uninitialized.  */
-	memset(bsd_specific->boot_code, 0, sizeof (bsd_specific->boot_code));
 
-	label = (BSDRawLabel*) (bsd_specific->boot_code + BSD_LABEL_OFFSET);
-
+	/* Initialize the disk label's default values */
+	label = &bsd_specific->label;
 	label->d_magic = PED_CPU_TO_LE32 (BSD_DISKMAGIC);
 	label->d_type = PED_CPU_TO_LE16 (BSD_DTYPE_SCSI);
 	label->d_flags = 0;
@@ -223,6 +217,7 @@ bsd_alloc (const PedDevice* dev)
 
 	label->d_npartitions = 0;
 	label->d_checksum = xbsd_dkcksum (label);
+
 	return disk;
 
 error_free_disk:
@@ -243,7 +238,7 @@ bsd_duplicate (const PedDisk* disk)
 		return NULL;
 
 	new_bsd_data = (BSDDiskData*) new_disk->disk_specific;
-	memcpy (new_bsd_data->boot_code, old_bsd_data->boot_code, 512);
+	memcpy (new_bsd_data, old_bsd_data, sizeof(BSDDiskData));
 	return new_disk;
 }
 
@@ -267,10 +262,10 @@ bsd_read (PedDisk* disk)
 	if (!ptt_read_sector (disk->dev, 0, &s0))
 		return 0;
 
-	memcpy (bsd_specific->boot_code, s0, sizeof (bsd_specific->boot_code));
+	memcpy (bsd_specific, s0, sizeof (BSDDiskData));
 	free (s0);
 
-	label = (BSDRawLabel *) (bsd_specific->boot_code + BSD_LABEL_OFFSET);
+	label = &bsd_specific->label;
 
 	for (i = 1; i <= BSD_MAXPARTITIONS; i++) {
 		PedPartition* 		part;
@@ -312,18 +307,19 @@ error:
 static void
 _probe_and_add_boot_code (const PedDisk* disk)
 {
+	char *old_boot_code;
+	BSDRawLabel *old_label;
+
 	void *s0;
 	if (!ptt_read_sector (disk->dev, 0, &s0))
 		return;
-	char *old_boot_code = s0;
-	BSDRawLabel *old_label
-                = (BSDRawLabel*) (old_boot_code + BSD_LABEL_OFFSET);
+	old_boot_code = ((BSDDiskData*) s0)->boot_code;
+	old_label = &((BSDDiskData*) s0)->label;
 
 	if (old_boot_code [0]
 	    && old_label->d_magic == PED_CPU_TO_LE32 (BSD_DISKMAGIC)) {
 		BSDDiskData *bsd_specific = (BSDDiskData*) disk->disk_specific;
-		memcpy (bsd_specific->boot_code, old_boot_code,
-                        sizeof (BSDDiskData));
+		memcpy (bsd_specific, old_boot_code, sizeof (BSDDiskData));
         }
 	free (s0);
 }
@@ -343,9 +339,9 @@ bsd_write (const PedDisk* disk)
 	PED_ASSERT (disk->dev != NULL);
 
 	bsd_specific = (BSDDiskData*) disk->disk_specific;
-	label = (BSDRawLabel *) (bsd_specific->boot_code + BSD_LABEL_OFFSET);
+	label = &bsd_specific->label;
 
-	if (!bsd_specific->boot_code [0])
+	if (!bsd_specific->boot_code[0])
 		_probe_and_add_boot_code (disk);
 
 	memset (label->d_partitions, 0,
@@ -367,9 +363,9 @@ bsd_write (const PedDisk* disk)
 	label->d_npartitions = PED_CPU_TO_LE16 (max_part + 1);
 	label->d_checksum = xbsd_dkcksum (label);
 
-	alpha_bootblock_checksum (bsd_specific->boot_code);
+	alpha_bootblock_checksum (bsd_specific);
 
-        if (!ptt_write_sector (disk, bsd_specific->boot_code,
+        if (!ptt_write_sector (disk, bsd_specific,
                                sizeof (BSDDiskData)))
                 goto error;
 	return ped_device_sync (disk->dev);
