@@ -615,7 +615,7 @@ ped_disk_check (const PedDisk* disk)
 		if (!geom)
 			continue;
 
-		length_error = abs (walk->geom.length - geom->length);
+		length_error = llabs (walk->geom.length - geom->length);
 		max_length_error = PED_MAX (4096, walk->geom.length / 100);
                 bool ok = (ped_geometry_test_inside (&walk->geom, geom)
                            && length_error <= max_length_error);

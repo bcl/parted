@@ -1770,8 +1770,8 @@ _best_solution (const PedPartition* part, const PedCHSGeometry* bios_geom,
 		PedSector	a_delta;
 		PedSector	b_delta;
 
-		a_delta = abs (part->geom.start - a->start);
-		b_delta = abs (part->geom.start - b->start);
+		a_delta = llabs (part->geom.start - a->start);
+		b_delta = llabs (part->geom.start - b->start);
 
 		if (a_delta < b_delta)
 			goto choose_a;

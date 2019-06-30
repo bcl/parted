@@ -211,7 +211,7 @@ _geometry_error (const PedGeometry* a, const PedGeometry* b)
 	PedSector	start_delta = a->start - b->start;
 	PedSector	end_delta = a->end - b->end;
 
-	return abs (start_delta) + abs (end_delta);
+	return llabs (start_delta) + llabs (end_delta);
 }
 
 static PedFileSystemType*
