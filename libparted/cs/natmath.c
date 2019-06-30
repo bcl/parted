@@ -432,7 +432,7 @@ closest (PedSector sector, PedSector a, PedSector b)
 	if (b == -1)
 		return a;
 
-	if (abs (sector - a) < abs (sector - b))
+	if (llabs (sector - a) < llabs (sector - b))
 		return a;
 	else
 		return b;
