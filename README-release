@@ -4,25 +4,49 @@ Here are most of the steps we (maintainers) follow when making a release.
 
     git checkout master; git pull
 
+* Update gnulib to the current version
+
+    git submodule foreach git pull origin master
+
+* Copy the new bootstrap from gnulib:
+
+    cp gnulib/build-aux/bootstrap .
+
+  And then commit the change.
+
 * Adjust shared-library settings, CURRENT:REVISION:AGE in both files,
   libparted/{fs/,}Makefile.am
-  following the instructions in the comments there.
-
-* Run ./configure && make maintainer-clean
+  following the instructions in the comments there and commit any changes.
 
 * Ensure that the desired versions of autoconf, automake, etc.
   are in your PATH.  See the buildreq list in bootstrap.conf for
   the complete list.
 
+* In addition you will need texi2dvi installed, and po4a-updatepo
+
 * Ensure that you're on "master" with no uncommitted diffs.
   This should produce no output: git checkout master; git diff
 
-* Run bootstrap one last time.  This downloads any new translations:
+* Run git clean -xdf first, or make maintainer-clean
+
+* Run bootstrap. This downloads any new translations and creates ./configure
 
     ./bootstrap
 
+* Run ./configure
+  Note that currently -Werror is not included, warnings are intended to be
+  fixed, but should not block building unless they are in a new commit.
+
+* If the copyright has not been updated this year, run:
+
+  make update-copyright
+
+  and then commit the changes.
+
 * Pre-release testing:
-  Ensure that make check syntax-check succeeds.
+  Run "make check syntax-check"
+
+  syntax-check may complain about various things. Fix them and commit them.
 
 * Run "make distcheck"
 
