@@ -4,25 +4,101 @@ Here are most of the steps we (maintainers) follow when making a release.
 
     git checkout master; git pull
 
+* Update gnulib to the current version
+
+    git submodule foreach git pull origin master
+
+  Note that the first time you clone the repo you will need to initialize
+  the submodule with:
+
+    git submodule update --init ./gnulib/
+
+* Copy the new bootstrap from gnulib:
+
+    cp gnulib/build-aux/bootstrap .
+
+  And then commit the change.
+
 * Adjust shared-library settings, CURRENT:REVISION:AGE in both files,
   libparted/{fs/,}Makefile.am
-  following the instructions in the comments there.
-
-* Run ./configure && make maintainer-clean
+  following the instructions in the comments there and commit any changes.
 
 * Ensure that the desired versions of autoconf, automake, etc.
   are in your PATH.  See the buildreq list in bootstrap.conf for
-  the complete list.
+  the complete list. Depending on the distribution you are using the
+  package names below may be slightly different:
+
+  Fedora Packages
+   - libtool
+   - autoconf
+   - automake
+   - bc
+   - gperf
+   - gcc
+   - make
+   - texinfo-tex
+   - po4a
+   - e2fsprogs-devel
+   - libuuid-devel
+   - libblkid-devel
+   - device-mapper-devel
+   - ncurses-devel
+   - readline-devel
+   - libselinux-devel
+   - check
+   - pkgconfig
+   - dosfstools
+   - sudo
+   - perl-Digest-CRC
+   - xfsprogs
+   - hfsplus-tools
+   - btrfs-progs
+   - ntfsprogs
+
+  Debian Packages
+   - libtool
+   - gcc
+   - make
+   - texinfo
+   - texlive
+   - po4a
+   - uuid-dev
+   - libdevmapper-dev
+   - ncurses-dev
+   - libreadline-dev
+   - check
+   - pkg-config
+   - dosfstools
+   - sudo
+   - libdigest-crc-perl
+   - xfsprogs
+   - hfsprogs
+   - btrfs-progs
+   - ntfs-3g
 
 * Ensure that you're on "master" with no uncommitted diffs.
   This should produce no output: git checkout master; git diff
 
-* Run bootstrap one last time.  This downloads any new translations:
+* Run git clean -xdf first, or make maintainer-clean
+
+* Run bootstrap. This downloads any new translations and creates ./configure
 
     ./bootstrap
 
+* Run ./configure
+  Note that currently -Werror is not included, warnings are intended to be
+  fixed, but should not block building unless they are in a new commit.
+
+* If the copyright has not been updated this year, run:
+
+  make update-copyright
+
+  and then commit the changes.
+
 * Pre-release testing:
-  Ensure that make check syntax-check succeeds.
+  Run "make check syntax-check"
+
+  syntax-check may complain about various things. Fix them and commit them.
 
 * Run "make distcheck"
 
