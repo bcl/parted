@@ -410,11 +410,9 @@ pth_get_raw (const PedDevice *dev, const GuidPartitionTableHeader_t *pth)
  * Blame Intel.
  */
 static void
-swap_uuid_and_efi_guid (uuid_t uuid)
+swap_uuid_and_efi_guid (efi_guid_t *guid)
 {
-  efi_guid_t *guid = (efi_guid_t *) uuid;
-
-  PED_ASSERT (uuid != NULL);
+  PED_ASSERT (guid != NULL);
   guid->time_low = PED_SWAP32 (guid->time_low);
   guid->time_mid = PED_SWAP16 (guid->time_mid);
   guid->time_hi_and_version = PED_SWAP16 (guid->time_hi_and_version);
@@ -543,7 +541,7 @@ gpt_alloc (const PedDevice *dev)
                      data_end - data_start + 1);
   gpt_disk_data->entry_count = GPT_DEFAULT_PARTITION_ENTRIES;
   uuid_generate ((unsigned char *) &gpt_disk_data->uuid);
-  swap_uuid_and_efi_guid ((unsigned char *) (&gpt_disk_data->uuid));
+  swap_uuid_and_efi_guid (&gpt_disk_data->uuid);
   gpt_disk_data->pmbr_boot = 0;
   return disk;
 
@@ -1380,7 +1378,7 @@ gpt_partition_new (const PedDisk *disk,
   gpt_part_data->translated_name = 0;
   gpt_part_data->irst = 0;
   uuid_generate ((unsigned char *) &gpt_part_data->uuid);
-  swap_uuid_and_efi_guid ((unsigned char *) (&gpt_part_data->uuid));
+  swap_uuid_and_efi_guid (&gpt_part_data->uuid);
   memset (gpt_part_data->name, 0, sizeof gpt_part_data->name);
   return part;
 
