@@ -91,8 +91,6 @@ _generic_affs_probe (PedGeometry* geom, uint32_t kind)
 	len = geom->length / blocksize - reserved;
 	pos = (len - 1) / 2;
 	root = geom->start + (pos + reserved) * blocksize;
-	printf ("Pralloc = %d, Reserved = %d, blocksize = %d, root block at %llu\n",
-		prealloc, reserved, blocksize, root);
 
 	if (!ped_device_read (geom->dev, block, root, blocksize)) {
 		ped_exception_throw(PED_EXCEPTION_ERROR, PED_EXCEPTION_CANCEL,
