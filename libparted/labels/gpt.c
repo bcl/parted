@@ -273,7 +273,7 @@ struct __attribute__ ((packed)) _LegacyMBR_t
 };
 
 /* uses libparted's disk_specific field in PedDisk, to store our info */
-struct __attribute__ ((packed)) _GPTDiskData
+struct __attribute__ ((packed, aligned(8))) _GPTDiskData
 {
   PedGeometry data_area;
   int entry_count;
