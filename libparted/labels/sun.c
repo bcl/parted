@@ -68,7 +68,7 @@ struct __attribute__ ((packed)) _SunPartitionInfo {
 	u_int8_t	flags;		/* Partition flags */
 };
 
-struct __attribute__ ((packed)) _SunRawLabel {
+struct __attribute__ ((packed, aligned(2))) _SunRawLabel {
 	char 		info[128];	/* Informative text string */
 	u_int32_t	version;	/* Layout version */
 	u_int8_t	volume[8];	/* Volume name */
