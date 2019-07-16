@@ -11,6 +11,7 @@ dist_man8_MANS = \
 updatepo:
 	cd $(srcdir); \
 	test -w . || exit 0; \
+	test -d po || mkdir po; \
 	for name in $(dist_man8_MANS); do \
 		echo $$name; \
 		test -f po/$$name.pot || touch po/$$name.pot; \
