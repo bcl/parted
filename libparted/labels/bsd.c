@@ -364,7 +364,7 @@ bsd_write (const PedDisk* disk)
 		max_part = i;
 	}
 
-	label->d_npartitions = PED_CPU_TO_LE16 (max_part) + 1;
+	label->d_npartitions = PED_CPU_TO_LE16 (max_part + 1);
 	label->d_checksum = xbsd_dkcksum (label);
 
 	alpha_bootblock_checksum (bsd_specific->boot_code);
