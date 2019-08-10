@@ -144,8 +144,8 @@ alpha_bootblock_checksum (void *boot) {
 	int i;
 
 	for (i = 0; i < 63; i++)
-		sum += *dp++;
-	*dp = sum;
+		sum += dp[i];
+	dp[63] = sum;
 }
 
 static int
