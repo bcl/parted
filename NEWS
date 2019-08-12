@@ -1,8 +1,8 @@
 GNU parted NEWS                                    -*- outline -*-
 
-  Parted now recognizes NVMe devices, NVDIMM, and RAM drives.
-
 * Noteworthy changes in release ?.? (????-??-??) [?]
+
+  Parted now recognizes NVMe devices, NVDIMM, and RAM drives.
 
 ** Bug Fixes
 
