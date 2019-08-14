@@ -271,8 +271,6 @@ fat_boot_sector_analyse (FatBootSector* bs, PedFileSystem* fs)
 int
 fat_boot_sector_set_boot_code (FatBootSector** bsp, const PedFileSystem* fs)
 {
-	FatSpecific*	fs_info = FAT_SPECIFIC (fs);
-
 	PED_ASSERT (bsp != NULL);
 	*bsp = ped_malloc (fs->geom->dev->sector_size);
 	FatBootSector *bs = *bsp;
@@ -280,7 +278,8 @@ fat_boot_sector_set_boot_code (FatBootSector** bsp, const PedFileSystem* fs)
 
 	memset (bs, 0, 512);
 	memcpy (bs->boot_jump, FAT_BOOT_JUMP, 3);
-	memcpy (bs->u.fat32.boot_code, FAT_BOOT_CODE, FAT_BOOT_CODE_LENGTH);
+	PED_ASSERT (sizeof(FAT_BOOT_CODE) < sizeof(bs->u.fat32.boot_code));
+	strcpy (bs->u.fat32.boot_code, FAT_BOOT_CODE);
 	return 1;
 }
 

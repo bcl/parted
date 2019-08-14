@@ -57,8 +57,6 @@ typedef struct _FatInfoSector	FatInfoSector;
 					/* message: */			\
 			FAT_BOOT_MESSAGE
 
-#define FAT_BOOT_CODE_LENGTH 128
-
 struct __attribute__ ((packed)) _FatBootSector {
         uint8_t		boot_jump[3];	/* 00: Boot strap short or near jump */
         uint8_t		system_id[8];	/* 03: system name */
