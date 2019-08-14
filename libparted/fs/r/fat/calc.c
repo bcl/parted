@@ -23,7 +23,7 @@
 #ifndef DISCOVER_ONLY
 
 /* returns the minimum size of clusters for a given file system type */
-PedSector
+PedSector _GL_ATTRIBUTE_CONST
 fat_min_cluster_size (FatType fat_type) {
 	switch (fat_type) {
 		case FAT_TYPE_FAT12: return 1;
@@ -33,7 +33,7 @@ fat_min_cluster_size (FatType fat_type) {
 	return 0;
 }
 
-static PedSector
+static PedSector _GL_ATTRIBUTE_CONST
 _smallest_power2_over (PedSector ceiling)
 {
 	PedSector	result = 1;
@@ -45,7 +45,7 @@ _smallest_power2_over (PedSector ceiling)
 }
 
 /* returns the minimum size of clusters for a given file system type */
-PedSector
+PedSector _GL_ATTRIBUTE_CONST
 fat_recommend_min_cluster_size (FatType fat_type, PedSector size) {
 	switch (fat_type) {
 		case FAT_TYPE_FAT12: return 1;
@@ -59,7 +59,7 @@ fat_recommend_min_cluster_size (FatType fat_type, PedSector size) {
 }
 
 /* returns the maxmimum size of clusters for a given file system type */
-PedSector
+PedSector _GL_ATTRIBUTE_CONST
 fat_max_cluster_size (FatType fat_type) {
 	switch (fat_type) {
 		case FAT_TYPE_FAT12: return 1;	/* dunno... who cares? */
@@ -70,7 +70,7 @@ fat_max_cluster_size (FatType fat_type) {
 }
 
 /* returns the minimum number of clusters for a given file system type */
-FatCluster
+FatCluster _GL_ATTRIBUTE_CONST
 fat_min_cluster_count (FatType fat_type) {
 	switch (fat_type) {
 		case FAT_TYPE_FAT12:
@@ -83,7 +83,7 @@ fat_min_cluster_count (FatType fat_type) {
 }
 
 /* returns the maximum number of clusters for a given file system type */
-FatCluster
+FatCluster _GL_ATTRIBUTE_CONST
 fat_max_cluster_count (FatType fat_type) {
 	switch (fat_type) {
 		case FAT_TYPE_FAT12: return 0xff0;
@@ -94,7 +94,7 @@ fat_max_cluster_count (FatType fat_type) {
 }
 
 /* what is this supposed to be?  What drugs are M$ on?  (Can I have some? :-) */
-PedSector
+PedSector _GL_ATTRIBUTE_CONST
 fat_min_reserved_sector_count (FatType fat_type)
 {
 	return (fat_type == FAT_TYPE_FAT32) ? 32 : 1;

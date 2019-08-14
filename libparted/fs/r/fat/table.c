@@ -462,7 +462,7 @@ fat_table_set_avail (FatTable* ft, FatCluster cluster)
 
 #endif /* !DISCOVER_ONLY */
 
-int
+int _GL_ATTRIBUTE_CONST
 fat_table_entry_size (FatType fat_type)
 {
 	switch (fat_type) {
