@@ -52,20 +52,19 @@ _generic_affs_probe (PedGeometry* geom, uint32_t kind)
 	uint32_t *block;
 	PedSector root, len, pos;
 	struct PartitionBlock * part;
-	int blocksize = 1, reserved = 2, prealloc = 0;
+	int blocksize = 1, reserved = 2;
 
 	PED_ASSERT (geom != NULL);
 	PED_ASSERT (geom->dev != NULL);
 	if (geom->dev->sector_size != 512)
 		return NULL;
-	/* Finds the blocksize, prealloc and reserved values of the partition block */
+	/* Finds the blocksize and reserved values of the partition block */
 	if (!(part = ped_malloc (PED_SECTOR_SIZE_DEFAULT*blocksize))) {
 		ped_exception_throw(PED_EXCEPTION_ERROR, PED_EXCEPTION_CANCEL,
 			_("%s : Failed to allocate partition block\n"), __func__);
 		goto error_part;
 	}
 	if (amiga_find_part(geom, part) != NULL) {
-		prealloc = PED_BE32_TO_CPU (part->de_PreAlloc);
 		reserved = PED_BE32_TO_CPU (part->de_Reserved);
 		reserved = reserved == 0 ? 1 : reserved;
 		blocksize = PED_BE32_TO_CPU (part->de_SizeBlock)
