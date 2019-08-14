@@ -59,6 +59,7 @@ static PedFileSystemType hfsplus_type;
 
 /* ----- HFS ----- */
 
+#if 0
 /* This is a very unundoable operation */
 /* Maybe I shouldn't touch the alternate MDB ? */
 /* Anyway clobber is call before other fs creation */
@@ -78,6 +79,7 @@ hfs_clobber (PedGeometry* geom)
 		(!!ped_geometry_write (geom, buf, geom->length - 1, 1)) &
 		(!!ped_geometry_sync  (geom));
 }
+#endif
 
 PedFileSystem *
 hfs_open (PedGeometry* geom)
@@ -339,6 +341,7 @@ hfs_resize (PedFileSystem* fs, PedGeometry* geom, PedTimer* timer)
 #include "reloc_plus.h"
 #include "journal.h"
 
+#if 0
 static int
 hfsplus_clobber (PedGeometry* geom)
 {
@@ -374,6 +377,7 @@ hfsplus_clobber (PedGeometry* geom)
 	/* non-embedded or envelop destroy as hfs */
 	return ( hfs_clobber (geom) && i );
 }
+#endif
 
 int
 hfsplus_close (PedFileSystem *fs)
