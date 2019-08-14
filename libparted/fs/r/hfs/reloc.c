@@ -224,6 +224,7 @@ hfs_do_move (PedFileSystem* fs, unsigned int *ptr_src,
 				priv_data->catalog_file
 				->cache[ref->ref_index].start_block =
 				PED_CPU_TO_BE16(new_start);
+			/* FALLTHROUGH */
 		    case CR_BTREE_EXT_0 :
 			file = priv_data->extent_file;
 			goto CR_BTREE;

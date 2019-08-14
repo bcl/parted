@@ -217,6 +217,7 @@ _amiga_read_block (PedDevice *dev, struct AmigaBlock *blk, PedSector block, stru
 							return NULL;
 					}
 				}
+				/* FALLTHROUGH */
 			case PED_EXCEPTION_IGNORE :
 			case PED_EXCEPTION_UNHANDLED :
 			default :
