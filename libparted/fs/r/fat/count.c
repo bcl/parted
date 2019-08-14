@@ -338,7 +338,7 @@ fat_collect_cluster_info (PedFileSystem* fs) {
 	return 1;
 }
 
-FatClusterFlag
+FatClusterFlag _GL_ATTRIBUTE_PURE
 fat_get_cluster_flag (PedFileSystem* fs, FatCluster cluster)
 {
 	FatSpecific*		fs_info = FAT_SPECIFIC (fs);
@@ -346,7 +346,7 @@ fat_get_cluster_flag (PedFileSystem* fs, FatCluster cluster)
 	return fs_info->cluster_info [cluster].flag;
 }
 
-PedSector
+PedSector _GL_ATTRIBUTE_PURE
 fat_get_cluster_usage (PedFileSystem* fs, FatCluster cluster)
 {
 	FatSpecific*		fs_info = FAT_SPECIFIC (fs);

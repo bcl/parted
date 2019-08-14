@@ -371,7 +371,7 @@ fat_table_is_bad (const FatTable* ft, FatCluster cluster)
 /*
     returns true if <cluster> represents an EOF marker
 */
-int
+int _GL_ATTRIBUTE_PURE
 fat_table_is_eof (const FatTable* ft, FatCluster cluster)
 {
 	return _test_code_eof (ft, cluster);

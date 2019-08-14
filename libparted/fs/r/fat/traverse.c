@@ -31,7 +31,7 @@
 
 static char tmp_buffer [4096];
 
-int
+int _GL_ATTRIBUTE_PURE
 fat_traverse_entries_per_buffer (FatTraverseInfo* trav_info)
 {
 	return trav_info->buffer_size / sizeof (FatDirEntry);
@@ -226,7 +226,7 @@ fat_traverse_next_dir_entry (FatTraverseInfo *trav_info)
 	return trav_info->dir_entries + trav_info->current_entry;
 }
 
-FatCluster
+FatCluster _GL_ATTRIBUTE_PURE
 fat_dir_entry_get_first_cluster (FatDirEntry* dir_entry, PedFileSystem *fs)
 {
 	FatSpecific*		fs_info = FAT_SPECIFIC (fs);
@@ -269,7 +269,7 @@ fat_dir_entry_set_first_cluster (FatDirEntry* dir_entry, PedFileSystem* fs,
 	}
 }
 
-uint32_t
+uint32_t _GL_ATTRIBUTE_PURE
 fat_dir_entry_get_length (FatDirEntry* dir_entry)
 {
 	return PED_LE32_TO_CPU (dir_entry->length);
@@ -284,7 +284,7 @@ fat_dir_entry_is_null_term (const FatDirEntry* dir_entry)
 	return memcmp (&null_entry, dir_entry, sizeof (null_entry)) == 0;
 }
 
-int
+int _GL_ATTRIBUTE_PURE
 fat_dir_entry_is_active (FatDirEntry* dir_entry)
 {
 	if ((unsigned char) dir_entry->name[0] == DELETED_FLAG) return 0;
@@ -293,7 +293,7 @@ fat_dir_entry_is_active (FatDirEntry* dir_entry)
 	return 1;
 }
 
-int
+int _GL_ATTRIBUTE_PURE
 fat_dir_entry_is_file (FatDirEntry* dir_entry) {
 	if (dir_entry->attributes == VFAT_ATTR) return 0;
 	if (dir_entry->attributes & VOLUME_LABEL_ATTR) return 0;
@@ -302,7 +302,7 @@ fat_dir_entry_is_file (FatDirEntry* dir_entry) {
 	return 1;
 }
 
-int
+int _GL_ATTRIBUTE_PURE
 fat_dir_entry_is_system_file (FatDirEntry* dir_entry)
 {
 	if (!fat_dir_entry_is_file (dir_entry)) return 0;
@@ -310,7 +310,7 @@ fat_dir_entry_is_system_file (FatDirEntry* dir_entry)
 		|| (dir_entry->attributes & HIDDEN_ATTR);
 }
 
-int
+int _GL_ATTRIBUTE_PURE
 fat_dir_entry_is_directory (FatDirEntry* dir_entry)
 {
 	if (dir_entry->attributes == VFAT_ATTR) return 0;

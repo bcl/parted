@@ -86,7 +86,7 @@ fat_boot_sector_read (FatBootSector** bsp, const PedGeometry *geom)
 /*
     Don't trust the FAT12, FAT16 or FAT32 label string.
  */
-FatType
+FatType _GL_ATTRIBUTE_PURE
 fat_boot_sector_probe_type (const FatBootSector* bs, const PedGeometry* geom)
 {
 	PedSector	logical_sector_size;

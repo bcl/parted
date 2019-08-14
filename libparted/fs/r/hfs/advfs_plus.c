@@ -247,7 +247,7 @@ errbbp: hfsplus_free_bad_blocks_list(priv_data->bad_blocks_xtent_list);
 }
 
 /* This function check if fblock is a bad block */
-int
+int _GL_ATTRIBUTE_PURE
 hfsplus_is_bad_block (const PedFileSystem *fs, unsigned int fblock)
 {
 	HfsPPrivateFSData* 	priv_data = (HfsPPrivateFSData*)
@@ -358,7 +358,7 @@ hfsplus_get_min_size (const PedFileSystem *fs)
 
 /* return the block which should be used to pack data to have
    at least free fblock blocks at the end of the volume */
-unsigned int
+unsigned int _GL_ATTRIBUTE_PURE
 hfsplus_find_start_pack (const PedFileSystem *fs, unsigned int fblock)
 {
 	HfsPPrivateFSData* 	priv_data = (HfsPPrivateFSData*)

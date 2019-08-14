@@ -314,7 +314,7 @@ fat_calc_resize_sizes (
     friends, to allow room for this space.  If too much of this space is left
     over, everyone will complain, so we have to be greedy, and use it all up...
  */
-PedSector
+PedSector _GL_ATTRIBUTE_PURE
 fat_calc_align_sectors (const PedFileSystem* new_fs,
 			const PedFileSystem* old_fs)
 {
@@ -359,7 +359,7 @@ fat_calc_align_sectors (const PedFileSystem* new_fs,
 	return align;
 }
 
-int
+int _GL_ATTRIBUTE_PURE
 fat_is_sector_in_clusters (const PedFileSystem* fs, PedSector sector)
 {
 	FatSpecific*	fs_info = FAT_SPECIFIC (fs);
