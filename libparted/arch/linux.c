@@ -867,6 +867,7 @@ _device_probe_geometry (PedDevice* dev)
         LinuxSpecific*          arch_specific = LINUX_SPECIFIC (dev);
         struct stat             dev_stat;
         struct hd_geometry      geometry;
+        int                     geometry_is_valid = 0;
         int                     sector_size = 0;
 
         if (!_device_stat (dev, &dev_stat))
@@ -884,13 +885,19 @@ _device_probe_geometry (PedDevice* dev)
         dev->bios_geom.heads = 0;
         dev->bios_geom.cylinders = 0;
 
+        geometry_is_valid = !ioctl (arch_specific->fd, HDIO_GETGEO, &geometry)
+                            && geometry.sectors && geometry.heads;
+
+#if defined __s390__ || defined __s390x__
+        if (geometry_is_valid) {
+#else
         if (!ioctl (arch_specific->fd, BLKSSZGET, &sector_size)) {
                 /* get the sector count first */
                 dev->bios_geom.sectors = 1 + (sector_size / PED_SECTOR_SIZE_DEFAULT);
                 dev->bios_geom.heads = 255;
-        } else if (!ioctl (arch_specific->fd, HDIO_GETGEO, &geometry)
-                        && geometry.sectors && geometry.heads) {
-                /* if BLKSSZGET failed, try the deprecated HDIO_GETGEO */
+        } else if (geometry_is_valid) {
+                /* if BLKSSZGET failed, use deprecated HDIO_GETGEO result */
+#endif
                 dev->bios_geom.sectors = geometry.sectors;
                 dev->bios_geom.heads = geometry.heads;
         } else {
