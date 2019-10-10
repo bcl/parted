@@ -2,6 +2,11 @@ GNU parted NEWS                                    -*- outline -*-
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
 
+** New Features
+
+  Add a new partition type flag, chromeos_kernel, for use with ChromeOS
+  machines. This is a GPT-only flag and sets the type GUID to
+  FE3A2A5D-4F32-41A7-B725-ACCC3285A309.
 
 * Noteworthy changes in release 3.3 (2019-10-10) [stable]
 
