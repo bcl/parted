@@ -2,6 +2,11 @@ GNU parted NEWS                                    -*- outline -*-
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
 
+** Bug Fixes
+
+  s390: Re-enabled virtio-attached DASD heuristics by using
+  HDIO_GETGEO when probing device geometry. Fixes a bug with
+  KVM virtio-blk backed by a DASD.
 
 * Noteworthy changes in release 3.2.153 (2019-08-12) [alpha]
 
