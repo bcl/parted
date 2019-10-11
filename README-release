@@ -132,6 +132,9 @@ Once all the builds and tests have passed,
 
 * Run the gnupload command that was suggested by your "make stable" run above.
 
+  If you are using a different gpg key to sign the releases you will need to
+  pass --user <EMAIL> to gnupload to select it.
+
 * Wait a few minutes (maybe up to 30?) and then use the release URLs to
   download all tarball/signature pairs and use gpg --verify to ensure
   that they're all valid.
