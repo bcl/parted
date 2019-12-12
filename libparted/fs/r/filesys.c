@@ -213,8 +213,6 @@ error_close_dev:
  * file system occupies a given region described by \p geom.
  * After this operation ped_file_system_probe() won't detect any file system.
  *
- * \note ped_file_system_create() calls this before creating a new file system.
- *
  * \return \c 1 on success, \c 0 on failure
  */
 static int
