@@ -2409,6 +2409,8 @@ ped_partition_flag_get_name (PedPartitionFlag flag)
                 return N_("esp");
         case PED_PARTITION_CHROMEOS_KERNEL:
                 return N_("chromeos_kernel");
+	case PED_PARTITION_BLS_BOOT:
+		return N_("bls_boot");
 
 	default:
 		ped_exception_throw (
