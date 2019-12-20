@@ -8,6 +8,10 @@ GNU parted NEWS                                    -*- outline -*-
   machines. This is a GPT-only flag and sets the type GUID to
   FE3A2A5D-4F32-41A7-B725-ACCC3285A309.
 
+  Add a new partition flag for Linux Boot Loader Specification /boot
+  partitions. The bls_boot flag will set the msdos partition type to 0xea
+  and the GPT partition type GUID to bc13c2ff-59e6-4262-a352-b275fd6f7172.
+
 * Noteworthy changes in release 3.3 (2019-10-10) [stable]
 
 ** Bug Fixes
