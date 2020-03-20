@@ -32,6 +32,8 @@ libfs_la_SOURCES =		\
   fat/count.h			\
   fat/fat.c			\
   fat/fat.h			\
+  f2fs/f2fs.c			\
+  f2fs/f2fs.h			\
   hfs/hfs.c			\
   hfs/hfs.h			\
   hfs/probe.c			\

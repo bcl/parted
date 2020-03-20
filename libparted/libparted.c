@@ -109,6 +109,7 @@ extern void ped_file_system_linux_swap_init (void);
 extern void ped_file_system_jfs_init (void);
 extern void ped_file_system_hfs_init (void);
 extern void ped_file_system_fat_init (void);
+extern void ped_file_system_f2fs_init (void);
 extern void ped_file_system_ext2_init (void);
 extern void ped_file_system_nilfs2_init (void);
 extern void ped_file_system_btrfs_init (void);
@@ -126,6 +127,7 @@ init_file_system_types ()
 	ped_file_system_jfs_init ();
 	ped_file_system_hfs_init ();
 	ped_file_system_fat_init ();
+	ped_file_system_f2fs_init ();
 	ped_file_system_ext2_init ();
 	ped_file_system_nilfs2_init ();
 	ped_file_system_btrfs_init ();
@@ -186,6 +188,7 @@ _init()
 extern void ped_file_system_nilfs2_done (void);
 extern void ped_file_system_ext2_done (void);
 extern void ped_file_system_fat_done (void);
+extern void ped_file_system_f2fs_done (void);
 extern void ped_file_system_hfs_done (void);
 extern void ped_file_system_jfs_done (void);
 extern void ped_file_system_linux_swap_done (void);
@@ -202,6 +205,7 @@ done_file_system_types ()
 {
 	ped_file_system_nilfs2_done ();
 	ped_file_system_ext2_done ();
+	ped_file_system_f2fs_done ();
 	ped_file_system_fat_done ();
 	ped_file_system_hfs_done ();
 	ped_file_system_jfs_done ();
