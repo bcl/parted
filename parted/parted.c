@@ -1546,6 +1546,7 @@ do_resizepart (PedDevice** dev, PedDisk** diskp)
         PedConstraint*          constraint;
         int rc = 0;
         char*                   end_input = NULL;
+        char*                   end_size = NULL;
 
         if (!disk) {
                 disk = ped_disk_new (*dev);
@@ -1561,8 +1562,22 @@ do_resizepart (PedDevice** dev, PedDisk** diskp)
 
         if (!command_line_get_partition (_("Partition number?"), disk, &part))
                 goto error;
+
+        /* Save the optional End value if the partition is busy. */
+        if (ped_partition_is_busy(part)) {
+            if (command_line_get_word_count())
+                end_size = command_line_pop_word();
+        }
+
+        /* If the partition is busy this may clear the command_line and prompt the user */
         if (!_partition_warn_busy (part))
                 goto error;
+
+        /* Push the End value back onto the command_line, if it exists */
+        if (end_size) {
+            command_line_push_word(end_size);
+            free(end_size);
+        }
 
         start = part->geom.start;
         end = oldend = part->geom.end;
