@@ -2,7 +2,7 @@
 # exercise the resize sub-command
 # based on t3000-resize-fs.sh test
 
-# Copyright (C) 2009-2011, 2019 Free Software Foundation, Inc.
+# Copyright (C) 2009-2020 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -66,8 +66,8 @@ sleep 1
 # Running it without end should not core-dump or prompt
 parted -s $dev resizepart 1 > out 2> err || fail=1
 
-# extend the filesystem to end on sector 4096
-new_end=4096s
+# extend the filesystem to end on sector 2048
+new_end=2048s
 parted -s $dev resizepart 1 $new_end > out 2> err || fail=1
 # expect no output
 compare /dev/null out || fail=1
@@ -77,8 +77,44 @@ compare /dev/null err || fail=1
 parted -m -s $dev u s p > out 2>&1 || fail=1
 
 sed -n 3p out > k && mv k out || fail=1
-printf "1:$default_start:$new_end:3073s:::$ms;\n" > exp || fail=1
+printf "1:$default_start:$new_end:1025s:::$ms;\n" > exp || fail=1
 compare exp out || fail=1
+
+## Make sure resizing a busy partition works when user answers 'yes'
+# Format the partition and mount it for the busy check
+mkfs.ext4 "${dev}1" || skip_ mkfs.ext4 failed
+
+# be sure to unmount upon interrupt, failure, etc.
+cleanup_fn_() { umount "${dev}1" > /dev/null 2>&1; }
+
+mount_point=$(pwd)/mnt
+
+mkdir $mount_point || fail=1
+mount "${dev}1" "$mount_point" || fail=1
+
+# extend the filesystem to end on sector 4096
+new_end=4096s
+echo yes | parted ---pretend-input-tty $dev resizepart 1 $new_end > out 2>&1
+cat > exp <<EOF
+Warning: Partition ${dev}1 is being used. Are you sure you want to continue?
+Yes/No? yes
+Information: You may need to update /etc/fstab.
+
+EOF
+# Transform the actual output, to avoid spurious differences when
+# $PWD contains a symlink-to-dir.  Also, remove the ^M      ...^M bogosity.
+# normalize the actual output
+mv out o2 && sed -e "s,   *,,g;s, $,," o2 > out
+compare exp out || fail=1
+
+# print partition table
+parted -m -s $dev u s p > out 2>&1 || fail=1
+
+sed -n 3p out > k && mv k out || fail=1
+printf "1:$default_start:$new_end:3073s:ext2::$ms;\n" > exp || fail=1
+compare exp out || fail=1
+
+umount "${dev}1" || fail=1
 
 # Remove the partition explicitly, so that mklabel doesn't evoke a warning.
 parted -s $dev rm 1 || fail=1
