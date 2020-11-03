@@ -55,7 +55,6 @@ libparted_la_LIBADD =	\
   $(top_builddir)/lib/libgnulib.la \
   $(OS_LIBS)		\
   $(DM_LIBS)		\
-  $(SELINUX_LIBS)	\
   $(LIB_BLKID)		\
   $(UUID_LIBS)		\
   $(INTLLIBS)

@@ -1,14 +1,8 @@
-# Default to disabling device-mapper and SELinux
+# Default to disabling device-mapper
 %define use_devmapper 0
-%define use_selinux 0
-%define use_sepol 0
 
 # Enable device-mapper support if we find devmapper
 %define use_devmapper %(pkg-config --libs devmapper >/dev/null 2>&1; [ $? -eq 0 ] && echo 1)
-
-# Enable SELinux if we find libselinux and libsepol
-%define use_selinux %([ -r %{_libdir}/libselinux.a ] && echo 1)
-%define use_sepol %([ -r %{_libdir}/libsepol.so ] && echo 1)
 
 Summary:   The GNU disk partition manipulation program
 Name:      @PACKAGE@
@@ -22,7 +16,7 @@ Group:     Applications/System
 BuildRequires: e2fsprogs-devel readline-devel ncurses-devel gperf
 BuildRequires: automake libtool gettext-devel texinfo pkgconfig
 
-BuildRequires: device-mapper-devel, libselinux-devel libsepol-devel
+BuildRequires: device-mapper-devel
 
 Prereq: /sbin/install-info
 
@@ -52,11 +46,6 @@ Parted library, you need to install this package.
    --enable-device-mapper \
 %else
    --disable-devmapper \
-%endif
-%if "%{use_selinux}" == "1" && "%{use_sepol}" == "1"
-   --enable-selinux \
-%else
-   --disable-selinux \
 %endif
    --enable-part-static \
    --enable-pc98=no \

@@ -44,7 +44,6 @@ Here are most of the steps we (maintainers) follow when making a release.
    - device-mapper-devel
    - ncurses-devel
    - readline-devel
-   - libselinux-devel
    - check
    - pkgconfig
    - dosfstools
