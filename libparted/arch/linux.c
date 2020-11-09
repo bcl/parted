@@ -720,9 +720,9 @@ _get_linux_version ()
         static int kver = -1;
 
         struct utsname uts;
-        int major = 0;
-        int minor = 0;
-        int teeny = 0;
+        unsigned int major = 0;
+        unsigned int minor = 0;
+        unsigned int teeny = 0;
 
         if (kver != -1)
                 return kver;
@@ -2884,7 +2884,7 @@ _dm_get_partition_start_and_length(PedPartition const *part,
         char *params;
         char *target_type;
         dm_get_next_target(task, NULL, (uint64_t *)start, (uint64_t *)length, &target_type, &params);
-        if (sscanf (params, "%d:%d %Ld", &major, &minor, start) != 3)
+        if (sscanf (params, "%d:%d %Lu", &major, &minor, start) != 3)
                 goto err;
         rc = 1;
 
