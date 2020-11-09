@@ -1291,7 +1291,7 @@ msdos_write (const PedDisk* disk)
 	DosRawTable *table = (DosRawTable *) s0;
 
 	if (!table->boot_code[0]) {
-		memset (table->boot_code, 0, 512);
+		memset (table, 0, 512);
 		memcpy (table->boot_code, MBR_BOOT_CODE, sizeof (MBR_BOOT_CODE));
 	}
 
