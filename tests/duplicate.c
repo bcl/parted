@@ -134,7 +134,7 @@ main (int argc, char **argv)
     {
       if (!ped_partition_is_flag_available(disk_part, flag))
         continue;
-      fprintf (stderr, "Checking partition flag %d\n", flag);
+      fprintf (stderr, "Checking partition flag %u\n", flag);
       fprintf (stderr, "%d ? %d\n", ped_partition_get_flag (disk_part, flag),
                ped_partition_get_flag (copy_part, flag));
       assert (ped_partition_get_flag (disk_part, flag)
