@@ -529,7 +529,7 @@ struct __attribute__ ((packed)) _HfsJBlockListHeader {
         uint32_t        bytes_used;
         uint32_t        checksum;
         uint32_t        pad;
-        HfsJBlockInfo   binfo[1];
+        HfsJBlockInfo   binfo[];
 };
 typedef struct _HfsJBlockListHeader HfsJBlockListHeader;
 
