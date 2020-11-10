@@ -33,12 +33,13 @@ struct ext2_dev_handle* ext2_make_dev_handle_from_parted_geometry(PedGeometry* g
 static PedGeometry*
 _ext2_generic_probe (PedGeometry* geom, int expect_ext_ver)
 {
+	struct ext2_super_block *sb;
 	const int sectors = (4096 + geom->dev->sector_size - 1) /
 			     geom->dev->sector_size;
-	char *sb_v = alloca (sectors * geom->dev->sector_size);
-	if (!ped_geometry_read(geom, sb_v, 0, sectors))
+	uint8_t *buf = alloca (sectors * geom->dev->sector_size);
+	if (!ped_geometry_read(geom, buf, 0, sectors))
 		return NULL;
-	struct ext2_super_block *sb = (struct ext2_super_block *)(sb_v + 1024);
+	sb = (struct ext2_super_block *)(buf+1024);
 
 	if (EXT2_SUPER_MAGIC(*sb) == EXT2_SUPER_MAGIC_CONST) {
 		PedSector block_size = (EXT2_MIN_BLOCK_SIZE << (EXT2_SUPER_LOG_BLOCK_SIZE(*sb))) / geom->dev->sector_size;

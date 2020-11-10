@@ -173,7 +173,7 @@ struct ext2_inode
 
 #define i_size_high	i_dir_acl
 
-struct ext2_super_block
+struct __attribute__ ((packed)) ext2_super_block
 {
 	uint32_t	s_inodes_count;		/* Inodes count */
 	uint32_t	s_blocks_count;		/* Blocks count */
