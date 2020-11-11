@@ -80,6 +80,7 @@ hfsplus_btree_search (HfsPPrivateFile* b_tree_file, HfsPPrivateGenericKey* key,
 	HfsPPrivateGenericKey*	record_key = NULL;
 	unsigned int		node_number, record_number, size, bsize;
 	int			i;
+	uint16_t		record_pos;
 
 	/* Read the header node */
 	if (!hfsplus_file_read_sector(b_tree_file, node_1, 0))
@@ -93,7 +94,7 @@ hfsplus_btree_search (HfsPPrivateFile* b_tree_file, HfsPPrivateGenericKey* key,
 
 	/* Get the size of a node in sectors and allocate buffer */
 	size = (bsize = PED_BE16_TO_CPU (header->node_size)) / PED_SECTOR_SIZE_DEFAULT;
-	node = (uint8_t*) ped_malloc (bsize);
+	node = ped_malloc (bsize);
 	if (!node)
 		return 0;
 	HfsPNodeDescriptor *desc = (HfsPNodeDescriptor*) node;
@@ -107,13 +108,13 @@ hfsplus_btree_search (HfsPPrivateFile* b_tree_file, HfsPPrivateGenericKey* key,
 	while (1) {
 		record_number = PED_BE16_TO_CPU (desc->rec_nb);
 		for (i = record_number; i; i--) {
-			record_key = (HfsPPrivateGenericKey*)
-			    (node + PED_BE16_TO_CPU(*((uint16_t *)
-					(node+(bsize - 2*i)))));
+			uint16_t value;
+			memcpy(&value, node+(bsize - (2*i)), sizeof(uint16_t));
+			record_pos = PED_BE16_TO_CPU(value);
+			record_key = (HfsPPrivateGenericKey*) (node + record_pos);
 			/* check for obvious error in FS */
-			if (((uint8_t*)record_key - node < HFS_FIRST_REC)
-			    || ((uint8_t*)record_key - node
-				>= (signed)bsize
+			if ((record_pos < HFS_FIRST_REC)
+			    || (record_pos >= (signed)bsize
 				   - 2 * (signed)(record_number+1))) {
 				ped_exception_throw (
 					PED_EXCEPTION_ERROR,
@@ -131,8 +132,9 @@ hfsplus_btree_search (HfsPPrivateFile* b_tree_file, HfsPPrivateGenericKey* key,
 
 			skip = ( 2 + PED_BE16_TO_CPU (record_key->key_length)
 			         + 1 ) & ~1;
-			node_number = PED_BE32_TO_CPU (*((uint32_t *)
-					(((uint8_t *) record_key) + skip)));
+			uint32_t value;
+			memcpy(&value, node+record_pos+skip, sizeof(uint32_t));
+			node_number = PED_BE32_TO_CPU(value);
 			if (!hfsplus_file_read(b_tree_file, node,
 					       (PedSector) node_number * size,
 					       size)) {
@@ -151,7 +153,7 @@ hfsplus_btree_search (HfsPPrivateFile* b_tree_file, HfsPPrivateGenericKey* key,
 	if (record_ref) {
 		record_ref->node_size = size;	/* in sectors */
 		record_ref->node_number = node_number;
-		record_ref->record_pos = (uint8_t*)record_key - node;
+		record_ref->record_pos = record_pos;
 		record_ref->record_number = i;
 	}
 
