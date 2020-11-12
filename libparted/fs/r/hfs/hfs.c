@@ -891,12 +891,11 @@ hfsplus_wrapper_update (PedFileSystem* fs)
 			ref.record_number = 1;
 		}
 
-		ref.record_pos =
-			PED_BE16_TO_CPU (*((uint16_t *)
-				(node + (PED_SECTOR_SIZE_DEFAULT
-				         - 2*ref.record_number))));
+		uint16_t value;
+		memcpy(&value, node+PED_SECTOR_SIZE_DEFAULT - (2*ref.record_number), sizeof(uint16_t));
+		ref.record_pos = PED_BE16_TO_CPU(value);
 		ret_key = (HfsExtentKey*) (node + ref.record_pos);
-		ret_data = (HfsExtDescriptor*) ( node + ref.record_pos
+		ret_data = (HfsExtDescriptor*) (node + ref.record_pos
 						 + sizeof (HfsExtentKey) );
 	}
 
