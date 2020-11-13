@@ -106,7 +106,7 @@ void ped_assert (const char* cond_text,
         /* Throw the exception */
         ped_exception_throw (
                 PED_EXCEPTION_BUG,
-                PED_EXCEPTION_FATAL,
+                PED_EXCEPTION_CANCEL,
                 _("Assertion (%s) at %s:%d in function %s() failed."),
                 cond_text, file, line, function);
         abort ();
