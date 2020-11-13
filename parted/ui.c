@@ -1138,7 +1138,7 @@ command_line_get_disk_flag (const char* prompt, const PedDisk* disk,
                             PedDiskFlag* flag)
 {
         StrList*            opts = NULL;
-        PedPartitionFlag    walk = 0;
+        PedDiskFlag         walk = 0;
         char*               flag_name;
 
         while ( (walk = ped_disk_flag_next (walk)) ) {
