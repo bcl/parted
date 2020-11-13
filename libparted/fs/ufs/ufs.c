@@ -45,14 +45,14 @@
 #define UFS_MAGIC_FEA	0x00195612
 #define UFS_MAGIC_4GB	0x05231994
 
-struct ufs_csum {
+struct __attribute__ ((packed)) ufs_csum {
 	uint32_t	cs_ndir;	/* number of directories */
 	uint32_t	cs_nbfree;	/* number of free blocks */
 	uint32_t	cs_nifree;	/* number of free inodes */
 	uint32_t	cs_nffree;	/* number of free frags */
 };
 
-struct ufs_super_block {
+struct __attribute__ ((packed)) ufs_super_block {
 	uint32_t	fs_link;	/* UNUSED */
 	uint32_t	fs_rlink;	/* UNUSED */
 	uint32_t	fs_sblkno;	/* addr of super-block in filesys */
@@ -176,7 +176,7 @@ ufs_probe_sun (PedGeometry* geom)
 {
 	const int	sectors = ((3 * 512) + geom->dev->sector_size - 1) /
 				   geom->dev->sector_size;
-	char *		buf = alloca (sectors * geom->dev->sector_size);
+	uint8_t*	buf = alloca (sectors * geom->dev->sector_size);
 	struct ufs_super_block *sb;
 
 	if (geom->length < 5)
@@ -212,7 +212,7 @@ ufs_probe_hp (PedGeometry* geom)
 		return 0;
 	const int	sectors = ((3 * 512) + geom->dev->sector_size - 1) /
 				   geom->dev->sector_size;
-	char *		buf = alloca (sectors * geom->dev->sector_size);
+	uint8_t*	buf = alloca (sectors * geom->dev->sector_size);
 
 	if (!ped_geometry_read (geom, buf, 16 * 512 / geom->dev->sector_size, sectors))
 		return 0;
