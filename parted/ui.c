@@ -909,11 +909,11 @@ command_line_get_word (const char* prompt, const char* def,
 int
 command_line_get_integer (const char* prompt, int* value)
 {
-        char     def_str [10];
+        char     def_str [20];
         char*    input;
         long     ret;
 
-        snprintf (def_str, 10, "%d", *value);
+        snprintf (def_str, 20, "%d", *value);
         input = command_line_get_word (prompt, *value ? def_str : NULL,
                                        NULL, 1);
         if (!input)
