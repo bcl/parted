@@ -34,8 +34,7 @@
 /* secondary superblock offset in 512byte blocks. */
 #define NILFS_SB2_OFFSET(devsize)	((((devsize)>>3) - 1) << 3)
 
-struct nilfs2_super_block
-{
+struct __attribute__ ((packed)) nilfs2_super_block {
 	uint32_t	s_rev_level;
 	uint16_t	s_minor_rev_level;
 	uint16_t	s_magic;
@@ -112,18 +111,18 @@ nilfs2_probe (PedGeometry* geom)
 		return NULL;
 	const int sectors = (4096 + geom->dev->sector_size - 1) /
 			     geom->dev->sector_size;
-	char *buf = alloca (sectors * geom->dev->sector_size);
+	uint8_t *buf = alloca (sectors * geom->dev->sector_size);
 	const int sectors2 = (1024 + geom->dev->sector_size -1 ) /
 			      geom->dev->sector_size;
 	void *buff2 = alloca (sectors2 * geom->dev->sector_size);
 
 	if (ped_geometry_read(geom, buf, 0, sectors))
-		sb = (struct nilfs2_super_block *)(buf+1024);
+		sb = (struct nilfs2_super_block*)(buf + 1024);
 	if (ped_geometry_read(geom, buff2, sb2off, sectors2))
-		sb2 = buff2;
+		sb2 = (struct nilfs2_super_block*)buff2;
 
 	if ((!sb || !is_valid_nilfs_sb(sb)) &&
-	    (!sb2 || !is_valid_nilfs_sb(sb2)) )
+	    (!sb2 || !is_valid_nilfs_sb(sb2)))
 		return NULL;
 
 	/* reserve 4k bytes for secondary superblock */
