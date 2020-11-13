@@ -486,6 +486,7 @@ hfsplus_cache_from_catalog(HfsCPrivateCache* cache, PedFileSystem* fs,
 	unsigned int		i, j, size, bsize;
 	uint32_t		jib = priv_data->jib_start_block,
 				jl  = priv_data->jl_start_block;
+	uint16_t		catalog_pos;
 
 	if (!priv_data->catalog_file->sect_nb) {
 		ped_exception_throw (
@@ -520,15 +521,16 @@ hfsplus_cache_from_catalog(HfsCPrivateCache* cache, PedFileSystem* fs,
 			unsigned int	skip;
 			uint8_t		where;
 
-			catalog_key = (HfsPCatalogKey*)
-			    ( node + PED_BE16_TO_CPU (*((uint16_t *)
-					(node+(bsize - 2*i)))) );
+			uint16_t value;
+			memcpy(&value, node+(bsize - (2*i)), sizeof(uint16_t));
+			catalog_pos = PED_BE16_TO_CPU(value);
+			catalog_key = (HfsPCatalogKey*)(node + catalog_pos);
 			skip = ( 2 + PED_BE16_TO_CPU (catalog_key->key_length)
 				 + 1) & ~1;
 			catalog_data = (HfsPCatalog*)
 					    (((uint8_t*)catalog_key) + skip);
 			/* check for obvious error in FS */
-			if (((uint8_t*)catalog_key - node < HFS_FIRST_REC)
+			if ((catalog_pos < HFS_FIRST_REC)
 			    || ((uint8_t*)catalog_data - node
 			        >= (signed) bsize
 				   - 2 * (signed)(record_number+1))) {
@@ -609,6 +611,7 @@ hfsplus_cache_from_extent(HfsCPrivateCache* cache, PedFileSystem* fs,
 	HfsPExtDescriptor*	extent;
 	unsigned int		leaf_node, record_number;
 	unsigned int		i, j, size, bsize;
+	uint16_t		extent_pos;
 
 	if (!priv_data->extents_file->sect_nb) {
 		ped_exception_throw (
@@ -640,13 +643,14 @@ hfsplus_cache_from_extent(HfsCPrivateCache* cache, PedFileSystem* fs,
 		record_number = PED_BE16_TO_CPU (desc->rec_nb);
 		for (i = 1; i <= record_number; i++) {
 			uint8_t where;
-			extent_key = (HfsPExtentKey*)
-			    (node + PED_BE16_TO_CPU(*((uint16_t *)
-					    (node+(bsize - 2*i)))));
+			uint16_t value;
+			memcpy(&value, node+(bsize - (2*i)), sizeof(uint16_t));
+			extent_pos = PED_BE16_TO_CPU(value);
+			extent_key = (HfsPExtentKey*)(node + extent_pos);
 			extent = (HfsPExtDescriptor*)
 			    (((uint8_t*)extent_key) + sizeof (HfsPExtentKey));
 			/* check for obvious error in FS */
-			if (((uint8_t*)extent_key - node < HFS_FIRST_REC)
+			if ((extent_pos < HFS_FIRST_REC)
 			    || ((uint8_t*)extent - node
 			        >= (signed)bsize
 				   - 2 * (signed)(record_number+1))) {
@@ -724,6 +728,7 @@ hfsplus_cache_from_attributes(HfsCPrivateCache* cache, PedFileSystem* fs,
 	HfsPExtDescriptor*	extent;
 	unsigned int		leaf_node, record_number;
 	unsigned int		i, j, size, bsize;
+	uint16_t		generic_pos;
 
 	/* attributes file is facultative */
 	if (!priv_data->attributes_file->sect_nb)
@@ -751,15 +756,15 @@ hfsplus_cache_from_attributes(HfsCPrivateCache* cache, PedFileSystem* fs,
 		record_number = PED_BE16_TO_CPU (desc->rec_nb);
 		for (i = 1; i <= record_number; i++) {
 			unsigned int	skip;
-			generic_key = (HfsPPrivateGenericKey*)
-				(node + PED_BE16_TO_CPU(*((uint16_t *)
-					    (node+(bsize - 2*i)))));
+			uint16_t value;
+			memcpy(&value, node+(bsize - (2*i)), sizeof(uint16_t));
+			generic_pos = PED_BE16_TO_CPU(value);
+			generic_key = (HfsPPrivateGenericKey*)(node + generic_pos);
 			skip = ( 2 + PED_BE16_TO_CPU (generic_key->key_length)
 			         + 1 ) & ~1;
-			fork_ext_data = (HfsPForkDataAttr*)
-					    (((uint8_t*)generic_key) + skip);
+			fork_ext_data = (HfsPForkDataAttr*)(node+generic_pos+skip);
 			/* check for obvious error in FS */
-			if (((uint8_t*)generic_key - node < HFS_FIRST_REC)
+			if ((generic_pos < HFS_FIRST_REC)
 			    || ((uint8_t*)fork_ext_data - node
 			        >= (signed) bsize
 				   - 2 * (signed)(record_number+1))) {
