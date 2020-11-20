@@ -446,23 +446,6 @@ fat_construct_new_fat (FatOpContext* ctx)
 		fat_table_set (new_fs_info->fat, new_cluster, new_next_cluster);
 	}
 
-#if 0
-#ifdef PED_VERBOSE
-	for (old_cluster=2; old_cluster < old_fs_info->cluster_count+2;
-	     old_cluster++) {
-		if (fat_table_is_available (old_fs_info->fat, old_cluster))
-			continue;
-
-		printf ("%d->%d\t(next: %d->%d)\n",
-			old_cluster,
-			ctx->remap [old_cluster],
-			fat_table_get (old_fs_info->fat, old_cluster),
-			fat_table_get (new_fs_info->fat,
-				       ctx->remap [old_cluster]));
-	}
-#endif /* PED_VERBOSE */
-#endif
-
 	if (old_fs_info->fat_type == FAT_TYPE_FAT32
 	    && new_fs_info->fat_type == FAT_TYPE_FAT32) {
 		new_fs_info->root_cluster

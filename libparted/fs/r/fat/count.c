@@ -27,66 +27,6 @@
 
 #ifndef DISCOVER_ONLY
 
-#if 0
-/* extremely ugly hack: stick everything that obviously isn't an unmovable file
- * in here.  Note: DAT is a bit dubious.  Unfortunately, it's used by the
- * registry, so it'll be all over the place :-(
- */
-static char*	movable_extensions[] = {
-	"",
-	"1ST",
-	"AVI",
-	"BAK", "BAT", "BMP",
-	"CFG", "COM", "CSS",
-	"DAT", "DLL", "DOC", "DRV",
-	"EXE",
-	"FAQ", "FLT", "FON",
-	"GID", "GIF",
-	"HLP", "HTT", "HTM",
-	"ICO", "INI",
-	"JPG",
-	"LNK", "LOG",
-	"KBD",
-	"ME", "MID", "MSG",
-	"OCX", "OLD",
-	"PIF", "PNG", "PRV",
-	"RTF",
-	"SCR", "SYS",
-	"TMP", "TTF", "TXT",
-	"URL",
-	"WAV",
-	"VBX", "VOC", "VXD",
-	NULL
-};
-
-static char*
-get_extension (char* file_name)
-{
-	char*		ext;
-
-	ext = strrchr (file_name, '.');
-	if (!ext)
-		return "";
-	if (strchr (ext, '\\'))
-		return "";
-	return ext + 1;
-}
-
-static int
-is_movable_system_file (char* file_name)
-{
-	char*		ext = get_extension (file_name);
-	int		i;
-
-	for (i = 0; movable_extensions [i]; i++) {
-		if (strcasecmp (ext, movable_extensions [i]) == 0)
-			return 1;
-	}
-
-	return 0;
-}
-#endif /* 0 */
-
 /*
     prints out the sequence of clusters for a given file chain, beginning
     at start_cluster.
@@ -247,29 +187,6 @@ flag_traverse_dir (FatTraverseInfo* trav_info) {
 		printf ("%s: ", file_name);
 		print_chain (fs, first_cluster);
 #endif
-
-#if 0
-		if (fat_dir_entry_is_system_file (this_entry)
-		    && !is_movable_system_file (file_name)) {
-                        PedExceptionOption ex_status;
-			ex_status = ped_exception_throw (
-				PED_EXCEPTION_WARNING,
-				PED_EXCEPTION_IGNORE_CANCEL,
-				_("The file %s is marked as a system file.  "
-				"This means moving it could cause some "
-				"programs to stop working."),
-				file_name);
-
-			switch (ex_status) {
-				case PED_EXCEPTION_CANCEL:
-					return 0;
-
-				case PED_EXCEPTION_UNHANDLED:
-					ped_exception_catch ();
-				case PED_EXCEPTION_IGNORE:
-			}
-		}
-#endif /* 0 */
 
 		if (fat_dir_entry_is_directory (this_entry)) {
 			if (!flag_traverse_fat (fs, file_name, first_cluster,

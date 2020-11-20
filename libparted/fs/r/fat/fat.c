@@ -613,68 +613,6 @@ fat_get_resize_constraint (const PedFileSystem* fs)
 	return fat_get_copy_constraint (fs, fs->geom->dev);
 }
 
-/* FIXME: fat_calc_sizes() needs to say "too big" or "too small", or
- * something.  This is a really difficult (maths) problem to do
- * nicely...
- * 	So, this algorithm works if dev->length / 2 is a valid fat_type
- * size.  (Which is how I got the magic numbers below)
- */
-#if 0
-/* returns: -1 too small, 0 ok, 1 too big */
-static int
-_test_create_size (PedSector length, FatType fat_type,
-		   PedSector cluster_sectors, PedSector cluster_count)
-{
-	PedSector	rootdir_sectors;
-	PedSector	_cluster_sectors;
-	FatCluster	_cluster_count;
-	PedSector	_fat_size;
-
-	rootdir_sectors = (fat_type == FAT_TYPE_FAT16) ? 16 : 0;
-
-	if (!fat_calc_sizes (length, 0, fat_type, rootdir_sectors,
-			     &_cluster_sectors, &_cluster_count, &_fat_size))
-		return -1; // XXX: doesn't work... can't see a better way!
-
-	if (_cluster_sectors < cluster_sectors)
-		return -1;
-	if (_cluster_sectors > cluster_sectors)
-		return 1;
-
-	if (_cluster_count < cluster_count)
-		return -1;
-	if (_cluster_count > cluster_count)
-		return 1;
-
-	return 0;
-}
-
-static PedSector
-_get_create_size (PedSector upper_bound, FatType fat_type,
-		  PedSector cluster_sectors, FatCluster cluster_count)
-{
-	PedSector	min_length = 0;
-	PedSector	max_length = upper_bound;
-	PedSector	length;
-
-	while (1) {
-		length = (min_length + max_length) / 2;
-		switch (_test_create_size (length, fat_type, cluster_sectors,
-					   cluster_count)) {
-			case -1: min_length = length; break;
-			case 0: return length;
-			case 1: max_length = length; break;
-		}
-		/* hack... won't always be able to get max cluster count
-		 * with max cluster size, etc. */
-		if (max_length - min_length == 1)
-			return min_length;
-	}
-
-	return 0;	/* shut gcc up */
-}
-#endif
-
 PedConstraint*
 fat_get_create_constraint_fat16 (const PedDevice* dev)
 {
@@ -685,19 +623,8 @@ fat_get_create_constraint_fat16 (const PedDevice* dev)
 	if (!ped_geometry_init (&full_dev, dev, 0, dev->length - 1))
 		return NULL;
 
-#if 0
-	min_size = _get_create_size (dev->length, FAT_TYPE_FAT16,
-		       		     fat_min_cluster_size (FAT_TYPE_FAT16),
-				     fat_min_cluster_count (FAT_TYPE_FAT16));
-	max_size = _get_create_size (dev->length, FAT_TYPE_FAT16,
-				     fat_max_cluster_size (FAT_TYPE_FAT16),
-				     fat_max_cluster_count (FAT_TYPE_FAT16));
-	if (!min_size)
-		return NULL;
-#else
 	min_size = 65794;
 	max_size = 2097153;
-#endif
 
 	return ped_constraint_new (
 			ped_alignment_any, ped_alignment_any,
@@ -714,15 +641,7 @@ fat_get_create_constraint_fat32 (const PedDevice* dev)
 	if (!ped_geometry_init (&full_dev, dev, 0, dev->length - 1))
 		return NULL;
 
-#if 0
-	min_size = _get_create_size (dev->length, FAT_TYPE_FAT32,
-		       		     fat_min_cluster_size (FAT_TYPE_FAT32),
-				     fat_min_cluster_count (FAT_TYPE_FAT32));
-	if (!min_size)
-		return NULL;
-#else
 	min_size = 525224;
-#endif
 
 	return ped_constraint_new (
 			ped_alignment_any, ped_alignment_any,
@@ -730,97 +649,3 @@ fat_get_create_constraint_fat32 (const PedDevice* dev)
 			min_size, dev->length);
 }
 #endif /* !DISCOVER_ONLY */
-
-#if 0
-
-static PedFileSystemOps fat16_ops = {
-	probe:		fat_probe_fat16,
-#ifndef DISCOVER_ONLY
-	clobber:	fat_clobber,
-	open:		fat_open,
-	create:		fat_create_fat16,
-	close:		fat_close,
-	check:		fat_check,
-	resize:		fat_resize,
-	copy:		fat_copy,
-	get_create_constraint:	fat_get_create_constraint_fat16,
-	get_resize_constraint:	fat_get_resize_constraint,
-	get_copy_constraint:	fat_get_copy_constraint,
-#else /* !DISCOVER_ONLY */
-	clobber:	NULL,
-	open:		NULL,
-	create:		NULL,
-	close:		NULL,
-	check:		NULL,
-	resize:		NULL,
-	copy:		NULL,
-	get_create_constraint:	NULL,
-	get_resize_constraint:	NULL,
-	get_copy_constraint:	NULL,
-#endif /* !DISCOVER_ONLY */
-};
-
-static PedFileSystemOps fat32_ops = {
-	probe:		fat_probe_fat32,
-#ifndef DISCOVER_ONLY
-	clobber:	fat_clobber,
-	open:		fat_open,
-	create:		fat_create_fat32,
-	close:		fat_close,
-	check:		fat_check,
-	resize:		fat_resize,
-	copy:		fat_copy,
-	get_create_constraint:	fat_get_create_constraint_fat32,
-	get_resize_constraint:	fat_get_resize_constraint,
-	get_copy_constraint:	fat_get_copy_constraint,
-#else /* !DISCOVER_ONLY */
-	clobber:	NULL,
-	open:		NULL,
-	create:		NULL,
-	close:		NULL,
-	check:		NULL,
-	resize:		NULL,
-	copy:		NULL,
-	get_create_constraint:	NULL,
-	get_resize_constraint:	NULL,
-	get_copy_constraint:	NULL,
-#endif /* !DISCOVER_ONLY */
-};
-
-#define FAT_BLOCK_SIZES ((int[2]){512, 0})
-
-PedFileSystemType fat16_type = {
-	next:	        NULL,
-	ops:	        &fat16_ops,
-	name:	        "fat16",
-        block_sizes:    FAT_BLOCK_SIZES
-};
-
-PedFileSystemType fat32_type = {
-	next:	        NULL,
-	ops:	        &fat32_ops,
-	name:	        "fat32",
-        block_sizes:    FAT_BLOCK_SIZES
-};
-
-void
-ped_file_system_fat_init ()
-{
-	if (sizeof (FatBootSector) != 512) {
-		ped_exception_throw (PED_EXCEPTION_BUG, PED_EXCEPTION_CANCEL,
-			_("GNU Parted was miscompiled: the FAT boot sector "
-			"should be 512 bytes.  FAT support will be disabled."));
-	} else {
-		ped_file_system_type_register (&fat16_type);
-		ped_file_system_type_register (&fat32_type);
-	}
-}
-
-void
-ped_file_system_fat_done ()
-{
-	ped_file_system_type_unregister (&fat16_type);
-	ped_file_system_type_unregister (&fat32_type);
-}
-
-#endif
