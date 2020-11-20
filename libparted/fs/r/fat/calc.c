@@ -369,7 +369,7 @@ fat_is_sector_in_clusters (const PedFileSystem* fs, PedSector sector)
 	      		   + fs_info->cluster_sectors * fs_info->cluster_count;
 }
 
-FatFragment
+FatFragment _GL_ATTRIBUTE_PURE
 fat_cluster_to_frag (const PedFileSystem* fs, FatCluster cluster)
 {
 	FatSpecific*	fs_info = FAT_SPECIFIC (fs);
@@ -379,7 +379,7 @@ fat_cluster_to_frag (const PedFileSystem* fs, FatCluster cluster)
 	return (cluster - 2) * fs_info->cluster_frags;
 }
 
-FatCluster
+FatCluster _GL_ATTRIBUTE_PURE
 fat_frag_to_cluster (const PedFileSystem* fs, FatFragment frag)
 {
 	FatSpecific*	fs_info = FAT_SPECIFIC (fs);
@@ -389,7 +389,7 @@ fat_frag_to_cluster (const PedFileSystem* fs, FatFragment frag)
 	return frag / fs_info->cluster_frags + 2;
 }
 
-PedSector
+PedSector _GL_ATTRIBUTE_PURE
 fat_frag_to_sector (const PedFileSystem* fs, FatFragment frag)
 {
 	FatSpecific*	fs_info = FAT_SPECIFIC (fs);
@@ -399,7 +399,7 @@ fat_frag_to_sector (const PedFileSystem* fs, FatFragment frag)
 	return frag * fs_info->frag_sectors + fs_info->cluster_offset;
 }
 
-FatFragment
+FatFragment _GL_ATTRIBUTE_PURE
 fat_sector_to_frag (const PedFileSystem* fs, PedSector sector)
 {
 	FatSpecific*	fs_info = FAT_SPECIFIC (fs);
@@ -409,7 +409,7 @@ fat_sector_to_frag (const PedFileSystem* fs, PedSector sector)
 	return (sector - fs_info->cluster_offset) / fs_info->frag_sectors;
 }
 
-PedSector
+PedSector _GL_ATTRIBUTE_PURE
 fat_cluster_to_sector (const PedFileSystem* fs, FatCluster cluster)
 {
 	FatSpecific*	fs_info = FAT_SPECIFIC (fs);
@@ -420,7 +420,7 @@ fat_cluster_to_sector (const PedFileSystem* fs, FatCluster cluster)
 		+ fs_info->cluster_offset;
 }
 
-FatCluster
+FatCluster _GL_ATTRIBUTE_PURE
 fat_sector_to_cluster (const PedFileSystem* fs, PedSector sector)
 {
 	FatSpecific*	fs_info = FAT_SPECIFIC (fs);

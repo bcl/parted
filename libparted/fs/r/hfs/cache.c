@@ -173,7 +173,7 @@ hfsc_cache_add_extent(HfsCPrivateCache* cache, uint32_t start, uint32_t length,
 	return ext;
 }
 
-HfsCPrivateExtent*
+HfsCPrivateExtent* _GL_ATTRIBUTE_PURE
 hfsc_cache_search_extent(HfsCPrivateCache* cache, uint32_t start)
 {
 	HfsCPrivateExtent*	ret;

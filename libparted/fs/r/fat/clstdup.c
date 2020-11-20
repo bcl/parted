@@ -126,7 +126,7 @@ fetch_fragments (FatOpContext* ctx)
 
 /* finds the first fragment that is not going to get overwritten (that needs to
    get read in) */
-static FatFragment
+static FatFragment _GL_ATTRIBUTE_PURE
 get_first_underlay (const FatOpContext* ctx, int first, int last)
 {
 	int		old;
@@ -147,7 +147,7 @@ get_first_underlay (const FatOpContext* ctx, int first, int last)
 
 /* finds the last fragment that is not going to get overwritten (that needs to
    get read in) */
-static FatFragment
+static FatFragment _GL_ATTRIBUTE_PURE
 get_last_underlay (const FatOpContext* ctx, int first, int last)
 {
 	int		old;
