@@ -359,46 +359,6 @@ gnu_close (PedDevice* dev)
 			dev->dirty = 0;
 	}
 
-#if 0
-	if (dev->dirty && dev->boot_dirty && dev->type != PED_DEVICE_FILE) {
-		/* ouch! */
-		ped_exception_throw (
-			PED_EXCEPTION_WARNING,
-			PED_EXCEPTION_OK,
-			_("The partition table cannot be re-read.  This means "
-			  "you need to reboot before mounting any "
-			  "modified partitions.  You also need to reinstall "
-			  "your boot loader before you reboot (which may "
-			  "require mounting modified partitions).  It is "
-			  "impossible do both things!  So you'll need to "
-			  "boot off a rescue disk, and reinstall your boot "
-			  "loader from the rescue disk.  Read section 4 of "
-			  "the Parted User documentation for more "
-			  "information."));
-		return 1;
-	}
-
-	if (dev->dirty && dev->type != PED_DEVICE_FILE) {
-		ped_exception_throw (
-			PED_EXCEPTION_WARNING,
-			PED_EXCEPTION_IGNORE,
-			_("The partition table on %s cannot be re-read "
-			  "(%s).  This means the Hurd knows nothing about any "
-			  "modifications you made.  You should reboot your "
-			  "computer before doing anything with %s."),
-			dev->path, strerror (errno), dev->path);
-	}
-
-	if (dev->boot_dirty && dev->type != PED_DEVICE_FILE) {
-		ped_exception_throw (
-			PED_EXCEPTION_WARNING,
-			PED_EXCEPTION_OK,
-			_("You should reinstall your boot loader before "
-			  "rebooting.  Read section 4 of the Parted User "
-			  "documentation for more information."));
-	}
-#endif
-
 	return 1;
 }
 
