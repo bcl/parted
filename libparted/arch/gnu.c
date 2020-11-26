@@ -805,7 +805,7 @@ gnu_partition_get_path (const PedPartition* part)
 	result = (char*) ped_malloc (result_len);
 	if (!result)
 		return NULL;
-	snprintf (result, result_len, "%s%d", dev_path, part->num);
+	snprintf (result, result_len, "%ss%d", dev_path, part->num);
 	return result;
 }
 
