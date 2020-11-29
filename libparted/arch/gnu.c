@@ -786,6 +786,15 @@ probe_standard_devices ()
 	_ped_device_probe ("/dev/hd6");
 	_ped_device_probe ("/dev/hd7");
 
+	_ped_device_probe ("/dev/wd0");
+	_ped_device_probe ("/dev/wd1");
+	_ped_device_probe ("/dev/wd2");
+	_ped_device_probe ("/dev/wd3");
+	_ped_device_probe ("/dev/wd4");
+	_ped_device_probe ("/dev/wd5");
+	_ped_device_probe ("/dev/wd6");
+	_ped_device_probe ("/dev/wd7");
+
 	return 1;
 }
 
