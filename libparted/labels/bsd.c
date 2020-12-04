@@ -164,8 +164,6 @@ bsd_probe (const PedDevice *dev)
 
 	label = &((BSDDiskData*) s0)->label;
 
-	alpha_bootblock_checksum(label);
-
 	/* check magic */
         bool found = PED_LE32_TO_CPU (label->d_magic) == BSD_DISKMAGIC;
 	free (s0);
