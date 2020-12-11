@@ -25,7 +25,7 @@ grep '^#define USE_BLKID 1' "$CONFIG_HEADER" > /dev/null ||
   skip_ 'this system lacks a new-enough libblkid'
 
 ss=$sector_size_
-partition_sectors=256  # sectors per partition
+partition_sectors=512  # sectors per partition
 n_partitions=17        # how many partitions to create
 start=2048             # start sector for the first partition
 gpt_slop=34            # sectors at end of disk reserved for GPT
