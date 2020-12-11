@@ -57,7 +57,7 @@ done
 # Some features should indicate ext4 by themselves.
 for feature in uninit_bg flex_bg; do
   # create an ext3 file system
-  dd if=/dev/null of=$dev bs=1024 seek=4096 >/dev/null || skip_ "dd failed"
+  dd if=/dev/null of=$dev bs=1024 seek=8192 >/dev/null || skip_ "dd failed"
   mkfs.ext3 -F $dev >/dev/null || skip_ "mkfs.ext3 failed"
 
   # set the feature
