@@ -2450,8 +2450,8 @@ ped_partition_flag_get_by_name (const char* name)
 	for (flag = ped_partition_flag_next (0); flag;
 	     		flag = ped_partition_flag_next (flag)) {
 		flag_name = ped_partition_flag_get_name (flag);
-		if (strcasecmp (name, flag_name) == 0
-		    || strcasecmp (name, _(flag_name)) == 0)
+		if (flag_name && (strcasecmp (name, flag_name) == 0
+		    || strcasecmp (name, _(flag_name)) == 0))
 			return flag;
 	}
 
