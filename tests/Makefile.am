@@ -89,7 +89,8 @@ TESTS = \
   t9040-many-partitions.sh \
   t9041-undetected-in-use-16th-partition.sh \
   t9042-dos-partition-limit.sh \
-  t9050-partition-table-types.sh
+  t9050-partition-table-types.sh \
+  t9060-gpt-grow-script-fix.sh
 
 EXTRA_DIST = \
   $(TESTS) t-local.sh t-lvm.sh \
