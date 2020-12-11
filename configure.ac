@@ -1,5 +1,6 @@
 dnl GNU Parted - a library and front end for manipulation hard disk partitions
-dnl Copyright (C) 1998-2002, 2005-2014, 2019 Free Software Foundation, Inc.
+dnl Copyright (C) 1998-2002, 2005-2014, 2019-2020 Free Software Foundation,
+dnl Inc.
 dnl
 dnl This file may be modified and/or distributed without restriction.
 
