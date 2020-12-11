@@ -3,7 +3,7 @@ dnl Copyright (C) 1998-2002, 2005-2014, 2019 Free Software Foundation, Inc.
 dnl
 dnl This file may be modified and/or distributed without restriction.
 
-AC_PREREQ([2.63])
+AC_PREREQ([2.64])
 AC_INIT([GNU parted], m4_esyscmd([build-aux/git-version-gen .version]),
         [bug-parted@gnu.org])
 
