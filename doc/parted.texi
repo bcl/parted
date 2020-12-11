@@ -406,6 +406,12 @@ display a help message
 @itemx --script
 never prompt the user
 
+@item -f
+@itemx --fix
+automatically answer exceptions with "fix" in script mode, whcih is useful for:
+GPT header not including full disk size; moving the backup GPT table to the end of the disk;
+MAC fix missing partition map entry; etc.
+
 @item -a alignment-type
 @itemx --align alignment-type
 Set alignment for newly created partitions, valid alignment types are:
