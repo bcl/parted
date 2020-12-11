@@ -64,7 +64,7 @@ EXTRA_DIST =			\
 # For details, see the "Updating library version information" section of
 # "info libtool".
 CURRENT = 0
-REVISION = 2
+REVISION = 3
 AGE = 0
 
 sym_file = $(srcdir)/fsresize.sym
