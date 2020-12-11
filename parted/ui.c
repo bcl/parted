@@ -644,6 +644,13 @@ exception_handler (PedException* ex)
         if (!option_get_next (ex->options, opt))
                 return opt;
 
+        /* script-mode and fix? */
+        int fix_is_an_option = (ex->options & PED_EXCEPTION_FIX);
+        if (opt_script_mode && opt_fix_mode && fix_is_an_option) {
+                printf ("Fixing, due to --fix\n");
+                return PED_EXCEPTION_FIX;
+        }
+
         /* script-mode: don't handle the exception */
         if (opt_script_mode || (!isatty (0) && !pretend_input_tty))
                 return PED_EXCEPTION_UNHANDLED;

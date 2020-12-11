@@ -89,6 +89,7 @@ extern void print_using_dev (PedDevice* dev);
 
 /* in parted.c */
 extern int	opt_script_mode;
+extern int	opt_fix_mode;
 extern int	pretend_input_tty;
 
 extern void print_options_help ();
