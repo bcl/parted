@@ -116,6 +116,7 @@ static struct option const options[] = {
         {"list",        0, NULL, 'l'},
         {"machine",     0, NULL, 'm'},
         {"script",      0, NULL, 's'},
+        {"fix",         0, NULL, 'f'},
         {"version",     0, NULL, 'v'},
         {"align",       required_argument, NULL, 'a'},
         {"-pretend-input-tty", 0, NULL, PRETEND_INPUT_TTY},
@@ -127,12 +128,14 @@ static const char *const options_help [][2] = {
         {"list",        N_("lists partition layout on all block devices")},
         {"machine",     N_("displays machine parseable output")},
         {"script",      N_("never prompts for user intervention")},
+        {"fix",         N_("in script mode, fix instead of abort when asked")},
         {"version",     N_("displays the version")},
         {"align=[none|cyl|min|opt]", N_("alignment for new partitions")},
         {NULL,          NULL}
 };
 
 int     opt_script_mode = 0;
+int     opt_fix_mode = 0;
 int     pretend_input_tty = 0;
 int     opt_machine_mode = 0;
 int     disk_is_modified = 0;
@@ -2191,7 +2194,7 @@ int     opt, help = 0, list = 0, version = 0, wrong = 0;
 
 while (1)
 {
-        opt = getopt_long (*argc_ptr, *argv_ptr, "hlmsva:",
+        opt = getopt_long (*argc_ptr, *argv_ptr, "hlmsfva:",
                            options, NULL);
         if (opt == -1)
                 break;
@@ -2201,6 +2204,7 @@ while (1)
                 case 'l': list = 1; break;
                 case 'm': opt_machine_mode = 1; break;
                 case 's': opt_script_mode = 1; break;
+                case 'f': opt_fix_mode = 1; break;
                 case 'v': version = 1; break;
                 case 'a':
                   alignment = XARGMATCH ("--align", optarg,
@@ -2217,7 +2221,7 @@ while (1)
 
 if (wrong == 1) {
         fprintf (stderr,
-                 _("Usage: %s [-hlmsv] [-a<align>] [DEVICE [COMMAND [PARAMETERS]]...]\n"),
+                 _("Usage: %s [-hlmsfv] [-a<align>] [DEVICE [COMMAND [PARAMETERS]]...]\n"),
                  program_name);
         return 0;
 }
