@@ -4,7 +4,7 @@
 #
 # This file may be modified and/or distributed without restriction.
 
-partedincludedir = -I$(top_builddir)/include -I$(top_srcdir)/include
+partedincludedir = -I$(top_builddir)/include -I$(top_srcdir)/include -I$(top_srcdir)/lib
 
 AM_CFLAGS = $(WARN_CFLAGS)
 
