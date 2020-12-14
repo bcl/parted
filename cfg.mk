@@ -45,7 +45,7 @@ local-checks-to-skip = \
 export VERBOSE = yes
 
 # Hash of lines 42-208 for release 3.2
-old_NEWS_hash = d01ed27e5633ad15dc61f9923261e499
+old_NEWS_hash = 048e0facc662623870b9eea4e160c3ad
 
 include $(srcdir)/dist-check.mk
 
