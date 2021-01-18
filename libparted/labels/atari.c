@@ -2,7 +2,7 @@
 
     libparted - a library for manipulating disk partitions
     atari.c - libparted module to manipulate Atari partition tables.
-    Copyright (C) 2000-2001, 2004, 2007-2014, 2019-2020 Free Software
+    Copyright (C) 2000-2001, 2004, 2007-2014, 2019-2021 Free Software
     Foundation, Inc.
 
     This program is free software; you can redistribute it and/or modify

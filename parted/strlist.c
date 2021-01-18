@@ -1,6 +1,6 @@
 /*
     parted - a frontend to libparted
-    Copyright (C) 1999-2001, 2007, 2009-2014, 2019-2020 Free Software
+    Copyright (C) 1999-2001, 2007, 2009-2014, 2019-2021 Free Software
     Foundation, Inc.
 
     This program is free software; you can redistribute it and/or modify

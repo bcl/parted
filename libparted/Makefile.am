@@ -1,5 +1,5 @@
 # This file is part of GNU Parted
-# Copyright (C) 1999-2001, 2007, 2009-2014, 2019-2020 Free Software Foundation,
+# Copyright (C) 1999-2001, 2007, 2009-2014, 2019-2021 Free Software Foundation,
 # Inc.
 #
 # This file may be modified and/or distributed without restriction.

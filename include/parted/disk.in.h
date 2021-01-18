@@ -1,6 +1,6 @@
 /*
     libparted - a library for manipulating disk partitions
-    Copyright (C) 1999-2002, 2007-2014, 2019-2020 Free Software Foundation,
+    Copyright (C) 1999-2002, 2007-2014, 2019-2021 Free Software Foundation,
     Inc.
 
     This program is free software; you can redistribute it and/or modify
