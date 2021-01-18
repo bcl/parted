@@ -170,3 +170,11 @@ Once all the builds and tests have passed,
   by running this:
 
     build-aux/gnu-web-doc-update
+
+* Alert the Translation Project that there is a new .pot file available
+  This should also be done for the Alpha release
+
+  See: https://translationproject.org/html/maintainers.html for details.
+
+  Send an email to coordinator@translationproject.org with a subject of parted-x.y.z.pot and a link
+  to the tar.xz file mentioned in the release.
