@@ -59,6 +59,10 @@ update-copyright-env = \
   UPDATE_COPYRIGHT_USE_INTERVALS=1 \
   UPDATE_COPYRIGHT_MAX_LINE_LENGTH=79
 
+# Override submodule check to allow workaround for broken gnulib upstream
+submodule-checks = no-submodule-changes
+gl_public_submodule_commit=
+
 #==> .j/.x-sc_GPL_version <==
 #build-aux/vc-list-files
 
