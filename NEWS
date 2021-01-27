@@ -2,6 +2,9 @@ GNU parted NEWS                                    -*- outline -*-
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
 
+  Include local gnulib change to version-etc.c date.
+  This means including a non-public gnulib commit in this release.
+  cfg.mk: disable submodule checks to work around broken upstream gnulib
 
 * Noteworthy changes in release 3.3.52 (2020-12-14) [alpha]
 
