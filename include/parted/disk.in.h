@@ -27,6 +27,12 @@
 #ifndef PED_DISK_H_INCLUDED
 #define PED_DISK_H_INCLUDED
 
+/* Include these to work around gnulib redefining free, read, etc. which causes problems
+ * with pt-common.h
+ */
+#include <stdlib.h>
+#include <unistd.h>
+
 /**
  * Disk flags
  */
