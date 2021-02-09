@@ -18,8 +18,13 @@
 
 . "${srcdir=.}/init.sh"; path_prepend_ ../parted .
 
-for t in msdos gpt bsd; do
-    duplicate $t || fail=1
+for t in msdos gpt bsd sun atari mac pc98; do
+    case $t in
+      atari) [ $ss -ne 512 ] && continue
+          ;;
+      *) duplicate $t || fail=1
+          ;;
+    esac
 done
 
 Exit $fail
