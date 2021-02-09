@@ -27,7 +27,7 @@ main (int argc, char **argv)
   /* Create a file.  */
   int fd = open (dev_name, O_CREAT|O_TRUNC|O_WRONLY, 0644);
   assert (0 <= fd);
-  off_t size = 8 * 1024 * 1024;
+  off_t size = 32 * 1024 * 1024;
   assert (ftruncate (fd, size) == 0);
   assert (close (fd) == 0);
 
@@ -47,7 +47,7 @@ main (int argc, char **argv)
   const PedFileSystemType *fs_type = ped_file_system_type_get ("ext2");
   assert (fs_type);
   PedPartitionType part_type = PED_PARTITION_NORMAL;
-  const PedGeometry *geometry = ped_geometry_new (dev, 34, 1024);
+  const PedGeometry *geometry = ped_geometry_new (dev, 2048, 1024);
   assert (geometry);
   PedPartition *part = ped_partition_new (disk, part_type, fs_type,
                                           geometry->start, geometry->end);
@@ -66,7 +66,7 @@ main (int argc, char **argv)
     ped_partition_set_flag (part, PED_PARTITION_LBA, 1);
 
   /* Add a 2nd partition with a name (when supported) */
-  geometry = ped_geometry_new (dev, 1500, 500);
+  geometry = ped_geometry_new (dev, 4096, 1024);
   assert (geometry);
   part = ped_partition_new (disk, part_type, fs_type,
                             geometry->start, geometry->end);
