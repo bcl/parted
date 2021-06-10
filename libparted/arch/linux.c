@@ -1678,7 +1678,7 @@ _flush_cache (PedDevice* dev)
                         break;
                 if (!_partition_is_mounted_by_path (name)) {
                         fd = open (name, WR_MODE, 0);
-                        if (fd > 0) {
+                        if (fd > -1) {
                                 ioctl (fd, BLKFLSBUF);
 retry:
                                 if (fsync (fd) < 0 || close (fd) < 0)
