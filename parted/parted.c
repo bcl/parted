@@ -645,6 +645,7 @@ do_mkpart (PedDevice** dev, PedDisk** diskp)
         char*                    part_name = NULL;
         char                     *start_usr = NULL, *end_usr = NULL;
         char                     *start_sol = NULL, *end_sol = NULL;
+        char                     *end_input = NULL;
 
         if (*diskp)
                 disk = *diskp;
@@ -698,12 +699,10 @@ do_mkpart (PedDevice** dev, PedDisk** diskp)
 
         if (!command_line_get_sector (_("Start?"), *dev, &start, &range_start, NULL))
                 goto error;
-        char *end_input;
         if (!command_line_get_sector (_("End?"), *dev, &end, &range_end, &end_input))
                 goto error;
 
         _adjust_end_if_iec(&start, &end, range_end, end_input);
-        free(end_input);
 
         /* processing starts here */
         part = ped_partition_new (disk, part_type, fs_type, start, end);
@@ -839,6 +838,7 @@ do_mkpart (PedDevice** dev, PedDisk** diskp)
         free (end_usr);
         free (start_sol);
         free (end_sol);
+        free(end_input);
 
         if ((*dev)->type != PED_DEVICE_FILE)
                 disk_is_modified = 1;
@@ -860,6 +860,7 @@ error:
         free (end_usr);
         free (start_sol);
         free (end_sol);
+        free(end_input);
 
         return 0;
 }
