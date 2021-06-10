@@ -1399,13 +1399,19 @@ static int
 init_sdmmc (PedDevice* dev)
 {
         char id[128];
-        char *type, *name;
+        char *type = NULL;
+        char *name = NULL;
 
         if (sdmmc_get_product_info (dev, &type, &name)) {
                 snprintf (id, sizeof(id) - 1, "%s %s", type, name);
                 free (type);
                 free (name);
         } else {
+                // One or the other may have been allocated, free it
+                if (type)
+                    free(type);
+                if (name)
+                    free(name);
                 snprintf (id, sizeof(id) - 1, "%s",
                           _("Generic SD/MMC Storage Card"));
         }
