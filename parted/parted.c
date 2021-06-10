@@ -1192,6 +1192,7 @@ do_print (PedDevice** dev, PedDisk** diskp)
                             sprintf (tmp, "%2s ", "");
 
                     StrList *row = str_list_create (tmp, NULL);
+                    free(tmp);
 
                     start = ped_unit_format (*dev, part->geom.start);
                     end = ped_unit_format_byte (
