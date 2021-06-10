@@ -337,12 +337,14 @@ hfsj_replay_journal(PedFileSystem* fs)
 	}
 	jh->checksum = HFS_CPU_TO_32(cksum, is_le);
 
-	/* The 2 following test are in the XNU Darwin source code */
-	/* so I assume they're needed */
+        /* https://github.com/apple-opensource/hfs/blob/master/core/hfs_journal.c#L1167
+         * indicates that this is:
+         * wrap the start ptr if it points to the very end of the journal
+         */
 	if (jh->start == jh->size)
 		jh->start = HFS_CPU_TO_64(PED_SECTOR_SIZE_DEFAULT, is_le);
 	if (jh->end   == jh->size)
-		jh->start = HFS_CPU_TO_64(PED_SECTOR_SIZE_DEFAULT, is_le);
+		jh->end = HFS_CPU_TO_64(PED_SECTOR_SIZE_DEFAULT, is_le);
 
 	if (jh->start == jh->end)
 		return 1;
