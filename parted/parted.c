@@ -1572,7 +1572,6 @@ do_resizepart (PedDevice** dev, PedDisk** diskp)
         /* Push the End value back onto the command_line, if it exists */
         if (end_size) {
             command_line_push_word(end_size);
-            free(end_size);
         }
 
         start = part->geom.start;
@@ -1580,7 +1579,7 @@ do_resizepart (PedDevice** dev, PedDisk** diskp)
         if (!command_line_get_sector (_("End?"), *dev, &end, &range_end, &end_input))
                 goto error;
         _adjust_end_if_iec(&start, &end, range_end, end_input);
-        free(end_input);
+
         /* Do not move start of the partition */
         constraint = constraint_from_start_end_fixed_start (*dev, start, range_end);
         if (!ped_disk_set_partition_geom (disk, part, constraint,
@@ -1606,6 +1605,9 @@ error_destroy_constraint:
 error:
         if (range_end != NULL)
                 ped_geometry_destroy (range_end);
+        free(end_input);
+        free(end_size);
+
         return rc;
 }
 
