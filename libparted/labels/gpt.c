@@ -1292,8 +1292,10 @@ gpt_write (const PedDisk *disk)
 
   /* Write PTH and PTEs */
   /* FIXME: Caution: this code is nearly identical to what's just below. */
-  if (_generate_header (disk, 0, ptes_crc, &gpt) != 0)
-    goto error_free_ptes;
+  if (_generate_header (disk, 0, ptes_crc, &gpt) != 0) {
+      pth_free(gpt);
+      goto error_free_ptes;
+  }
   pth_raw = pth_get_raw (disk->dev, gpt);
   pth_free (gpt);
   if (pth_raw == NULL)
@@ -1307,8 +1309,10 @@ gpt_write (const PedDisk *disk)
 
   /* Write Alternate PTH & PTEs */
   /* FIXME: Caution: this code is nearly identical to what's just above. */
-  if (_generate_header (disk, 1, ptes_crc, &gpt) != 0)
-    goto error_free_ptes;
+  if (_generate_header (disk, 1, ptes_crc, &gpt) != 0) {
+      pth_free(gpt);
+      goto error_free_ptes;
+  }
   pth_raw = pth_get_raw (disk->dev, gpt);
   pth_free (gpt);
   if (pth_raw == NULL)
