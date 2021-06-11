@@ -137,9 +137,14 @@ static AtariFS2PartId atr_fs2pid[] = {
 
 struct __attribute__ ((packed)) _AtariRawPartition {
 	uint8_t		flag;	/* bit 0: active; bit 7: bootable */
-	uint8_t		id[3];	/* "GEM", "BGM", "XGM", ... */
-	uint32_t	start;	/* start of partition */
-	uint32_t	size;	/* length of partition */
+	union {
+		uint8_t empty[11];         /* Empty table */
+		struct __attribute__ ((packed)) {
+			uint8_t		id[3];	/* "GEM", "BGM", "XGM", ... */
+			uint32_t	start;	/* start of partition */
+			uint32_t	size;	/* length of partition */
+		};
+	};
 };
 typedef struct _AtariRawPartition AtariRawPartition;
 
@@ -241,8 +246,8 @@ static int
 atr_is_signature_entry (AtariRawPartition* part)
 {
 	return part->flag == 0
-		&& !memcmp (part->id, SIGNATURE_EMPTY_TABLE,
-				      SIGNATURE_EMPTY_SIZE );
+		&& !memcmp (part->empty, SIGNATURE_EMPTY_TABLE,
+					 SIGNATURE_EMPTY_SIZE );
 }
 
 /* Set Parted signature in an AHDI entry */
@@ -250,7 +255,7 @@ static void
 atr_put_signature_entry (AtariRawPartition* part)
 {
 	part->flag = 0;
-	memcpy (part->id, SIGNATURE_EMPTY_TABLE, SIGNATURE_EMPTY_SIZE);
+	memcpy (part->empty, SIGNATURE_EMPTY_TABLE, SIGNATURE_EMPTY_SIZE);
 }
 
 #define atr_part_known(part, pid_list) (atr_pid_known ((part)->id, pid_list))
