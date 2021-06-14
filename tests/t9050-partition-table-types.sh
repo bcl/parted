@@ -35,16 +35,22 @@ pc98
 sun
 mkswap
 '
+N=1M
+dev=loop-file
 
-dd if=/dev/null of=f bs=1 seek=30M || framework_failure_
+cleanup_() {
+    rm -f $dev;
+}
+
+dd if=/dev/zero of=$dev bs=$N count=30 || framework_failure_
 
 for i in $types; do
   for j in $types; do
     echo $i:$j
-    case $i in mkswap) mkswap f || fail=1;;
-      *) parted -s f mklabel $i || fail=1;; esac
+    case $i in mkswap) mkswap $dev || fail=1;;
+      *) parted -s $dev mklabel $i || fail=1;; esac
     case $j in mkswap) continue;; esac
-    parted -s f mklabel $j || fail=1
+    parted -s $dev mklabel $j || fail=1
   done
 done
 
