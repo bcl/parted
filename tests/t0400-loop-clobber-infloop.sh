@@ -22,7 +22,12 @@
 
 N=1M
 dev=loop-file
-dd if=/dev/null of=$dev bs=1 seek=$N || fail=1
+
+cleanup_() {
+    rm -f $dev;
+}
+
+dd if=/dev/zero of=$dev bs=$N count=1 || fail=1
 
 mkswap $dev || fail=1
 
