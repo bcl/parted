@@ -2855,6 +2855,7 @@ _dm_remove_partition(PedDisk* disk, int partno)
         if (!task)
                 goto err;
         dm_task_set_name (task, part_name);
+        dm_task_retry_remove(task);
         if (!dm_task_set_cookie (task, &cookie, 0))
                 goto err;
         rc = _dm_task_run_wait (task, cookie);
