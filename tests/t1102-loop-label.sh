@@ -23,7 +23,7 @@ require_root_
 require_scsi_debug_module_
 ss=$sector_size_
 
-scsi_debug_setup_ sector_size=$ss dev_size_mb=90 > dev-name ||
+scsi_debug_setup_ sector_size=$ss dev_size_mb=10 > dev-name ||
   skip_ 'failed to create scsi_debug device'
 dev=$(cat dev-name)
 
@@ -31,13 +31,13 @@ mke2fs -F $dev
 parted -s "$dev" print > out 2>&1 || fail=1
 cat <<EOF > exp
 Model: Linux scsi_debug (scsi)
-Disk DEVICE: 94.4MB
+Disk DEVICE: 10.5MB
 Sector size (logical/physical): ${ss}B/${ss}B
 Partition Table: loop
 Disk Flags:
 
 Number  Start  End     Size    File system  Flags
- 1      0.00B  94.4MB  94.4MB  ext2
+ 1      0.00B  10.5MB  10.5MB  ext2
 
 EOF
 mv out o2 && sed -e "s,$dev,DEVICE,;s/  *$//" o2 > out
