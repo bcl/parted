@@ -29,8 +29,8 @@ start=63s
 default_end=546147s
     new_end=530144s
 
-# create memory-backed device
-scsi_debug_setup_ dev_size_mb=550 > dev-name ||
+# create memory-backed device. Must be > 256MB+8MB
+scsi_debug_setup_ dev_size_mb=267 > dev-name ||
   skip_ 'failed to create scsi_debug device'
 dev=$(cat dev-name)
 
