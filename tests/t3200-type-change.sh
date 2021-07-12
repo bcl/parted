@@ -25,7 +25,7 @@ grep '^#define USE_BLKID 1' "$CONFIG_HEADER" > /dev/null ||
   skip_ 'this system lacks a new-enough libblkid'
 
 # create memory-backed device
-scsi_debug_setup_ dev_size_mb=550 > dev-name ||
+scsi_debug_setup_ dev_size_mb=10 > dev-name ||
   skip_ 'failed to create scsi_debug device'
 scsi_dev=$(cat dev-name)
 
@@ -34,7 +34,7 @@ scsi_dev=$(cat dev-name)
 # partition and ensure that parted doesn't "helpfully" change the partition
 # type to match the newly-detected FS type.
 
-parted -s $scsi_dev mklabel msdos mkpart primary fat32 64s 80000s || fail=1
+parted -s $scsi_dev mklabel msdos mkpart primary fat32 1MiB 100%  || fail=1
 
 parted -s $scsi_dev u s p
 
