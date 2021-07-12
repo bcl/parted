@@ -22,7 +22,7 @@ require_root_
 require_scsi_debug_module_
 
 # create memory-backed device
-scsi_debug_setup_ sector_size=$sector_size_ dev_size_mb=32 > dev-name ||
+scsi_debug_setup_ sector_size=$sector_size_ dev_size_mb=10 > dev-name ||
   skip_ 'failed to create scsi_debug device'
 scsi_dev=$(cat dev-name)
 
@@ -39,7 +39,7 @@ parted -s $scsi_dev rm 1 || fail=1
 # rescue the partition
 echo yes | parted ---pretend-input-tty $scsi_dev rescue 1m 100% > out 2>&1
 cat > exp <<EOF
-Information: A ext4 primary partition was found at 1049kB -> 33.6MB.  Do you want to add it to the partition table?
+Information: A ext4 primary partition was found at 1049kB -> 10.5MB.  Do you want to add it to the partition table?
 Yes/No/Cancel? yes
 Information: You may need to update /etc/fstab.
 EOF
