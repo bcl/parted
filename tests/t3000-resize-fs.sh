@@ -26,11 +26,11 @@ require_512_byte_sector_size_
 ss=$sector_size_
 
 start=63s
-default_end=546147s
-    new_end=530144s
+default_end=32006s
+    new_end=16003s
 
 # create memory-backed device
-scsi_debug_setup_ dev_size_mb=550 > dev-name ||
+scsi_debug_setup_ dev_size_mb=16 > dev-name ||
   skip_ 'failed to create scsi_debug device'
 dev=$(cat dev-name)
 
