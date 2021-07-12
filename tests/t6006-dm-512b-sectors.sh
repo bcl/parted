@@ -46,9 +46,9 @@ cleanup_fn_() {
     udevadm settle
 }
 
-# Create a 500M device
+# Create a 10M device
 ss=$sector_size_
-scsi_debug_setup_ sector_size=$ss dev_size_mb=500 > dev-name ||
+scsi_debug_setup_ sector_size=$ss dev_size_mb=11 > dev-name ||
   skip_ 'failed to create scsi_debug device'
 scsi_dev=$(cat dev-name)
 
@@ -58,13 +58,13 @@ scsi_dev_size=$(blockdev --getsz $scsi_dev) || framework_failure
 dmsetup create $linear_ --table "0 $scsi_dev_size linear $scsi_dev 0" || framework_failure
 dev="/dev/mapper/$linear_"
 
-# Create msdos partition table with a partition from 1MiB to 100MiB
-parted -s $dev mklabel msdos mkpart primary ext2 1MiB 101MiB > out 2>&1 || fail=1
+# Create msdos partition table with a partition from 1MiB to 10MiB
+parted -s $dev mklabel msdos mkpart primary ext2 1MiB 100% > out 2>&1 || fail=1
 compare /dev/null out || fail=1
 wait_for_dev_to_appear_ ${dev}1 || fail=1
 
-# The size of the partition should be 100MiB, or 204800 512b sectors
+# The size of the partition should be 10MiB, or 20480 512b sectors
 p1_size=$(blockdev --getsz ${dev}1) || framework_failure
-[ $p1_size == 204800 ] || fail=1
+[ $p1_size == 20480 ] || fail=1
 
 Exit $fail
