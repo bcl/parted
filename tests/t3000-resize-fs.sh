@@ -24,13 +24,13 @@ require_512_byte_sector_size_
 
 FSTYPES=""
 
-# Is mkfs.hfs available?
-mkfs.hfs 2>&1 | grep '^usage:' && FSTYPES="hfs+"
+# Is mkfs.hfsplus available?
+mkfs.hfsplus 2>&1 | grep '^usage:' && FSTYPES="hfs+"
 
 # Is mkfs.vfat available?
 mkfs.vfat 2>&1 | grep '^Usage:' && FSTYPES="$FSTYPES fat32 fat16"
 
-[ -n "$FSTYPES" ] || skip_ "Neither mkfs.hfs nor mkfs.vfat installed"
+[ -n "$FSTYPES" ] || skip_ "Neither mkfs.hfsplus nor mkfs.vfat installed"
 
 
 ss=$sector_size_
@@ -79,7 +79,7 @@ for fs_type in $FSTYPES; do
   case $fs_type in
     fat16) mkfs_cmd='mkfs.vfat -F 16'; fsck='fsck.vfat -v';;
     fat32) mkfs_cmd='mkfs.vfat -F 32'; fsck='fsck.vfat -v';;
-    hfs*) mkfs_cmd='mkfs.hfs';         fsck=fsck.hfs;;
+    hfs*) mkfs_cmd='mkfs.hfsplus';     fsck=fsck.hfsplus;;
     *) error "internal error: unhandled fs type: $fs_type";;
   esac
 
