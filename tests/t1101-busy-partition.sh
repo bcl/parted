@@ -22,6 +22,8 @@ test "$VERBOSE" = yes && parted --version
 
 require_root_
 require_scsi_debug_module_
+require_fat_
+require_filesystem_ vfat
 
 # create memory-backed device
 scsi_debug_setup_ dev_size_mb=10 > dev-name ||

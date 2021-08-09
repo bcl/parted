@@ -19,6 +19,9 @@
 . "${srcdir=.}/init.sh"; path_prepend_ ../parted
 require_root_
 require_scsi_debug_module_
+require_fat_
+require_filesystem_ vfat
+
 ss=$sector_size_
 
 scsi_debug_setup_ sector_size=$ss dev_size_mb=10 > dev-name ||
