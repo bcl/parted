@@ -418,3 +418,13 @@ require_64bit_()
           ;;
   esac
 }
+
+# Check if the specified filesystem is either built into the kernel, or can be loaded
+# as a module
+# Usage: has_filesystem vfat
+# Ruturns 0 if the filesystem is available, otherwise skips the test
+require_filesystem_()
+{
+  grep -q $1 /proc/filesystems && return 0
+  modprobe --quiet --dry-run $1 || skip_ "this test requires kernel support for $1"
+}
