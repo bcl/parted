@@ -411,7 +411,7 @@ device_mapper_required_()
 require_64bit_()
 {
   case $(uname -m) in
-      x86_64|ppc64)
+      aarch64|mips64|ppc64|x86_64)
           return 0;;
       *)
           skip_ "This test requires a 64 bit system"
