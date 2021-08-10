@@ -897,8 +897,8 @@ MS Windows ME based operating systems to use Linear (LBA) mode.
 to be used by Linux.
 
 @item swap
-(Mac) - this flag should be enabled if the partition is the swap
-device to be used by Linux.
+(MS-DOS, GPT, Mac) - this flag should be enabled if the partition is the
+swap device to be used by Linux.
 
 @item hidden
 (MS-DOS, PC98) - this flag can be enabled to hide partitions from

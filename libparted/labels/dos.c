@@ -160,6 +160,7 @@ typedef struct {
 	int		msftres;
 	int		raid;
 	int		lvm;
+	int		swap;
 	int		lba;
 	int		palo;
 	int		prep;
@@ -958,6 +959,7 @@ raw_part_parse (const PedDisk* disk, const DosRawPartition* raw_part,
 	dos_data->raid = raw_part->type == PARTITION_LINUX_RAID;
 	dos_data->lvm = raw_part->type == PARTITION_LINUX_LVM_OLD
 			|| raw_part->type == PARTITION_LINUX_LVM;
+	dos_data->swap = raw_part->type == PARTITION_LINUX_SWAP;
 	dos_data->lba = raw_part_is_lba (raw_part);
 	dos_data->palo = raw_part->type == PARTITION_PALO;
 	dos_data->prep = raw_part->type == PARTITION_PREP;
@@ -1380,6 +1382,7 @@ msdos_partition_duplicate (const PedPartition* part)
 	new_dos_data->msftres = old_dos_data->msftres;
 	new_dos_data->raid = old_dos_data->raid;
 	new_dos_data->lvm = old_dos_data->lvm;
+	new_dos_data->swap = old_dos_data->swap;
 	new_dos_data->lba = old_dos_data->lba;
 	new_dos_data->palo = old_dos_data->palo;
 	new_dos_data->prep = old_dos_data->prep;
@@ -1437,6 +1440,7 @@ msdos_partition_set_system (PedPartition* part,
 		dos_data->diag = 0;
 		dos_data->raid = 0;
 		dos_data->lvm = 0;
+		dos_data->swap = 0;
 		dos_data->palo = 0;
 		dos_data->prep = 0;
 		dos_data->irst = 0;
@@ -1462,6 +1466,10 @@ msdos_partition_set_system (PedPartition* part,
 	}
 	if (dos_data->lvm) {
 		dos_data->system = PARTITION_LINUX_LVM;
+		return 1;
+	}
+	if (dos_data->swap) {
+		dos_data->system = PARTITION_LINUX_SWAP;
 		return 1;
 	}
 	if (dos_data->raid) {
@@ -1510,9 +1518,10 @@ msdos_partition_set_system (PedPartition* part,
 		dos_data->system = PARTITION_UDF;
 	else if (!strcmp (fs_type->name, "sun-ufs"))
 		dos_data->system = PARTITION_SUN_UFS;
-	else if (is_linux_swap (fs_type->name))
+	else if (is_linux_swap (fs_type->name)) {
 		dos_data->system = PARTITION_LINUX_SWAP;
-	else
+		dos_data->swap = 1;
+	} else
 		dos_data->system = PARTITION_LINUX;
 
 	return 1;
@@ -1525,6 +1534,7 @@ clear_flags (DosPartitionData *dos_data)
   dos_data->hidden = 0;
   dos_data->msftres = 0;
   dos_data->lvm = 0;
+  dos_data->swap = 0;
   dos_data->palo = 0;
   dos_data->prep = 0;
   dos_data->irst = 0;
@@ -1604,6 +1614,12 @@ msdos_partition_set_flag (PedPartition* part,
 		dos_data->lvm = state;
 		return ped_partition_set_system (part, part->fs_type);
 
+	case PED_PARTITION_SWAP:
+		if (state)
+			clear_flags (dos_data);
+		dos_data->swap = state;
+		return ped_partition_set_system (part, part->fs_type);
+
 	case PED_PARTITION_LBA:
 		dos_data->lba = state;
 		return ped_partition_set_system (part, part->fs_type);
@@ -1677,6 +1693,9 @@ msdos_partition_get_flag (const PedPartition* part, PedPartitionFlag flag)
 	case PED_PARTITION_LVM:
 		return dos_data->lvm;
 
+	case PED_PARTITION_SWAP:
+		return dos_data->swap;
+
 	case PED_PARTITION_LBA:
 		return dos_data->lba;
 
@@ -1720,6 +1739,7 @@ msdos_partition_is_flag_available (const PedPartition* part,
 	case PED_PARTITION_BOOT:
 	case PED_PARTITION_RAID:
 	case PED_PARTITION_LVM:
+	case PED_PARTITION_SWAP:
 	case PED_PARTITION_LBA:
 	case PED_PARTITION_PALO:
 	case PED_PARTITION_PREP:
