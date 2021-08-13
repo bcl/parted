@@ -16,7 +16,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <config.h>
 
 #include <config.h>
 
@@ -727,6 +726,7 @@ void
 command_line_push_line (const char* line, int multi_word)
 {
         int     quoted = 0;
+        int     quotes_empty = 0;
         char    quote_char = 0;
         char    this_word [256];
         int     i;
@@ -754,6 +754,9 @@ command_line_push_line (const char* line, int multi_word)
 
                         if (quoted && *line == quote_char) {
                                 quoted = 0;
+                                /* allow empty partition name in script mode */
+                                if (!i)
+                                        quotes_empty = 1;
                                 continue;
                         }
 
@@ -761,9 +764,11 @@ command_line_push_line (const char* line, int multi_word)
                         if (quoted && line[0] == '\\' && line[1])
                                 line++;
 
+                        quotes_empty = 0;
                         this_word [i++] = *line;
                 }
-                if (i || !multi_word) {
+                if (i || !multi_word || quotes_empty) {
+                        quotes_empty = 0;
                         this_word [i] = 0;
                         command_line_push_word (this_word);
                 }
