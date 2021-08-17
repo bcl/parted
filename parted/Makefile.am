@@ -13,6 +13,8 @@ parted_SOURCES = command.c	\
 		 strlist.h	\
 		 ui.c		\
 		 ui.h		\
+		 jsonwrt.c	\
+		 jsonwrt.h	\
 		 table.c	\
 		 table.h
 

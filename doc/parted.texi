@@ -402,6 +402,14 @@ Options:
 @itemx --help
 display a help message
 
+@item -m
+@itemx --machine
+display output in machine parseable format
+
+@item -j
+@itemx --json
+display output in JSON format
+
 @item -s
 @itemx --script
 never prompt the user
