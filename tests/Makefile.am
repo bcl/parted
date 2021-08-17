@@ -40,6 +40,8 @@ TESTS = \
   t0400-loop-clobber-infloop.sh \
   t0500-dup-clobber.sh \
   t0501-duplicate.sh \
+  t0800-json-gpt.sh \
+  t0801-json-msdos.sh \
   t1100-busy-label.sh \
   t1101-busy-partition.sh \
   t1102-loop-label.sh \
