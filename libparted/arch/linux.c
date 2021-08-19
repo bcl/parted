@@ -2453,6 +2453,9 @@ _device_get_part_path (PedDevice const *dev, int num)
 #else
         devpath = dev->path;
 #endif
+        if (!devpath)
+            return NULL;
+
         path_len = strlen (devpath);
         /* Check for devfs-style /disc => /partN transformation
            unconditionally; the system might be using udev with devfs rules,
