@@ -297,18 +297,17 @@ typedef struct _GPTPartitionData
   efi_guid_t uuid;
   efi_char16_t name[37];
   char *translated_name;
+  GuidPartitionEntryAttributes_t attributes;
   int lvm;
   int swap;
   int raid;
   int boot;
   int bios_grub;
   int hp_service;
-  int hidden;
   int msftres;
   int msftdata;
   int atvrecv;
   int msftrecv;
-  int legacy_boot;
   int prep;
   int irst;
   int chromeos_kernel;
@@ -826,24 +825,19 @@ _parse_part_entry (PedDisk *disk, GuidPartitionEntry_t *pte)
     gpt_part_data->name[i] = (efi_char16_t) pte->PartitionName[i];
   gpt_part_data->name[i] = 0;
   gpt_part_data->translated_name = 0;
+  gpt_part_data->attributes = pte->Attributes;
 
   gpt_part_data->lvm = gpt_part_data->swap
     = gpt_part_data->raid
     = gpt_part_data->boot = gpt_part_data->hp_service
-    = gpt_part_data->hidden = gpt_part_data->msftres
+    = gpt_part_data->msftres
     = gpt_part_data->msftdata
     = gpt_part_data->msftrecv
-    = gpt_part_data->legacy_boot
     = gpt_part_data->prep
     = gpt_part_data->irst
     = gpt_part_data->chromeos_kernel
     = gpt_part_data->bls_boot
     = gpt_part_data->bios_grub = gpt_part_data->atvrecv = 0;
-
-  if (pte->Attributes.RequiredToFunction & 0x1)
-    gpt_part_data->hidden = 1;
-  if (pte->Attributes.LegacyBIOSBootable & 0x1)
-    gpt_part_data->legacy_boot = 1;
 
   if (!guid_cmp (gpt_part_data->type, PARTITION_SYSTEM_GUID))
     gpt_part_data->boot = 1;
@@ -1241,12 +1235,7 @@ _partition_generate_part_entry (PedPartition *part, GuidPartitionEntry_t *pte)
   pte->UniquePartitionGuid = gpt_part_data->uuid;
   pte->StartingLBA = PED_CPU_TO_LE64 (part->geom.start);
   pte->EndingLBA = PED_CPU_TO_LE64 (part->geom.end);
-  memset (&pte->Attributes, 0, sizeof (GuidPartitionEntryAttributes_t));
-
-  if (gpt_part_data->hidden)
-    pte->Attributes.RequiredToFunction = 1;
-  if (gpt_part_data->legacy_boot)
-    pte->Attributes.LegacyBIOSBootable = 1;
+  pte->Attributes = gpt_part_data->attributes;
 
   for (i = 0; i < 36; i++)
     pte->PartitionName[i] = gpt_part_data->name[i];
@@ -1388,12 +1377,10 @@ gpt_partition_new (const PedDisk *disk,
   gpt_part_data->boot = 0;
   gpt_part_data->bios_grub = 0;
   gpt_part_data->hp_service = 0;
-  gpt_part_data->hidden = 0;
   gpt_part_data->msftres = 0;
   gpt_part_data->msftdata = 0;
   gpt_part_data->msftrecv = 0;
   gpt_part_data->atvrecv = 0;
-  gpt_part_data->legacy_boot = 0;
   gpt_part_data->prep = 0;
   gpt_part_data->translated_name = 0;
   gpt_part_data->irst = 0;
@@ -1402,6 +1389,7 @@ gpt_partition_new (const PedDisk *disk,
   uuid_generate ((unsigned char *) &gpt_part_data->uuid);
   swap_uuid_and_efi_guid (&gpt_part_data->uuid);
   memset (gpt_part_data->name, 0, sizeof gpt_part_data->name);
+  memset (&gpt_part_data->attributes, 0, sizeof gpt_part_data->attributes);
   return part;
 
 error_free_part:
@@ -1911,10 +1899,10 @@ gpt_partition_set_flag (PedPartition *part, PedPartitionFlag flag, int state)
           = gpt_part_data->atvrecv = 0;
       return gpt_partition_set_system (part, part->fs_type);
     case PED_PARTITION_HIDDEN:
-      gpt_part_data->hidden = state;
+      gpt_part_data->attributes.RequiredToFunction = state;
       return 1;
     case PED_PARTITION_LEGACY_BOOT:
-      gpt_part_data->legacy_boot = state;
+      gpt_part_data->attributes.LegacyBIOSBootable = state;
       return 1;
     case PED_PARTITION_ROOT:
     case PED_PARTITION_LBA:
@@ -1953,9 +1941,9 @@ gpt_partition_get_flag (const PedPartition *part, PedPartitionFlag flag)
     case PED_PARTITION_APPLE_TV_RECOVERY:
       return gpt_part_data->atvrecv;
     case PED_PARTITION_HIDDEN:
-      return gpt_part_data->hidden;
+      return gpt_part_data->attributes.RequiredToFunction;
     case PED_PARTITION_LEGACY_BOOT:
-      return gpt_part_data->legacy_boot;
+      return gpt_part_data->attributes.LegacyBIOSBootable;
     case PED_PARTITION_PREP:
       return gpt_part_data->prep;
     case PED_PARTITION_IRST:
