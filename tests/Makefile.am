@@ -26,6 +26,7 @@ TESTS = \
   t0211-gpt-rewrite-header.sh \
   t0212-gpt-many-partitions.sh \
   t0213-mkpart-start-negative.sh \
+  t0215-gpt-attrs.sh \
   t0220-gpt-msftres.sh \
   t0250-gpt.sh \
   t0251-gpt-unicode.sh \
@@ -98,7 +99,7 @@ TESTS = \
 EXTRA_DIST = \
   $(TESTS) t-local.sh t-lvm.sh \
   init.cfg init.sh t-lib-helpers.sh gpt-header-munge \
-  gpt-header-move msdos-overlap
+  gpt-header-move msdos-overlap gpt-attrs
 
 check_PROGRAMS = print-align print-flags print-max dup-clobber duplicate \
   fs-resize
