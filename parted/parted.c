@@ -2222,7 +2222,7 @@ command_register (commands, command_create (
         str_list_create_unique ("print", _("print"), NULL),
         do_print,
         str_list_create (
-_("print [devices|free|list,all|NUMBER]     display the partition table, "
+_("print [devices|free|list,all]            display the partition table, "
   "available devices, free space, all found partitions, or a particular "
   "partition"),
 NULL),
@@ -2233,8 +2233,6 @@ _("  devices   : display all active block devices\n"),
 _("  free      : display information about free unpartitioned space on the "
   "current block device\n"),
 _("  list, all : display the partition tables of all active block devices\n"),
-_("  NUMBER    : display more detailed information about this particular "
-  "partition\n"),
 NULL), 1));
 
 command_register (commands, command_create (
