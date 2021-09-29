@@ -60,6 +60,7 @@ TESTS = \
   t3000-resize-fs.sh \
   t3200-resize-partition.sh \
   t3200-type-change.sh \
+  t3210-gpt-type-change.sh \
   t3300-palo-prep.sh \
   t3310-flags.sh \
   t3400-whole-disk-FAT-partition.sh \
