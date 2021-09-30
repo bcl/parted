@@ -1565,7 +1565,7 @@ gpt_partition_set_flag (PedPartition *part, PedPartitionFlag flag, int state)
     if (state)
       gpt_part_data->type = p->type_uuid;
     else if (guid_cmp (gpt_part_data->type, p->type_uuid) == 0)
-      gpt_part_data->type = PARTITION_LINUX_DATA_GUID;
+      return gpt_partition_set_system (part, part->fs_type);
     return 1;
   }
 
