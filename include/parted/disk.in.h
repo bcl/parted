@@ -84,10 +84,11 @@ enum _PedPartitionFlag {
         PED_PARTITION_IRST=17,
         PED_PARTITION_ESP=18,
         PED_PARTITION_CHROMEOS_KERNEL=19,
-        PED_PARTITION_BLS_BOOT=20
+        PED_PARTITION_BLS_BOOT=20,
+        PED_PARTITION_LINUX_HOME=21,
 };
 #define PED_PARTITION_FIRST_FLAG        PED_PARTITION_BOOT
-#define PED_PARTITION_LAST_FLAG         PED_PARTITION_BLS_BOOT
+#define PED_PARTITION_LAST_FLAG         PED_PARTITION_LINUX_HOME
 
 enum _PedDiskTypeFeature {
         PED_DISK_TYPE_EXTENDED=1,       /**< supports extended partitions */

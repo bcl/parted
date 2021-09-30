@@ -2411,6 +2411,8 @@ ped_partition_flag_get_name (PedPartitionFlag flag)
                 return N_("chromeos_kernel");
 	case PED_PARTITION_BLS_BOOT:
 		return N_("bls_boot");
+        case PED_PARTITION_LINUX_HOME:
+                return N_("linux-home");
 
 	default:
 		ped_exception_throw (
