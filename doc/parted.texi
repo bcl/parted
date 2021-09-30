@@ -904,6 +904,10 @@ MS Windows ME based operating systems to use Linear (LBA) mode.
 (Mac) - this flag should be enabled if the partition is the root device
 to be used by Linux.
 
+@item linux-home
+(GPT) - Enable this to indicate that the selected partition is a
+Linux /home partition.
+
 @item swap
 (MS-DOS, GPT, Mac) - this flag should be enabled if the partition is the
 swap device to be used by Linux.
