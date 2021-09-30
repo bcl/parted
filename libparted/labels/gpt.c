@@ -164,6 +164,10 @@ typedef struct
     ((efi_guid_t) { PED_CPU_TO_LE32 (0xbc13c2ff), PED_CPU_TO_LE16 (0x59e6), \
                     PED_CPU_TO_LE16 (0x4262), 0xa3, 0x52, \
                     { 0xb2, 0x75, 0xfd, 0x6f, 0x71, 0x72 }})
+#define PARTITION_LINUX_HOME_GUID \
+    ((efi_guid_t) { PED_CPU_TO_LE32 (0x933ac7e1), PED_CPU_TO_LE16 (0x2eb4), \
+                    PED_CPU_TO_LE16 (0x4f13), 0xb8, 0x44, \
+                    { 0x0e, 0x14, 0xe2, 0xae, 0xf9, 0x15 }})
 
 struct flag_uuid_mapping_t
 {
@@ -182,6 +186,7 @@ static const struct flag_uuid_mapping_t flag_uuid_mapping[] =
     { PED_PARTITION_ESP,                PARTITION_SYSTEM_GUID },
     { PED_PARTITION_HPSERVICE,          PARTITION_HPSERVICE_GUID },
     { PED_PARTITION_IRST,               PARTITION_IRST_GUID },
+    { PED_PARTITION_LINUX_HOME,         PARTITION_LINUX_HOME_GUID },
     { PED_PARTITION_LVM,                PARTITION_LVM_GUID },
     { PED_PARTITION_MSFT_DATA,          PARTITION_BASIC_DATA_GUID },
     { PED_PARTITION_MSFT_RESERVED,      PARTITION_MSFT_RESERVED_GUID },
