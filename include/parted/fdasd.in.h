@@ -28,10 +28,8 @@
 
 #define PARTITION_LINUX_SWAP    0x82
 #define PARTITION_LINUX         0x83
-#define PARTITION_LINUX_EXT     0x85
 #define PARTITION_LINUX_LVM     0x8e
 #define PARTITION_LINUX_RAID    0xfd
-#define PARTITION_LINUX_LVM_OLD 0xfe
 
 #define PART_TYPE_NATIVE "NATIVE"
 #define PART_TYPE_SWAP   "SWAP  "
