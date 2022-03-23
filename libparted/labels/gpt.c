@@ -42,6 +42,7 @@
 #include <iconv.h>
 #include <langinfo.h>
 #include "xalloc.h"
+#include "xalloc-oversized.h"
 #include "verify.h"
 
 #include "pt-tools.h"
