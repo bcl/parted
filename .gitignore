@@ -53,8 +53,10 @@ gnulib-tests
 /lib/c++defs.h
 /lib/glthread/
 /lib/link-warning.h
+/lib/malloc/
 /lib/warn-on-use.h
 libparted.pc
+libparted-fs-resize.pc
 libparted/tests/disk
 libparted/tests/init.sh
 libparted/tests/label
