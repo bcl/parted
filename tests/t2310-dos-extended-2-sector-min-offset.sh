@@ -2,7 +2,7 @@
 # Ensure that parted allows a single sector between the beginning
 # of an extended partition and the first logical partition.
 
-# Copyright (C) 2010-2014, 2019-2021 Free Software Foundation, Inc.
+# Copyright (C) 2010-2014, 2019-2022 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

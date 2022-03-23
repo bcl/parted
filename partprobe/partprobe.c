@@ -1,6 +1,6 @@
 /*
     partprobe - informs the OS kernel of partition layout
-    Copyright (C) 2001-2002, 2007-2014, 2019-2021 Free Software Foundation,
+    Copyright (C) 2001-2002, 2007-2014, 2019-2022 Free Software Foundation,
     Inc.
 
     This program is free software; you can redistribute it and/or modify

@@ -1,6 +1,6 @@
 /*
     asfs.c -- parted asfs filesystem support
-    Copyright (C) 1998-2000, 2007, 2009-2014, 2019-2021 Free Software
+    Copyright (C) 1998-2000, 2007, 2009-2014, 2019-2022 Free Software
     Foundation, Inc.
 
     This program is free software; you can redistribute it and/or modify
