@@ -44,7 +44,7 @@ scsi_debug_setup_ dev_size_mb=25 > dev-name ||
   skip_ 'failed to create scsi_debug device'
 scsi_dev=$(cat dev-name)
 
-# Create a formatted partition. 
+# Create a formatted partition.
 # Set a different partition type on it, eg. lvm, then unset it.
 # The partition flag should return to the detected filesystem type.
 
