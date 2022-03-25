@@ -7,7 +7,7 @@
  * Written by Karel Zak <kzak@redhat.com>
  */
 
-#include "config.h"
+#include <config.h>
 #include <stdio.h>
 #include <inttypes.h>
 #include <ctype.h>
