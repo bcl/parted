@@ -14,6 +14,7 @@ AC_CONFIG_SRCDIR([include/parted/parted.in.h])
 
 AC_CONFIG_HEADERS([lib/config.h:lib/config.h.in])
 AC_CONFIG_AUX_DIR([build-aux])
+AC_CONFIG_MACRO_DIR([m4])
 
 dnl Versioning
 dnl Shamelessly pulled straight from glib's configure.in ...
