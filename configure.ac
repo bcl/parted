@@ -4,9 +4,8 @@ dnl Inc.
 dnl
 dnl This file may be modified and/or distributed without restriction.
 
-AC_PREREQ([2.64])
-AC_INIT([GNU parted], m4_esyscmd([build-aux/git-version-gen .version]),
-        [bug-parted@gnu.org])
+AC_PREREQ([2.71])
+AC_INIT([GNU parted],[m4_esyscmd(build-aux/git-version-gen .version)],[bug-parted@gnu.org])
 
 # When the most recent signed tag is v1.8.8.1,
 # the above might set e.g., PACKAGE_VERSION='1.8.8.1.1-0bfc'
@@ -146,7 +145,7 @@ dnl libparted)
 AM_CPPFLAGS="$AM_CPPFLAGS -D_REENTRANT"
 
 dnl Check for programs.
-AC_ISC_POSIX
+AC_SEARCH_LIBS([strerror],[cposix])
 AC_PROG_CC
 AC_PROG_GCC_TRADITIONAL
 AM_PROG_CC_C_O
@@ -257,7 +256,7 @@ AC_CHECK_SIZEOF([off_t], [64], [
 	#include <unistd.h>
 ])
 
-AM_ENABLE_SHARED
+AC_ENABLE_SHARED([])
 if test "$OS" = linux && test $ac_cv_sizeof_off_t -lt 8; then
 	dnl Need to disable shared libraries, to get llseek() to work.  Long
 	dnl story.  The short story is: lseek() isn't in glibc, so a syscall
@@ -266,9 +265,9 @@ if test "$OS" = linux && test $ac_cv_sizeof_off_t -lt 8; then
 	AC_MSG_WARN(
 off_t is less than 8 bytes.  Using llseek syscall, and disabling shared
 libraries.)
-	AM_DISABLE_SHARED
+	AC_DISABLE_SHARED([])
 fi
-AC_PROG_LIBTOOL
+LT_INIT
 LT_INIT
 
 AM_ICONV
@@ -505,7 +504,7 @@ fi
 AM_CONDITIONAL([HAVE_CHECK], [test "$have_check" = yes])
 
 dnl Checks for typedefs, structures and compiler characteristics.
-AC_PROG_LD
+LT_PATH_LD
 
 AC_C_BIGENDIAN
 AC_C_INLINE
@@ -546,7 +545,7 @@ AC_DEFINE_UNQUOTED([USE_BLKID], [$use_blkid],
   [Define if you have sufficient blkid support.])
 AC_CHECK_HEADERS_ONCE([blkid/blkid.h])
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 lib/Makefile
 include/Makefile
@@ -567,6 +566,7 @@ debug/test/Makefile
 tests/Makefile
 po/Makefile.in
 ])
+AC_OUTPUT
 
 echo
 echo Type \'make\' to compile parted.
