@@ -1404,17 +1404,12 @@ init_sdmmc (PedDevice* dev)
 
         if (sdmmc_get_product_info (dev, &type, &name)) {
                 snprintf (id, sizeof(id) - 1, "%s %s", type, name);
-                free (type);
-                free (name);
         } else {
-                // One or the other may have been allocated, free it
-                if (type)
-                    free(type);
-                if (name)
-                    free(name);
                 snprintf (id, sizeof(id) - 1, "%s",
                           _("Generic SD/MMC Storage Card"));
         }
+        free (type);
+        free (name);
         return init_generic(dev, id);
 }
 
