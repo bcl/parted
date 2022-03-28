@@ -870,7 +870,7 @@ but when shrinking, you need to shrink the filesystem before the partition.
 @deffn Command rm @var{number}
 
 Removes the partition with number @var{number}.  If you accidentally delete
-a partition with this command, use mkpart to
+a partition with this command, use @pxref{rescue} to
 recover it.  Also, you can use the gpart program (@pxref{Related information})
 to recover damaged disk labels.
 
