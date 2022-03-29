@@ -2,6 +2,37 @@ GNU parted NEWS                                    -*- outline -*-
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
 
+** New Features
+
+  Add --fix to --script mode to automatically fix problems like the backup
+  GPT header not being at the end of a disk.
+
+  Add use of the swap partition flag to msdos disk labeled disks.
+
+  Allow the partition name to be an empty string when set in script mode.
+
+  Add --json command line switch to output the details of the disk as JSON.
+
+  Add support for the Linux home GUID using the linux-home flag.
+
+** Bug Fixes
+
+  Decrease disk sizes used in tests to make it easier to run the test suite
+  on systems with less memory. Largest filesystem is now 267MB (fat32). The
+  rest are only 10MB.
+
+  Add aarch64 and mips64 as valid machines for testing.
+
+  Escape colons and backslashes in the machine output. Device path,
+  model, and partition name could all include these. They are now
+  escaped with a backslash.
+
+  Use libdevmapper's retry remove option when the device is BUSY. This
+  prevents libdevmapper from printing confusin output when trying to
+  remove a busy partition.
+
+  Keep GUID specific attributes when writing the GPT header. Previously
+  they were set to 0.
 
 * Noteworthy changes in release 3.4 (2021-01-27) [stable]
 
