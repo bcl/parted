@@ -2223,8 +2223,7 @@ command_register (commands, command_create (
         do_print,
         str_list_create (
 _("print [devices|free|list,all]            display the partition table, "
-  "available devices, free space, all found partitions, or a particular "
-  "partition"),
+  "or available devices, or free space, or all found partitions"),
 NULL),
         str_list_create (
 _("Without arguments, 'print' displays the entire partition table. However "
