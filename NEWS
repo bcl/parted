@@ -2,6 +2,9 @@ GNU parted NEWS                                    -*- outline -*-
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
 
+** Bug Fixes
+
+  usage: remove the mention of "a particular partition"
 
 * Noteworthy changes in release 3.4.64 (2022-03-30) [alpha]
 
