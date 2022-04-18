@@ -2,6 +2,9 @@ GNU parted NEWS                                    -*- outline -*-
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
 
+** New Features
+
+  Update to latest gnulib for 3.5 release
 
 * Noteworthy changes in release 3.4.64.2 (2022-04-05) [alpha]
 
