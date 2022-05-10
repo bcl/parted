@@ -1960,7 +1960,7 @@ _partition_get_overlap_constraint (PedPartition* part, PedGeometry* geom)
 	if (walk)
 		max_end = walk->geom.start - 1;
 
-	if (min_start >= max_end)
+	if (min_start > max_end)
 		return NULL;
 
 	ped_geometry_init (&free_space, part->disk->dev,

@@ -91,6 +91,8 @@ TESTS = \
   t9021-maxima.sh \
   t9022-one-unit-snap.sh \
   t9023-value-lt-one.sh \
+  t9024-msdos-1s-partition.sh \
+  t9025-gpt-1s-partition.sh \
   t9030-align-check.sh \
   t9040-many-partitions.sh \
   t9041-undetected-in-use-16th-partition.sh \
