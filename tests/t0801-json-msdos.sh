@@ -52,13 +52,15 @@ cat <<EOF > exp || fail=1
             "start": "5.00MiB",
             "end": "10.0MiB",
             "size": "5.00MiB",
-            "type": "primary"
+            "type": "primary",
+            "type-id": "0x83"
          },{
             "number": 2,
             "start": "10.0MiB",
             "end": "30.0MiB",
             "size": "20.0MiB",
             "type": "extended",
+            "type-id": "0x0f",
             "flags": [
                 "lba"
             ]
@@ -68,6 +70,7 @@ cat <<EOF > exp || fail=1
             "end": "20.0MiB",
             "size": "10.0MiB",
             "type": "logical",
+            "type-id": "0x8e",
             "flags": [
                 "lvm"
             ]

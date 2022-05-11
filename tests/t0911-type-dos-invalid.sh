@@ -1,7 +1,8 @@
 #!/bin/sh
-# Ensure that an HFS partition in a dos table gets the right ID
 
-# Copyright (C) 2010-2014, 2019-2022 Free Software Foundation, Inc.
+# Test type command with MS-DOS label
+
+# Copyright (C) 2022 SUSE LLC
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,24 +18,18 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 . "${srcdir=.}/init.sh"; path_prepend_ ../parted
+require_512_byte_sector_size_
 
 dev=loop-file
-ss=$sector_size_
-n_sectors=8000
 
-dd if=/dev/null of=$dev bs=$ss seek=$n_sectors || framework_failure
+# create device
+truncate --size 50MiB "$dev" || fail=1
 
-# create a MS-DOS partition table
-parted -s $dev mklabel msdos \
-  mkpart pri hfs  2048s 4095s \
-  mkpart pri hfs+ 4096s 6143s > out 2>&1 || fail=1
-# expect no output
-compare /dev/null out || fail=1
+# create msdos label and one partition
+parted --script "$dev" mklabel msdos > out 2>&1 || fail=1
+parted --script "$dev" mkpart primary "linux-swap" 10% 20% > out 2>&1 || fail=1
 
-# Extract the "type" byte of the first partition.
-od -An -j450 -tx1 -N1 $dev  > out || fail=1
-od -An -j466 -tx1 -N1 $dev >> out || fail=1
-printf ' af\n af\n' > exp || fail=1
-compare exp out || fail=1
+# set type-id
+parted --script "$dev" type 1 "0x101" && fail=1
 
 Exit $fail

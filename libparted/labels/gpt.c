@@ -1686,6 +1686,44 @@ gpt_partition_get_name (const PedPartition *part)
   return gpt_part_data->translated_name;
 }
 
+
+static int
+gpt_partition_set_type_uuid (PedPartition *part, const uint8_t *uuid)
+{
+  GPTPartitionData *gpt_part_data = part->disk_specific;
+
+  efi_guid_t* type_uuid = &gpt_part_data->type;
+  memcpy(type_uuid, uuid, sizeof (efi_guid_t));
+
+  /* type_uuid is always LE, while uint8_t is always kind of BE */
+
+  type_uuid->time_low = PED_SWAP32(type_uuid->time_low);
+  type_uuid->time_mid = PED_SWAP16(type_uuid->time_mid);
+  type_uuid->time_hi_and_version = PED_SWAP16(type_uuid->time_hi_and_version);
+
+  return 1;
+}
+
+
+static uint8_t*
+gpt_partition_get_type_uuid (const PedPartition *part)
+{
+  const GPTPartitionData *gpt_part_data = part->disk_specific;
+
+  efi_guid_t type_uuid = gpt_part_data->type;
+
+  /* type_uuid is always LE, while uint8_t is always kind of BE */
+
+  type_uuid.time_low = PED_SWAP32(type_uuid.time_low);
+  type_uuid.time_mid = PED_SWAP16(type_uuid.time_mid);
+  type_uuid.time_hi_and_version = PED_SWAP16(type_uuid.time_hi_and_version);
+
+  uint8_t *buf = ped_malloc(sizeof (uuid_t));
+  memcpy(buf, &type_uuid, sizeof (uuid_t));
+  return buf;
+}
+
+
 static int
 gpt_get_max_primary_partition_count (const PedDisk *disk)
 {
@@ -1781,6 +1819,10 @@ static PedDiskOps gpt_disk_ops =
 
   partition_set_name:		gpt_partition_set_name,
   partition_get_name:		gpt_partition_get_name,
+  partition_set_type_id:	NULL,
+  partition_get_type_id:	NULL,
+  partition_set_type_uuid:	gpt_partition_set_type_uuid,
+  partition_get_type_uuid:	gpt_partition_get_type_uuid,
   disk_set_flag:		gpt_disk_set_flag,
   disk_get_flag:		gpt_disk_get_flag,
   disk_is_flag_available:	gpt_disk_is_flag_available,
@@ -1793,7 +1835,7 @@ static PedDiskType gpt_disk_type =
   next:		NULL,
   name:		"gpt",
   ops:		&gpt_disk_ops,
-  features:	PED_DISK_TYPE_PARTITION_NAME
+  features:	PED_DISK_TYPE_PARTITION_NAME | PED_DISK_TYPE_PARTITION_TYPE_UUID
 };
 
 void

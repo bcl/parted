@@ -117,6 +117,10 @@ static PedDiskOps dasd_disk_ops = {
 
 	partition_set_name:	NULL,
 	partition_get_name:	NULL,
+	partition_set_type_id:          NULL,
+	partition_get_type_id:          NULL,
+	partition_set_type_uuid:	NULL,
+	partition_get_type_uuid:	NULL,
 
 	get_partition_alignment: dasd_get_partition_alignment,
 

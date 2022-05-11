@@ -1458,6 +1458,36 @@ _assert_partition_name_feature (const PedDiskType* disk_type)
 	return 1;
 }
 
+static int
+_assert_partition_type_id_feature (const PedDiskType* disk_type)
+{
+        if (!ped_disk_type_check_feature (
+                        disk_type, PED_DISK_TYPE_PARTITION_TYPE_ID)) {
+                ped_exception_throw (
+                        PED_EXCEPTION_ERROR,
+                        PED_EXCEPTION_CANCEL,
+                        "%s disk labels do not support partition type-ids.",
+                        disk_type->name);
+                return 0;
+        }
+        return 1;
+}
+
+static int
+_assert_partition_type_uuid_feature (const PedDiskType* disk_type)
+{
+        if (!ped_disk_type_check_feature (
+                        disk_type, PED_DISK_TYPE_PARTITION_TYPE_UUID)) {
+                ped_exception_throw (
+                        PED_EXCEPTION_ERROR,
+                        PED_EXCEPTION_CANCEL,
+                        "%s disk labels do not support partition type-uuids.",
+                        disk_type->name);
+                return 0;
+        }
+        return 1;
+}
+
 /**
  * Sets the name of a partition.
  *
@@ -1508,6 +1538,78 @@ ped_partition_get_name (const PedPartition* part)
 
 	PED_ASSERT (part->disk->type->ops->partition_get_name != NULL);
 	return part->disk->type->ops->partition_get_name (part);
+}
+
+/**
+ * Set the type-id of the partition \p part. This will only work if the disk label
+ * supports it.
+ */
+int
+ped_partition_set_type_id (PedPartition *part, uint8_t id)
+{
+        PED_ASSERT (part != NULL);
+        PED_ASSERT (part->disk != NULL);
+        PED_ASSERT (ped_partition_is_active (part));
+
+        if (!_assert_partition_type_id_feature (part->disk->type))
+                return 0;
+
+        PED_ASSERT (part->disk->type->ops->partition_set_type_id != NULL);
+        return part->disk->type->ops->partition_set_type_id (part, id);
+}
+
+/**
+ * Get the type-id of the partition \p part. This will only work if the disk label
+ * supports it.
+ */
+uint8_t
+ped_partition_get_type_id (const PedPartition *part)
+{
+        PED_ASSERT (part != NULL);
+        PED_ASSERT (part->disk != NULL);
+        PED_ASSERT (ped_partition_is_active (part));
+
+        if (!_assert_partition_type_id_feature (part->disk->type))
+                return 0;
+
+        PED_ASSERT (part->disk->type->ops->partition_set_type_id != NULL);
+        return part->disk->type->ops->partition_get_type_id (part);
+}
+
+/**
+ * Set the type-uuid of the partition \p part. This will only work if the disk label
+ * supports it.
+ */
+int
+ped_partition_set_type_uuid (PedPartition *part, const uint8_t* uuid)
+{
+        PED_ASSERT (part != NULL);
+        PED_ASSERT (part->disk != NULL);
+        PED_ASSERT (ped_partition_is_active (part));
+
+        if (!_assert_partition_type_uuid_feature (part->disk->type))
+                return 0;
+
+        PED_ASSERT (part->disk->type->ops->partition_set_type_uuid != NULL);
+        return part->disk->type->ops->partition_set_type_uuid (part, uuid);
+}
+
+/**
+ * Get the type-uuid of the partition \p part. This will only work if the disk label
+ * supports it.
+ */
+uint8_t*
+ped_partition_get_type_uuid (const PedPartition *part)
+{
+        PED_ASSERT (part != NULL);
+        PED_ASSERT (part->disk != NULL);
+        PED_ASSERT (ped_partition_is_active (part));
+
+        if (!_assert_partition_type_uuid_feature (part->disk->type))
+                return NULL;
+
+        PED_ASSERT (part->disk->type->ops->partition_set_type_uuid != NULL);
+        return part->disk->type->ops->partition_get_type_uuid (part);
 }
 
 /** @} */

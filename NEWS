@@ -2,6 +2,9 @@ GNU parted NEWS                                    -*- outline -*-
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
 
+** New Features
+
+  Add type commands to set type-id on MS-DOS and type-uuid on GPT.
 
 * Noteworthy changes in release 3.5 (2022-04-18) [stable]
 

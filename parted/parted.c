@@ -19,6 +19,7 @@
 
 #include <config.h>
 #include <stdbool.h>
+#include <uuid/uuid.h>
 
 #include "argmatch.h"
 #include "closeout.h"
@@ -174,6 +175,8 @@ static const char* end_msg =          N_("END is disk location, such as "
 static const char* state_msg =        N_("STATE is one of: on, off\n");
 static const char* device_msg =       N_("DEVICE is usually /dev/hda or /dev/sda\n");
 static const char* name_msg =         N_("NAME is any word you want\n");
+static const char* type_msg =         N_("TYPE_ID is a value between 0x01 and 0xff, "
+                "TYPE_UUID is a UUID\n");
 
 static const char* copyright_msg = N_(
 "Copyright (C) 1998 - 2006 Free Software Foundation, Inc.\n"
@@ -917,6 +920,87 @@ error:
         return 0;
 }
 
+static int
+do_type (PedDevice** dev, PedDisk** diskp)
+{
+        if (!*diskp)
+                *diskp = ped_disk_new (*dev);
+        if (!*diskp)
+                goto error;
+
+        bool has_type_id = ped_disk_type_check_feature ((*diskp)->type,
+                                                        PED_DISK_TYPE_PARTITION_TYPE_ID);
+        bool has_type_uuid = ped_disk_type_check_feature ((*diskp)->type,
+                                                          PED_DISK_TYPE_PARTITION_TYPE_UUID);
+
+        PED_ASSERT (!(has_type_id && has_type_uuid));
+
+        if (!has_type_id && !has_type_uuid) {
+                ped_exception_throw (PED_EXCEPTION_ERROR, PED_EXCEPTION_CANCEL,
+                                     _("%s disk labels do not support partition type."),
+                                     (*diskp)->type->name);
+                goto error;
+        }
+
+        PedPartition* part = NULL;
+        if (!command_line_get_partition (_("Partition number?"), *diskp, &part))
+                goto error;
+
+        char* input = NULL;
+
+        if (has_type_id) {
+                uint8_t type_id = ped_partition_get_type_id (part);
+                static char buf[8];
+                snprintf(buf, 8, "0x%02x", type_id);
+
+                input = command_line_get_word (_("Partition type-id?"), buf, NULL, 0);
+                if (!input)
+                    goto error;
+
+                unsigned int tmp = strtol (input, (char**) NULL, 16);
+                if (tmp < 0x01 || tmp > 0xff) {
+                        ped_exception_throw (PED_EXCEPTION_ERROR, PED_EXCEPTION_CANCEL,
+                                             _("Invalid type-id."));
+                        goto error_free_input;
+                }
+
+                if (!ped_partition_set_type_id (part, tmp))
+                        goto error_free_input;
+        }
+
+        if (has_type_uuid) {
+                uint8_t* type_uuid = ped_partition_get_type_uuid (part);
+                static char buf[UUID_STR_LEN];
+                uuid_unparse_lower (type_uuid, buf);
+                free (type_uuid);
+
+                input = command_line_get_word (_("Partition type-uuid?"), buf, NULL, 0);
+                if (!input)
+                        goto error;
+
+                uuid_t tmp;
+                if (uuid_parse (input, tmp) != 0 || uuid_is_null (tmp)) {
+                        ped_exception_throw (PED_EXCEPTION_ERROR, PED_EXCEPTION_CANCEL,
+                                             _("Invalid type-uuid."));
+                        goto error_free_input;
+                }
+
+                if (!ped_partition_set_type_uuid (part, tmp))
+                        goto error_free_input;
+        }
+
+        free (input);
+
+        if (!ped_disk_commit (*diskp))
+                goto error;
+        return 1;
+
+error_free_input:
+        free (input);
+error:
+        return 0;
+}
+
 static char*
 partition_print_flags (PedPartition const *part)
 {
@@ -1270,6 +1354,10 @@ do_print (PedDevice** dev, PedDisk** diskp)
                                          PED_DISK_TYPE_EXTENDED);
         has_name = ped_disk_type_check_feature ((*diskp)->type,
                                          PED_DISK_TYPE_PARTITION_NAME);
+        bool has_type_id = ped_disk_type_check_feature ((*diskp)->type,
+							PED_DISK_TYPE_PARTITION_TYPE_ID);
+        bool has_type_uuid = ped_disk_type_check_feature ((*diskp)->type,
+							  PED_DISK_TYPE_PARTITION_TYPE_UUID);
 
         PedPartition* part;
         if (opt_output_mode == HUMAN) {
@@ -1407,10 +1495,25 @@ do_print (PedDevice** dev, PedDisk** diskp)
 
                 if (!(part->type & PED_PARTITION_FREESPACE)) {
 
+                    if (has_type_id) {
+                        uint8_t type_id = ped_partition_get_type_id (part);
+                        static char buf[8];
+                        snprintf(buf, 8, "0x%02x", type_id);
+                        ul_jsonwrt_value_s (&json, "type-id", buf);
+                    }
+
+                    if (has_type_uuid) {
+                        uint8_t* type_uuid = ped_partition_get_type_uuid (part);
+                        static char buf[UUID_STR_LEN];
+                        uuid_unparse_lower (type_uuid, buf);
+                        ul_jsonwrt_value_s (&json, "type-uuid", buf);
+                        free (type_uuid);
+                    }
+
                     if (has_name) {
                         name = ped_partition_get_name (part);
                         if (strcmp (name, "") != 0)
-                            ul_jsonwrt_value_s (&json, "name", ped_partition_get_name (part));
+                            ul_jsonwrt_value_s (&json, "name", name);
                     }
 
                     if (part->fs_type)
@@ -2315,6 +2418,14 @@ _("toggle [NUMBER [FLAG]]                   toggle the state of FLAG on "
   "partition NUMBER"),
 NULL),
         str_list_create (_(number_msg), flag_msg, NULL), 1));
+
+command_register (commands, command_create (
+        str_list_create_unique ("type", _("type"), NULL),
+        do_type,
+        str_list_create (
+_("type NUMBER TYPE-ID or TYPE-UUID         type set TYPE-ID or TYPE-UUID of partition NUMBER"),
+NULL),
+        str_list_create (_(number_msg), _(type_msg), NULL), 1));
 
 command_register (commands, command_create (
         str_list_create_unique ("unit", _("unit"), NULL),

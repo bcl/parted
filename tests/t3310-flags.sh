@@ -91,6 +91,10 @@ for table_type in aix amiga atari bsd dvh gpt mac msdos pc98 sun loop; do
            # test to fail.
            flags=`echo "$flags" | egrep -v 'lvm|raid'`
            ;;
+    msdos) # FIXME: Exclude flags that can only be set in combination
+           # with certain other flags.
+           flags=`echo "$flags" | egrep -v 'hidden|lba'`
+           ;;
   esac
 
   for mode in on_only on_and_off ; do
