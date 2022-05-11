@@ -466,6 +466,7 @@ GNU Parted provides the following commands:
 * select::
 * set::
 * toggle::
+* type::
 * unit::
 @end menu
 
@@ -1031,6 +1032,25 @@ Set the @samp{boot} flag on partition 1.
 @deffn Command toggle @var{number} @var{flag}
 
 Toggle the state of @var{flag} on partition @var{number}.
+
+@end deffn
+
+@node type
+@subsection type
+@cindex type, command description
+@cindex command description, type
+
+@deffn Command type @var{number} @var{id} or @var{uuid}
+
+On MS-DOS set the type-id aka partition id to @var{id} on partition
+@var{number}. The id is a value between 0x01 and 0xff, e.g. the ID for
+Linux is 0x83. A list with some IDs is available at
+@uref{https://en.wikipedia.org/wiki/Partition_type}.
+
+On GPT set the type-uuid to @var{uuid} on partition
+@var{number}. E.g. the UUID for Linux is
+0fc63daf-8483-4772-8e79-3d69d8477de4. A list with some UUIDs is availabe
+at @uref{https://en.wikipedia.org/wiki/GUID_Partition_Table}.
 
 @end deffn
 

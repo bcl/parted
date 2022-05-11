@@ -43,6 +43,10 @@ TESTS = \
   t0501-duplicate.sh \
   t0800-json-gpt.sh \
   t0801-json-msdos.sh \
+  t0900-type-gpt.sh \
+  t0901-type-gpt-invalid.sh \
+  t0910-type-dos.sh \
+  t0911-type-dos-invalid.sh \
   t1100-busy-label.sh \
   t1101-busy-partition.sh \
   t1102-loop-label.sh \
