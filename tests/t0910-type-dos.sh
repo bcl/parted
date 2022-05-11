@@ -1,8 +1,8 @@
 #!/bin/sh
 
-# Test JSON output with GPT label
+# Test type command with MS-DOS label
 
-# Copyright (C) 2021 SUSE LLC
+# Copyright (C) 2022 SUSE LLC
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,15 +25,15 @@ dev=loop-file
 # create device
 truncate --size 50MiB "$dev" || fail=1
 
-# create gpt label and some partitions
-parted --script "$dev" mklabel gpt > out 2>&1 || fail=1
-parted --script "$dev" disk_set pmbr_boot on > out 2>&1 || fail=1
-parted --script "$dev" mkpart "test1" ext4 10% 20% > out 2>&1 || fail=1
-parted --script "$dev" mkpart "test2" xfs 20% 60% > out 2>&1 || fail=1
-parted --script "$dev" set 2 raid on > out 2>&1 || fail=1
+# create msdos label and one partition
+parted --script "$dev" mklabel msdos > out 2>&1 || fail=1
+parted --script "$dev" mkpart primary "linux-swap" 10% 20% > out 2>&1 || fail=1
+
+# set type-id
+parted --script "$dev" type 1 "0x83" || fail=1
 
 # print with json format
-parted --script --json "$dev" unit s print free > out 2>&1 || fail=1
+parted --script --json "$dev" unit s print > out 2>&1 || fail=1
 
 cat <<EOF > exp || fail=1
 {
@@ -44,43 +44,16 @@ cat <<EOF > exp || fail=1
       "transport": "file",
       "logical-sector-size": 512,
       "physical-sector-size": 512,
-      "label": "gpt",
-      "max-partitions": 128,
-      "flags": [
-          "pmbr_boot"
-      ],
+      "label": "msdos",
+      "max-partitions": 4,
       "partitions": [
          {
-            "number": 0,
-            "start": "34s",
-            "end": "10239s",
-            "size": "10206s",
-            "type": "free"
-         },{
             "number": 1,
             "start": "10240s",
             "end": "20479s",
             "size": "10240s",
             "type": "primary",
-            "type-uuid": "0fc63daf-8483-4772-8e79-3d69d8477de4",
-            "name": "test1"
-         },{
-            "number": 2,
-            "start": "20480s",
-            "end": "61439s",
-            "size": "40960s",
-            "type": "primary",
-            "type-uuid": "a19d880f-05fc-4d3b-a006-743f0f84911e",
-            "name": "test2",
-            "flags": [
-                "raid"
-            ]
-         },{
-            "number": 0,
-            "start": "61440s",
-            "end": "102366s",
-            "size": "40927s",
-            "type": "free"
+            "type-id": "0x83"
          }
       ]
    }

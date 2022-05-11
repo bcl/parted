@@ -134,6 +134,11 @@ human-friendly form for output).
 .B toggle \fIpartition\fP \fIflag\fP
 Toggle the state of \fIflag\fP on \fIpartition\fP.
 .TP
+.B type \fIpartition\fP \fIid\fP or \fIuuid\fP
+On MS-DOS set the type aka. partition id of \fIpartition\fP to
+\fIid\fP. The \fIid\fP is a value between "0x01" and "0xff". On GPT
+the type-uuid of \fIpartition\fP to \fIuuid\fP.
+.TP
 .B disk_set \fIflag\fP \fIstate\fP
 Change a \fIflag\fP on the disk to \fIstate\fP. A flag can be either "on" or "off".
 Some or all of these flags will be available, depending on what disk label you

@@ -100,6 +100,209 @@ static const char MBR_BOOT_CODE[] = {
 #define PARTITION_LINUX_RAID	0xfd
 #define PARTITION_LINUX_LVM_OLD 0xfe
 
+struct flag_id_mapping_t
+{
+    enum _PedPartitionFlag flag;
+    unsigned char type_id;
+    unsigned char alt_type_id;
+};
+
+static const struct flag_id_mapping_t flag_id_mapping[] =
+{
+    { PED_PARTITION_BLS_BOOT,           PARTITION_BLS_BOOT },
+    { PED_PARTITION_DIAG,               PARTITION_COMPAQ_DIAG, PARTITION_DELL_DIAG },
+    { PED_PARTITION_ESP,                PARTITION_ESP },
+    { PED_PARTITION_IRST,               PARTITION_IRST },
+    { PED_PARTITION_LVM,                PARTITION_LINUX_LVM, PARTITION_LINUX_LVM_OLD },
+    { PED_PARTITION_MSFT_RESERVED,      PARTITION_MSFT_RECOVERY },
+    { PED_PARTITION_PALO,               PARTITION_PALO },
+    { PED_PARTITION_PREP,               PARTITION_PREP },
+    { PED_PARTITION_RAID,               PARTITION_LINUX_RAID },
+    { PED_PARTITION_SWAP,               PARTITION_LINUX_SWAP },
+};
+
+static const struct flag_id_mapping_t* _GL_ATTRIBUTE_CONST
+dos_find_flag_id_mapping (PedPartitionFlag flag)
+{
+    int n = sizeof(flag_id_mapping) / sizeof(flag_id_mapping[0]);
+
+    for (int i = 0; i < n; ++i)
+	if (flag_id_mapping[i].flag == flag)
+	    return &flag_id_mapping[i];
+
+    return NULL;
+}
+
+/**
+ * Check whether the type_id supports the hidden flag. Returns true for both hidden and
+ * non-hidden id.
+ */
+static bool
+dos_type_id_supports_hidden(unsigned char type_id)
+{
+    switch (type_id)
+    {
+	case PARTITION_DOS_EXT:
+	case PARTITION_DOS_EXT_H:
+	case PARTITION_FAT12:
+	case PARTITION_FAT12_H:
+	case PARTITION_FAT16:
+	case PARTITION_FAT16_H:
+	case PARTITION_FAT16_LBA:
+	case PARTITION_FAT16_LBA_H:
+	case PARTITION_FAT16_SM:
+	case PARTITION_FAT16_SM_H:
+	case PARTITION_FAT32:
+	case PARTITION_FAT32_H:
+	case PARTITION_FAT32_LBA:
+	case PARTITION_FAT32_LBA_H:
+	case PARTITION_NTFS:
+	case PARTITION_NTFS_H:
+	    return true;
+
+	default:
+	    return false;
+    }
+}
+
+/**
+ * Check whether the type_id has the hidden flag set.
+ */
+static bool
+dos_type_id_is_hidden(unsigned char type_id)
+{
+    switch (type_id)
+    {
+	case PARTITION_DOS_EXT_H:
+	case PARTITION_FAT12_H:
+	case PARTITION_FAT16_H:
+	case PARTITION_FAT16_LBA_H:
+	case PARTITION_FAT16_SM_H:
+	case PARTITION_FAT32_H:
+	case PARTITION_FAT32_LBA_H:
+	case PARTITION_NTFS_H:
+	    return true;
+
+	default:
+	    return false;
+    }
+}
+
+/**
+ * Sets the hidden flag on type_id.
+ */
+static bool
+dos_type_id_set_hidden(unsigned char* type_id, bool state)
+{
+    PED_ASSERT (type_id);
+
+    if (!dos_type_id_supports_hidden(*type_id))
+	return false;
+
+    if (state)
+	*type_id |= PART_FLAG_HIDDEN;
+    else
+	*type_id &= ~PART_FLAG_HIDDEN;
+
+    return 1;
+}
+
+/**
+ * Check whether the type_id supports the lba flag. Returns true for both lba and non-lba
+ * id.
+ */
+static bool
+dos_type_id_supports_lba(unsigned char type_id)
+{
+    switch (type_id)
+    {
+	case PARTITION_FAT16:
+	case PARTITION_FAT16_H:
+	case PARTITION_FAT16_LBA:
+	case PARTITION_FAT16_LBA_H:
+	case PARTITION_FAT32:
+	case PARTITION_FAT32_H:
+	case PARTITION_FAT32_LBA:
+	case PARTITION_FAT32_LBA_H:
+	case PARTITION_DOS_EXT:
+	case PARTITION_EXT_LBA:
+	    return true;
+
+	default:
+	    return false;
+    }
+}
+
+/**
+ * Check whether the type_id has the lba flag set.
+ */
+static bool
+dos_type_id_is_lba(unsigned char type_id)
+{
+    switch (type_id)
+    {
+	case PARTITION_FAT16_LBA:
+	case PARTITION_FAT16_LBA_H:
+	case PARTITION_FAT32_LBA:
+	case PARTITION_FAT32_LBA_H:
+	case PARTITION_EXT_LBA:
+	    return true;
+
+	default:
+	    return false;
+    }
+}
+
+/**
+ * Sets the lba flag on type_id.
+ */
+static bool
+dos_type_id_set_lba(unsigned char* type_id, bool state)
+{
+    PED_ASSERT (type_id);
+
+    if (!dos_type_id_supports_lba(*type_id))
+	return false;
+
+    if (state)
+    {
+	switch (*type_id)
+	{
+	    case PARTITION_FAT16:
+		*type_id = PARTITION_FAT16_LBA;
+		break;
+
+	    case PARTITION_FAT32:
+		*type_id = PARTITION_FAT32_LBA;
+		break;
+
+	    case PARTITION_DOS_EXT:
+		*type_id = PARTITION_EXT_LBA;
+		break;
+	}
+    }
+    else
+    {
+	switch (*type_id)
+	{
+	    case PARTITION_FAT16_LBA:
+		*type_id = PARTITION_FAT16;
+		break;
+
+	    case PARTITION_FAT32_LBA:
+		*type_id = PARTITION_FAT32;
+		break;
+
+	    case PARTITION_EXT_LBA:
+		*type_id = PARTITION_DOS_EXT;
+		break;
+	}
+    }
+
+    return true;
+}
+
+
 /* This constant contains the maximum cylinder number that can be represented
  * in (C,H,S) notation.  Higher cylinder numbers are reserved for
  * "too big" indicators (in which case only LBA addressing can be used).
@@ -156,18 +359,6 @@ typedef struct {
 typedef struct {
 	unsigned char	system;
 	int		boot;
-	int		hidden;
-	int		msftres;
-	int		raid;
-	int		lvm;
-	int		swap;
-	int		lba;
-	int		palo;
-	int		prep;
-	int		diag;
-	int		irst;
-	int		esp;
-	int		bls_boot;
 	OrigState*	orig;			/* used for CHS stuff */
 } DosPartitionData;
 
@@ -891,48 +1082,6 @@ raw_part_is_extended (const DosRawPartition* raw_part)
 	return 0;
 }
 
-static int _GL_ATTRIBUTE_PURE
-raw_part_is_hidden (const DosRawPartition* raw_part)
-{
-	PED_ASSERT (raw_part != NULL);
-
-	switch (raw_part->type) {
-	case PARTITION_FAT12_H:
-	case PARTITION_FAT16_SM_H:
-	case PARTITION_FAT16_H:
-	case PARTITION_FAT32_H:
-	case PARTITION_NTFS_H:
-	case PARTITION_FAT32_LBA_H:
-	case PARTITION_FAT16_LBA_H:
-		return 1;
-
-	default:
-		return 0;
-	}
-
-	return 0;
-}
-
-static int _GL_ATTRIBUTE_PURE
-raw_part_is_lba (const DosRawPartition* raw_part)
-{
-	PED_ASSERT (raw_part != NULL);
-
-	switch (raw_part->type) {
-	case PARTITION_FAT32_LBA:
-	case PARTITION_FAT16_LBA:
-	case PARTITION_EXT_LBA:
-	case PARTITION_FAT32_LBA_H:
-	case PARTITION_FAT16_LBA_H:
-		return 1;
-
-	default:
-		return 0;
-	}
-
-	return 0;
-}
-
 static PedPartition*
 raw_part_parse (const PedDisk* disk, const DosRawPartition* raw_part,
 	        PedSector lba_offset, PedPartitionType type)
@@ -952,20 +1101,6 @@ raw_part_parse (const PedDisk* disk, const DosRawPartition* raw_part,
 	dos_data = part->disk_specific;
 	dos_data->system = raw_part->type;
 	dos_data->boot = raw_part->boot_ind != 0;
-	dos_data->diag = raw_part->type == PARTITION_COMPAQ_DIAG ||
-			 raw_part->type == PARTITION_DELL_DIAG;
-	dos_data->msftres = raw_part->type == PARTITION_MSFT_RECOVERY;
-	dos_data->hidden = raw_part_is_hidden (raw_part);
-	dos_data->raid = raw_part->type == PARTITION_LINUX_RAID;
-	dos_data->lvm = raw_part->type == PARTITION_LINUX_LVM_OLD
-			|| raw_part->type == PARTITION_LINUX_LVM;
-	dos_data->swap = raw_part->type == PARTITION_LINUX_SWAP;
-	dos_data->lba = raw_part_is_lba (raw_part);
-	dos_data->palo = raw_part->type == PARTITION_PALO;
-	dos_data->prep = raw_part->type == PARTITION_PREP;
-	dos_data->irst = raw_part->type == PARTITION_IRST;
-	dos_data->esp = raw_part->type == PARTITION_ESP;
-	dos_data->bls_boot = raw_part->type == PARTITION_BLS_BOOT;
 	dos_data->orig = ped_malloc (sizeof (OrigState));
 	if (!dos_data->orig) {
 		ped_partition_destroy (part);
@@ -1377,18 +1512,6 @@ msdos_partition_duplicate (const PedPartition* part)
 	new_dos_data = (DosPartitionData*) new_part->disk_specific;
 	new_dos_data->system = old_dos_data->system;
 	new_dos_data->boot = old_dos_data->boot;
-	new_dos_data->diag = old_dos_data->diag;
-	new_dos_data->hidden = old_dos_data->hidden;
-	new_dos_data->msftres = old_dos_data->msftres;
-	new_dos_data->raid = old_dos_data->raid;
-	new_dos_data->lvm = old_dos_data->lvm;
-	new_dos_data->swap = old_dos_data->swap;
-	new_dos_data->lba = old_dos_data->lba;
-	new_dos_data->palo = old_dos_data->palo;
-	new_dos_data->prep = old_dos_data->prep;
-	new_dos_data->irst = old_dos_data->irst;
-	new_dos_data->esp = old_dos_data->esp;
-	new_dos_data->bls_boot = old_dos_data->bls_boot;
 
 	if (old_dos_data->orig) {
 		new_dos_data->orig = ped_malloc (sizeof (OrigState));
@@ -1425,234 +1548,87 @@ msdos_partition_set_system (PedPartition* part,
 
 	part->fs_type = fs_type;
 
-	if (dos_data->hidden
-		    && fs_type
-		    && strncmp (fs_type->name, "fat", 3) != 0
-		    && strcmp (fs_type->name, "ntfs") != 0)
-		dos_data->hidden = 0;
-
-	if (dos_data->msftres
-		    && fs_type
-		    && strcmp (fs_type->name, "ntfs") != 0)
-		dos_data->msftres = 0;
-
 	if (part->type & PED_PARTITION_EXTENDED) {
-		dos_data->diag = 0;
-		dos_data->raid = 0;
-		dos_data->lvm = 0;
-		dos_data->swap = 0;
-		dos_data->palo = 0;
-		dos_data->prep = 0;
-		dos_data->irst = 0;
-		dos_data->esp = 0;
-		if (dos_data->lba)
-			dos_data->system = PARTITION_EXT_LBA;
-		else
-			dos_data->system = PARTITION_DOS_EXT;
-		return 1;
-	}
-
-	if (dos_data->diag) {
-		/* Don't change the system if it already is a diag type,
-		   otherwise use Compaq as almost all vendors use that. */
-		if (dos_data->system != PARTITION_COMPAQ_DIAG &&
-		    dos_data->system != PARTITION_DELL_DIAG)
-			dos_data->system = PARTITION_COMPAQ_DIAG;
-		return 1;
-	}
-	if (dos_data->msftres) {
-		dos_data->system = PARTITION_MSFT_RECOVERY;
-		return 1;
-	}
-	if (dos_data->lvm) {
-		dos_data->system = PARTITION_LINUX_LVM;
-		return 1;
-	}
-	if (dos_data->swap) {
-		dos_data->system = PARTITION_LINUX_SWAP;
-		return 1;
-	}
-	if (dos_data->raid) {
-		dos_data->system = PARTITION_LINUX_RAID;
-		return 1;
-	}
-	if (dos_data->palo) {
-		dos_data->system = PARTITION_PALO;
-		return 1;
-	}
-	if (dos_data->prep) {
-		dos_data->system = PARTITION_PREP;
-		return 1;
-	}
-	if (dos_data->irst) {
-		dos_data->system = PARTITION_IRST;
-		return 1;
-	}
-	if (dos_data->esp) {
-		dos_data->system = PARTITION_ESP;
-		return 1;
-	}
-	if (dos_data->bls_boot) {
-		dos_data->system = PARTITION_BLS_BOOT;
+		dos_data->system = PARTITION_EXT_LBA;
 		return 1;
 	}
 
 	if (!fs_type)
 		dos_data->system = PARTITION_LINUX;
-	else if (!strcmp (fs_type->name, "fat16")) {
-		dos_data->system = dos_data->lba
-				   ? PARTITION_FAT16_LBA : PARTITION_FAT16;
-		dos_data->system |= dos_data->hidden ? PART_FLAG_HIDDEN : 0;
-	} else if (!strcmp (fs_type->name, "fat32")) {
-		dos_data->system = dos_data->lba
-				   ? PARTITION_FAT32_LBA : PARTITION_FAT32;
-		dos_data->system |= dos_data->hidden ? PART_FLAG_HIDDEN : 0;
-	} else if (!strcmp (fs_type->name, "ntfs")
-		   || !strcmp (fs_type->name, "hpfs")) {
+	else if (!strcmp (fs_type->name, "fat16"))
+		dos_data->system = PARTITION_FAT16;
+	else if (!strcmp (fs_type->name, "fat32"))
+		dos_data->system = PARTITION_FAT32;
+	else if (!strcmp (fs_type->name, "ntfs")
+		   || !strcmp (fs_type->name, "hpfs"))
 		dos_data->system = PARTITION_NTFS;
-		dos_data->system |= dos_data->hidden ? PART_FLAG_HIDDEN : 0;
-	} else if (!strcmp (fs_type->name, "hfs")
+	else if (!strcmp (fs_type->name, "hfs")
 		   || !strcmp (fs_type->name, "hfs+"))
 		dos_data->system = PARTITION_HFS;
 	else if (!strcmp (fs_type->name, "udf"))
 		dos_data->system = PARTITION_UDF;
 	else if (!strcmp (fs_type->name, "sun-ufs"))
 		dos_data->system = PARTITION_SUN_UFS;
-	else if (is_linux_swap (fs_type->name)) {
+	else if (is_linux_swap (fs_type->name))
 		dos_data->system = PARTITION_LINUX_SWAP;
-		dos_data->swap = 1;
-	} else
+	else
 		dos_data->system = PARTITION_LINUX;
 
 	return 1;
-}
-
-static void
-clear_flags (DosPartitionData *dos_data)
-{
-  dos_data->diag = 0;
-  dos_data->hidden = 0;
-  dos_data->msftres = 0;
-  dos_data->lvm = 0;
-  dos_data->swap = 0;
-  dos_data->palo = 0;
-  dos_data->prep = 0;
-  dos_data->irst = 0;
-  dos_data->esp = 0;
-  dos_data->raid = 0;
-  dos_data->bls_boot = 0;
 }
 
 static int
 msdos_partition_set_flag (PedPartition* part,
                           PedPartitionFlag flag, int state)
 {
-	PedDisk*			disk;
-	PedPartition*			walk;
-	DosPartitionData*		dos_data;
-
 	PED_ASSERT (part != NULL);
 	PED_ASSERT (part->disk_specific != NULL);
 	PED_ASSERT (part->disk != NULL);
 
-	dos_data = part->disk_specific;
-	disk = part->disk;
+	DosPartitionData* dos_data = part->disk_specific;
+
+	const struct flag_id_mapping_t* p = dos_find_flag_id_mapping (flag);
+	if (p)
+	{
+	    if (part->type & PED_PARTITION_EXTENDED)
+		return 0;
+
+	    if (state)
+		dos_data->system = p->type_id;
+	    else if (dos_data->system == p->type_id || dos_data->system == p->alt_type_id)
+		return ped_partition_set_system (part, part->fs_type);
+
+	    return 1;
+	}
 
 	switch (flag) {
 	case PED_PARTITION_HIDDEN:
-		if (part->type == PED_PARTITION_EXTENDED) {
-			ped_exception_throw (
-				PED_EXCEPTION_ERROR,
-				PED_EXCEPTION_CANCEL,
-				_("Extended partitions cannot be hidden on "
-				  "msdos disk labels."));
-			return 0;
-		}
-		dos_data->hidden = state;
-		return ped_partition_set_system (part, part->fs_type);
-
-	case PED_PARTITION_MSFT_RESERVED:
-		if (part->type == PED_PARTITION_EXTENDED) {
-			ped_exception_throw (
-				PED_EXCEPTION_ERROR,
-				PED_EXCEPTION_CANCEL,
-				_("Extended partitions cannot be recovery partitions on "
-				  "msdos disk labels."));
-			return 0;
-		}
-		dos_data->msftres = state;
-		return ped_partition_set_system (part, part->fs_type);
-
-	case PED_PARTITION_BOOT:
-		dos_data->boot = state;
-		if (!state)
-			return 1;
-
-		walk = ped_disk_next_partition (disk, NULL);
-		for (; walk; walk = ped_disk_next_partition (disk, walk)) {
-			if (walk == part || !ped_partition_is_active (walk))
-				continue;
-			msdos_partition_set_flag (walk, PED_PARTITION_BOOT, 0);
-		}
-		return 1;
-
-	case PED_PARTITION_DIAG:
-		if (state)
-			clear_flags (dos_data);
-		dos_data->diag = state;
-		return ped_partition_set_system (part, part->fs_type);
-
-	case PED_PARTITION_RAID:
-		if (state)
-			clear_flags (dos_data);
-		dos_data->raid = state;
-		return ped_partition_set_system (part, part->fs_type);
-
-	case PED_PARTITION_LVM:
-		if (state)
-			clear_flags (dos_data);
-		dos_data->lvm = state;
-		return ped_partition_set_system (part, part->fs_type);
-
-	case PED_PARTITION_SWAP:
-		if (state)
-			clear_flags (dos_data);
-		dos_data->swap = state;
-		return ped_partition_set_system (part, part->fs_type);
+	{
+		return dos_type_id_set_hidden(&dos_data->system, state);
+	}
 
 	case PED_PARTITION_LBA:
-		dos_data->lba = state;
-		return ped_partition_set_system (part, part->fs_type);
+	{
+		return dos_type_id_set_lba(&dos_data->system, state);
+	}
 
-	case PED_PARTITION_PALO:
-		if (state)
-			clear_flags (dos_data);
-		dos_data->palo = state;
-		return ped_partition_set_system (part, part->fs_type);
+	case PED_PARTITION_BOOT:
+	{
+		dos_data->boot = state;
 
-	case PED_PARTITION_PREP:
 		if (state)
-			clear_flags (dos_data);
-		dos_data->prep = state;
-		return ped_partition_set_system (part, part->fs_type);
+		{
+			PedDisk* disk = part->disk;
+			PedPartition* walk = ped_disk_next_partition (disk, NULL);
+			for (; walk; walk = ped_disk_next_partition (disk, walk)) {
+				if (walk == part || !ped_partition_is_active (walk))
+					continue;
+				msdos_partition_set_flag (walk, PED_PARTITION_BOOT, 0);
+			}
+		}
 
-	case PED_PARTITION_IRST:
-		if (state)
-			clear_flags (dos_data);
-		dos_data->irst = state;
-		return ped_partition_set_system (part, part->fs_type);
-
-	case PED_PARTITION_ESP:
-		if (state)
-			clear_flags (dos_data);
-		dos_data->esp = state;
-		return ped_partition_set_system (part, part->fs_type);
-
-	case PED_PARTITION_BLS_BOOT:
-		if (state)
-			clear_flags (dos_data);
-		dos_data->bls_boot = state;
-		return ped_partition_set_system (part, part->fs_type);
+		return 1;
+	}
 
 	default:
 		return 0;
@@ -1662,57 +1638,24 @@ msdos_partition_set_flag (PedPartition* part,
 static int _GL_ATTRIBUTE_PURE
 msdos_partition_get_flag (const PedPartition* part, PedPartitionFlag flag)
 {
-	DosPartitionData*	dos_data;
-
 	PED_ASSERT (part != NULL);
 	PED_ASSERT (part->disk_specific != NULL);
 
-	dos_data = part->disk_specific;
+	DosPartitionData* dos_data = part->disk_specific;
+
+	const struct flag_id_mapping_t* p = dos_find_flag_id_mapping (flag);
+	if (p)
+	    return dos_data->system == p->type_id || dos_data->system == p->alt_type_id;
+
 	switch (flag) {
 	case PED_PARTITION_HIDDEN:
-		if (part->type == PED_PARTITION_EXTENDED)
-			return 0;
-		else
-			return dos_data->hidden;
+		return dos_type_id_is_hidden(dos_data->system);
 
-	case PED_PARTITION_MSFT_RESERVED:
-		if (part->type == PED_PARTITION_EXTENDED)
-			return 0;
-		else
-			return dos_data->msftres;
+	case PED_PARTITION_LBA:
+		return dos_type_id_is_lba(dos_data->system);
 
 	case PED_PARTITION_BOOT:
 		return dos_data->boot;
-
-	case PED_PARTITION_DIAG:
-		return dos_data->diag;
-
-	case PED_PARTITION_RAID:
-		return dos_data->raid;
-
-	case PED_PARTITION_LVM:
-		return dos_data->lvm;
-
-	case PED_PARTITION_SWAP:
-		return dos_data->swap;
-
-	case PED_PARTITION_LBA:
-		return dos_data->lba;
-
-	case PED_PARTITION_PALO:
-		return dos_data->palo;
-
-	case PED_PARTITION_PREP:
-		return dos_data->prep;
-
-	case PED_PARTITION_IRST:
-		return dos_data->irst;
-
-	case PED_PARTITION_ESP:
-		return dos_data->esp;
-
-	case PED_PARTITION_BLS_BOOT:
-		return dos_data->bls_boot;
 
 	default:
 		return 0;
@@ -1723,36 +1666,46 @@ static int
 msdos_partition_is_flag_available (const PedPartition* part,
 				   PedPartitionFlag flag)
 {
+	if (dos_find_flag_id_mapping (flag))
+		return part->type != PED_PARTITION_EXTENDED;
+
+	DosPartitionData* dos_data = part->disk_specific;
+
 	switch (flag) {
 	case PED_PARTITION_HIDDEN:
-		if (part->type == PED_PARTITION_EXTENDED)
-			return 0;
-		else
-			return 1;
+		return dos_type_id_supports_hidden(dos_data->system);
 
-	case PED_PARTITION_MSFT_RESERVED:
-		if (part->type == PED_PARTITION_EXTENDED)
-			return 0;
-		else
-			return 1;
+	case PED_PARTITION_LBA:
+		return dos_type_id_supports_lba(dos_data->system);
 
 	case PED_PARTITION_BOOT:
-	case PED_PARTITION_RAID:
-	case PED_PARTITION_LVM:
-	case PED_PARTITION_SWAP:
-	case PED_PARTITION_LBA:
-	case PED_PARTITION_PALO:
-	case PED_PARTITION_PREP:
-	case PED_PARTITION_IRST:
-	case PED_PARTITION_ESP:
-	case PED_PARTITION_BLS_BOOT:
-	case PED_PARTITION_DIAG:
 		return 1;
 
 	default:
 		return 0;
 	}
 }
+
+
+int
+msdos_partition_set_type_id (PedPartition* part, uint8_t id)
+{
+        DosPartitionData* dos_data = part->disk_specific;
+
+        dos_data->system = id;
+
+        return 1;
+}
+
+
+uint8_t _GL_ATTRIBUTE_PURE
+msdos_partition_get_type_id (const PedPartition* part)
+{
+        const DosPartitionData* dos_data = part->disk_specific;
+
+        return dos_data->system;
+}
+
 
 static PedGeometry*
 _try_constraint (const PedPartition* part, const PedConstraint* external,
@@ -2590,6 +2543,10 @@ static PedDiskOps msdos_disk_ops = {
 
 	partition_set_name:	NULL,
 	partition_get_name:	NULL,
+	partition_set_type_id:		msdos_partition_set_type_id,
+	partition_get_type_id:		msdos_partition_get_type_id,
+	partition_set_type_uuid:	NULL,
+	partition_get_type_uuid:	NULL,
 
   PT_op_function_initializers (msdos)
 };
@@ -2598,7 +2555,7 @@ static PedDiskType msdos_disk_type = {
 	next:		NULL,
 	name:		"msdos",
 	ops:		&msdos_disk_ops,
-	features:	PED_DISK_TYPE_EXTENDED
+	features:	PED_DISK_TYPE_EXTENDED | PED_DISK_TYPE_PARTITION_TYPE_ID
 };
 
 void
