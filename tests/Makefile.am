@@ -1,6 +1,3 @@
-XFAIL_TESTS = \
-  t3200-type-change.sh
-
 TEST_EXTENSIONS = .sh
 SH_LOG_COMPILER = $(SHELL)
 
