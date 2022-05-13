@@ -991,6 +991,9 @@ do_type (PedDevice** dev, PedDisk** diskp)
 
         free (input);
 
+        // Reset the fs_type based on the filesystem, if it exists
+        part->fs_type = ped_file_system_probe (&part->geom);
+
         if (!ped_disk_commit (*diskp))
                 goto error;
         return 1;
