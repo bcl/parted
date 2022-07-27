@@ -1572,7 +1572,7 @@ ped_partition_get_type_id (const PedPartition *part)
         if (!_assert_partition_type_id_feature (part->disk->type))
                 return 0;
 
-        PED_ASSERT (part->disk->type->ops->partition_set_type_id != NULL);
+        PED_ASSERT (part->disk->type->ops->partition_get_type_id != NULL);
         return part->disk->type->ops->partition_get_type_id (part);
 }
 
@@ -1608,7 +1608,7 @@ ped_partition_get_type_uuid (const PedPartition *part)
         if (!_assert_partition_type_uuid_feature (part->disk->type))
                 return NULL;
 
-        PED_ASSERT (part->disk->type->ops->partition_set_type_uuid != NULL);
+        PED_ASSERT (part->disk->type->ops->partition_get_type_uuid != NULL);
         return part->disk->type->ops->partition_get_type_uuid (part);
 }
 
