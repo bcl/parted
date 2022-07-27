@@ -1215,9 +1215,8 @@ _print_disk_info (const PedDevice *dev, const PedDisk *diskp)
             ul_jsonwrt_value_u64 (&json, "physical-sector-size", dev->phys_sector_size);
             ul_jsonwrt_value_s (&json, "label", pt_name);
             if (diskp) {
-                if (diskp->type->ops->get_max_primary_partition_count)
-                    ul_jsonwrt_value_u64 (&json, "max-partitions",
-                                          diskp->type->ops->get_max_primary_partition_count(diskp));
+                ul_jsonwrt_value_u64 (&json, "max-partitions",
+                                      ped_disk_get_max_primary_partition_count(diskp));
                 disk_print_flags_json (diskp);
             }
         } else {
