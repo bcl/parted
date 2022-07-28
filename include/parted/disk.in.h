@@ -98,10 +98,12 @@ enum _PedDiskTypeFeature {
         PED_DISK_TYPE_PARTITION_NAME=2,       /**< supports partition names */
         PED_DISK_TYPE_PARTITION_TYPE_ID=4,    /**< supports partition type-ids */
         PED_DISK_TYPE_PARTITION_TYPE_UUID=8,  /**< supports partition type-uuids */
+        PED_DISK_TYPE_DISK_UUID=16,           /**< supports disk uuids */
+        PED_DISK_TYPE_PARTITION_UUID=32,      /**< supports partition uuids */
 };
 // NOTE: DO NOT define using enums
-#define PED_DISK_TYPE_FIRST_FEATURE    1 // PED_DISK_TYPE_EXTENDED
-#define PED_DISK_TYPE_LAST_FEATURE     8 // PED_DISK_TYPE_PARTITION_TYPE_UUID
+#define PED_DISK_TYPE_FIRST_FEATURE    1  // PED_DISK_TYPE_EXTENDED
+#define PED_DISK_TYPE_LAST_FEATURE     32 // PED_DISK_TYPE_PARTITION_UUID
 
 struct _PedDisk;
 struct _PedPartition;
@@ -228,6 +230,7 @@ struct _PedDiskOps {
         int (*disk_is_flag_available) (
                 const PedDisk *disk,
                 PedDiskFlag flag);
+        uint8_t* (*disk_get_uuid) (const PedDisk* disk);
         /** \todo add label guessing op here */
 
         /* partition operations */
@@ -259,6 +262,8 @@ struct _PedDiskOps {
 
         int (*partition_set_type_uuid) (PedPartition* part, const uint8_t* uuid);
         uint8_t* (*partition_get_type_uuid) (const PedPartition* part);
+
+        uint8_t* (*partition_get_uuid) (const PedPartition* part);
 
         int (*partition_align) (PedPartition* part,
                                 const PedConstraint* constraint);
@@ -331,6 +336,8 @@ extern int ped_disk_set_flag(PedDisk *disk, PedDiskFlag flag, int state);
 extern int ped_disk_get_flag(const PedDisk *disk, PedDiskFlag flag);
 extern int ped_disk_is_flag_available(const PedDisk *disk, PedDiskFlag flag);
 
+extern uint8_t* ped_disk_get_uuid (const PedDisk* disk);
+
 extern const char *ped_disk_flag_get_name(PedDiskFlag flag);
 extern PedDiskFlag ped_disk_flag_get_by_name(const char *name);
 extern PedDiskFlag ped_disk_flag_next(PedDiskFlag flag) _GL_ATTRIBUTE_CONST;
@@ -366,6 +373,8 @@ extern uint8_t ped_partition_get_type_id (const PedPartition* part);
 
 extern int ped_partition_set_type_uuid (PedPartition* part, const uint8_t* uuid);
 extern uint8_t* ped_partition_get_type_uuid (const PedPartition* part);
+
+extern uint8_t* ped_partition_get_uuid (const PedPartition* part);
 
 extern int ped_partition_is_busy (const PedPartition* part);
 extern char* ped_partition_get_path (const PedPartition* part);

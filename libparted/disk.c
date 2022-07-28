@@ -886,6 +886,37 @@ ped_disk_flag_next(PedDiskFlag flag)
         return (flag + 1) % (PED_DISK_LAST_FLAG + 1);
 }
 
+static int
+_assert_disk_uuid_feature (const PedDiskType* disk_type)
+{
+        if (!ped_disk_type_check_feature (
+                        disk_type, PED_DISK_TYPE_DISK_UUID)) {
+                ped_exception_throw (
+                        PED_EXCEPTION_ERROR,
+                        PED_EXCEPTION_CANCEL,
+                        "%s disk labels do not support disk uuids.",
+                        disk_type->name);
+                return 0;
+        }
+        return 1;
+}
+
+/**
+ * Get the uuid of the disk \p disk. This will only work if the disk label
+ * supports it.
+ */
+uint8_t*
+ped_disk_get_uuid (const PedDisk *disk)
+{
+        PED_ASSERT (disk != NULL);
+
+        if (!_assert_disk_uuid_feature (disk->type))
+                return NULL;
+
+        PED_ASSERT (disk->type->ops->disk_get_uuid != NULL);
+        return disk->type->ops->disk_get_uuid (disk);
+}
+
 /**
  * \internal We turned a really nasty bureaucracy problem into an elegant maths
  * problem :-)  Basically, there are some constraints to a partition's
@@ -1488,6 +1519,21 @@ _assert_partition_type_uuid_feature (const PedDiskType* disk_type)
         return 1;
 }
 
+static int
+_assert_partition_uuid_feature (const PedDiskType* disk_type)
+{
+        if (!ped_disk_type_check_feature (
+                        disk_type, PED_DISK_TYPE_PARTITION_UUID)) {
+                ped_exception_throw (
+                        PED_EXCEPTION_ERROR,
+                        PED_EXCEPTION_CANCEL,
+                        "%s disk labels do not support partition uuids.",
+                        disk_type->name);
+                return 0;
+        }
+        return 1;
+}
+
 /**
  * Sets the name of a partition.
  *
@@ -1610,6 +1656,24 @@ ped_partition_get_type_uuid (const PedPartition *part)
 
         PED_ASSERT (part->disk->type->ops->partition_get_type_uuid != NULL);
         return part->disk->type->ops->partition_get_type_uuid (part);
+}
+
+/**
+ * Get the uuid of the partition \p part. This will only work if the disk label
+ * supports it.
+ */
+uint8_t*
+ped_partition_get_uuid (const PedPartition *part)
+{
+        PED_ASSERT (part != NULL);
+        PED_ASSERT (part->disk != NULL);
+        PED_ASSERT (ped_partition_is_active (part));
+
+        if (!_assert_partition_uuid_feature (part->disk->type))
+                return NULL;
+
+        PED_ASSERT (part->disk->type->ops->partition_get_uuid != NULL);
+        return part->disk->type->ops->partition_get_uuid (part);
 }
 
 /** @} */

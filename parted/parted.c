@@ -1215,6 +1215,14 @@ _print_disk_info (const PedDevice *dev, const PedDisk *diskp)
             ul_jsonwrt_value_u64 (&json, "physical-sector-size", dev->phys_sector_size);
             ul_jsonwrt_value_s (&json, "label", pt_name);
             if (diskp) {
+                bool has_disk_uuid = ped_disk_type_check_feature (diskp->type, PED_DISK_TYPE_DISK_UUID);
+                if (has_disk_uuid) {
+                    uint8_t* uuid = ped_disk_get_uuid (diskp);
+                    static char buf[UUID_STR_LEN];
+                    uuid_unparse_lower (uuid, buf);
+                    ul_jsonwrt_value_s (&json, "uuid", buf);
+                    free (uuid);
+                }
                 ul_jsonwrt_value_u64 (&json, "max-partitions",
                                       ped_disk_get_max_primary_partition_count(diskp));
                 disk_print_flags_json (diskp);
@@ -1360,6 +1368,8 @@ do_print (PedDevice** dev, PedDisk** diskp)
 							PED_DISK_TYPE_PARTITION_TYPE_ID);
         bool has_type_uuid = ped_disk_type_check_feature ((*diskp)->type,
 							  PED_DISK_TYPE_PARTITION_TYPE_UUID);
+        bool has_part_uuid = ped_disk_type_check_feature ((*diskp)->type,
+							  PED_DISK_TYPE_PARTITION_UUID);
 
         PedPartition* part;
         if (opt_output_mode == HUMAN) {
@@ -1510,6 +1520,14 @@ do_print (PedDevice** dev, PedDisk** diskp)
                         uuid_unparse_lower (type_uuid, buf);
                         ul_jsonwrt_value_s (&json, "type-uuid", buf);
                         free (type_uuid);
+                    }
+
+                    if (has_part_uuid) {
+                        uint8_t* uuid = ped_partition_get_uuid (part);
+                        static char buf[UUID_STR_LEN];
+                        uuid_unparse_lower (uuid, buf);
+                        ul_jsonwrt_value_s (&json, "uuid", buf);
+                        free (uuid);
                     }
 
                     if (has_name) {

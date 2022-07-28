@@ -32,8 +32,8 @@ parted --script "$dev" mkpart "test1" ext4 10% 20% > out 2>&1 || fail=1
 parted --script "$dev" mkpart "test2" xfs 20% 60% > out 2>&1 || fail=1
 parted --script "$dev" set 2 raid on > out 2>&1 || fail=1
 
-# print with json format
-parted --script --json "$dev" unit s print free > out 2>&1 || fail=1
+# print with json format, replace non-deterministic uuids
+parted --script --json "$dev" unit s print free | sed -E 's/"uuid": "[0-9a-f-]{36}"/"uuid": "<uuid>"/' > out 2>&1 || fail=1
 
 cat <<EOF > exp || fail=1
 {
@@ -45,6 +45,7 @@ cat <<EOF > exp || fail=1
       "logical-sector-size": 512,
       "physical-sector-size": 512,
       "label": "gpt",
+      "uuid": "<uuid>",
       "max-partitions": 128,
       "flags": [
           "pmbr_boot"
@@ -63,6 +64,7 @@ cat <<EOF > exp || fail=1
             "size": "10240s",
             "type": "primary",
             "type-uuid": "0fc63daf-8483-4772-8e79-3d69d8477de4",
+            "uuid": "<uuid>",
             "name": "test1"
          },{
             "number": 2,
@@ -71,6 +73,7 @@ cat <<EOF > exp || fail=1
             "size": "40960s",
             "type": "primary",
             "type-uuid": "a19d880f-05fc-4d3b-a006-743f0f84911e",
+            "uuid": "<uuid>",
             "name": "test2",
             "flags": [
                 "raid"
