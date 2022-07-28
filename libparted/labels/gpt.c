@@ -1576,6 +1576,24 @@ gpt_disk_is_flag_available(const PedDisk *disk, PedDiskFlag flag)
     }
 }
 
+static uint8_t*
+gpt_disk_get_uuid (const PedDisk *disk)
+{
+  GPTDiskData *gpt_disk_data = disk->disk_specific;
+
+  efi_guid_t uuid = gpt_disk_data->uuid;
+
+  /* uuid is always LE, while uint8_t is always kind of BE */
+
+  uuid.time_low = PED_SWAP32(uuid.time_low);
+  uuid.time_mid = PED_SWAP16(uuid.time_mid);
+  uuid.time_hi_and_version = PED_SWAP16(uuid.time_hi_and_version);
+
+  uint8_t *buf = ped_malloc(sizeof (uuid_t));
+  memcpy(buf, &uuid, sizeof (uuid_t));
+  return buf;
+}
+
 static int
 gpt_disk_get_flag (const PedDisk *disk, PedDiskFlag flag)
 {
@@ -1764,6 +1782,23 @@ gpt_partition_get_type_uuid (const PedPartition *part)
   return buf;
 }
 
+static uint8_t*
+gpt_partition_get_uuid (const PedPartition *part)
+{
+  const GPTPartitionData *gpt_part_data = part->disk_specific;
+
+  efi_guid_t uuid = gpt_part_data->uuid;
+
+  /* uuid is always LE, while uint8_t is always kind of BE */
+
+  uuid.time_low = PED_SWAP32(uuid.time_low);
+  uuid.time_mid = PED_SWAP16(uuid.time_mid);
+  uuid.time_hi_and_version = PED_SWAP16(uuid.time_hi_and_version);
+
+  uint8_t *buf = ped_malloc(sizeof (uuid_t));
+  memcpy(buf, &uuid, sizeof (uuid_t));
+  return buf;
+}
 
 static int
 gpt_get_max_primary_partition_count (const PedDisk *disk)
@@ -1864,9 +1899,11 @@ static PedDiskOps gpt_disk_ops =
   partition_get_type_id:	NULL,
   partition_set_type_uuid:	gpt_partition_set_type_uuid,
   partition_get_type_uuid:	gpt_partition_get_type_uuid,
+  partition_get_uuid:		gpt_partition_get_uuid,
   disk_set_flag:		gpt_disk_set_flag,
   disk_get_flag:		gpt_disk_get_flag,
   disk_is_flag_available:	gpt_disk_is_flag_available,
+  disk_get_uuid:		gpt_disk_get_uuid,
 
   PT_op_function_initializers (gpt)
 };
@@ -1876,7 +1913,8 @@ static PedDiskType gpt_disk_type =
   next:		NULL,
   name:		"gpt",
   ops:		&gpt_disk_ops,
-  features:	PED_DISK_TYPE_PARTITION_NAME | PED_DISK_TYPE_PARTITION_TYPE_UUID
+  features:	PED_DISK_TYPE_PARTITION_NAME | PED_DISK_TYPE_PARTITION_TYPE_UUID |
+		PED_DISK_TYPE_DISK_UUID | PED_DISK_TYPE_PARTITION_UUID
 };
 
 void

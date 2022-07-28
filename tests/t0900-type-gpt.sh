@@ -32,8 +32,8 @@ parted --script "$dev" mkpart "''" "linux-swap" 10% 20% > out 2>&1 || fail=1
 # set type-uuid
 parted --script "$dev" type 1 "deadfd6d-a4ab-43c4-84e5-0933c84b4f4f" || fail=1
 
-# print with json format
-parted --script --json "$dev" unit s print > out 2>&1 || fail=1
+# print with json format, replace non-deterministic uuids
+parted --script --json "$dev" unit s print | sed -E 's/"uuid": "[0-9a-f-]{36}"/"uuid": "<uuid>"/' > out 2>&1 || fail=1
 
 cat <<EOF > exp || fail=1
 {
@@ -45,6 +45,7 @@ cat <<EOF > exp || fail=1
       "logical-sector-size": 512,
       "physical-sector-size": 512,
       "label": "gpt",
+      "uuid": "<uuid>",
       "max-partitions": 128,
       "partitions": [
          {
@@ -53,7 +54,8 @@ cat <<EOF > exp || fail=1
             "end": "20479s",
             "size": "10240s",
             "type": "primary",
-            "type-uuid": "deadfd6d-a4ab-43c4-84e5-0933c84b4f4f"
+            "type-uuid": "deadfd6d-a4ab-43c4-84e5-0933c84b4f4f",
+            "uuid": "<uuid>"
          }
       ]
    }
