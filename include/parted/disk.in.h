@@ -47,8 +47,9 @@ enum _PedDiskFlag {
         /* This flag controls whether the boot flag of a GPT PMBR is set */
         PED_DISK_GPT_PMBR_BOOT=2,
 };
-#define PED_DISK_FIRST_FLAG             PED_DISK_CYLINDER_ALIGNMENT
-#define PED_DISK_LAST_FLAG              PED_DISK_GPT_PMBR_BOOT
+// NOTE: DO NOT define using enums
+#define PED_DISK_FIRST_FLAG             1 // PED_DISK_CYLINDER_ALIGNMENT
+#define PED_DISK_LAST_FLAG              2 // PED_DISK_GPT_PMBR_BOOT
 
 /**
  * Partition types
@@ -88,8 +89,9 @@ enum _PedPartitionFlag {
         PED_PARTITION_BLS_BOOT=20,
         PED_PARTITION_LINUX_HOME=21,
 };
-#define PED_PARTITION_FIRST_FLAG        PED_PARTITION_BOOT
-#define PED_PARTITION_LAST_FLAG         PED_PARTITION_LINUX_HOME
+// NOTE: DO NOT define using enums
+#define PED_PARTITION_FIRST_FLAG        1  // PED_PARTITION_BOOT
+#define PED_PARTITION_LAST_FLAG         21 // PED_PARTITION_LINUX_HOME
 
 enum _PedDiskTypeFeature {
         PED_DISK_TYPE_EXTENDED=1,             /**< supports extended partitions */
@@ -97,8 +99,9 @@ enum _PedDiskTypeFeature {
         PED_DISK_TYPE_PARTITION_TYPE_ID=4,    /**< supports partition type-ids */
         PED_DISK_TYPE_PARTITION_TYPE_UUID=8,  /**< supports partition type-uuids */
 };
-#define PED_DISK_TYPE_FIRST_FEATURE    PED_DISK_TYPE_EXTENDED
-#define PED_DISK_TYPE_LAST_FEATURE     PED_DISK_TYPE_PARTITION_TYPE_UUID
+// NOTE: DO NOT define using enums
+#define PED_DISK_TYPE_FIRST_FEATURE    1 // PED_DISK_TYPE_EXTENDED
+#define PED_DISK_TYPE_LAST_FEATURE     8 // PED_DISK_TYPE_PARTITION_TYPE_UUID
 
 struct _PedDisk;
 struct _PedPartition;
