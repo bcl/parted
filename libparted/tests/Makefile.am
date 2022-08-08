@@ -3,9 +3,10 @@
 #
 # This file may be modified and/or distributed without restriction.
 
-TESTS = t1000-label.sh t2000-disk.sh t2100-zerolen.sh t3000-symlink.sh t4000-volser.sh
+TESTS = t1000-label.sh t1001-flags.sh t2000-disk.sh t2100-zerolen.sh \
+	t3000-symlink.sh t4000-volser.sh
 EXTRA_DIST = $(TESTS)
-check_PROGRAMS = label disk zerolen symlink volser
+check_PROGRAMS = label disk zerolen symlink volser flags
 AM_CFLAGS = $(WARN_CFLAGS) $(WERROR_CFLAGS)
 
 LDADD = \
@@ -24,6 +25,7 @@ disk_SOURCES  = common.h common.c disk.c
 zerolen_SOURCES = common.h common.c zerolen.c
 symlink_SOURCES = common.h common.c symlink.c
 volser_SOURCES = common.h common.c volser.c
+flags_SOURCES = common.h common.c flags.c
 
 # Arrange to symlink to tests/init.sh.
 CLEANFILES = init.sh
