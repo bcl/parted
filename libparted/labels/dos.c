@@ -121,6 +121,22 @@ static const struct flag_id_mapping_t flag_id_mapping[] =
     { PED_PARTITION_SWAP,               PARTITION_LINUX_SWAP },
 };
 
+static const unsigned char skip_set_system_types[] =
+{
+    PARTITION_EXT_LBA,
+    PARTITION_DOS_EXT,
+    PARTITION_COMPAQ_DIAG,
+    PARTITION_MSFT_RECOVERY,
+    PARTITION_LINUX_LVM,
+    PARTITION_LINUX_SWAP,
+    PARTITION_LINUX_RAID,
+    PARTITION_PALO,
+    PARTITION_PREP,
+    PARTITION_IRST,
+    PARTITION_ESP,
+    PARTITION_BLS_BOOT
+};
+
 static const struct flag_id_mapping_t* _GL_ATTRIBUTE_CONST
 dos_find_flag_id_mapping (PedPartitionFlag flag)
 {
@@ -1540,6 +1556,21 @@ msdos_partition_destroy (PedPartition* part)
 	free (part);
 }
 
+/* is_skip_type checks the type against the list of types that should not be
+ * overridden by set_system. It returns a 1 if it is in the list.
+*/
+static bool
+is_skip_type(unsigned char type_id) {
+    int n = sizeof(skip_set_system_types) / sizeof(skip_set_system_types[0]);
+    for (int i = 0; i < n; ++i) {
+        if (type_id == skip_set_system_types[i]) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 static int
 msdos_partition_set_system (PedPartition* part,
 			    const PedFileSystemType* fs_type)
@@ -1547,6 +1578,11 @@ msdos_partition_set_system (PedPartition* part,
 	DosPartitionData* dos_data = part->disk_specific;
 
 	part->fs_type = fs_type;
+
+	// Is this a type that should skip fs_type checking?
+	if (is_skip_type(dos_data->system)) {
+		return 1;
+	}
 
 	if (part->type & PED_PARTITION_EXTENDED) {
 		dos_data->system = PARTITION_EXT_LBA;
@@ -1590,15 +1626,17 @@ msdos_partition_set_flag (PedPartition* part,
 	const struct flag_id_mapping_t* p = dos_find_flag_id_mapping (flag);
 	if (p)
 	{
-	    if (part->type & PED_PARTITION_EXTENDED)
-		return 0;
+		if (part->type & PED_PARTITION_EXTENDED)
+			return 0;
 
-	    if (state)
-		dos_data->system = p->type_id;
-	    else if (dos_data->system == p->type_id || dos_data->system == p->alt_type_id)
-		return ped_partition_set_system (part, part->fs_type);
-
-	    return 1;
+		if (state) {
+			dos_data->system = p->type_id;
+		} else if (dos_data->system == p->type_id || dos_data->system == p->alt_type_id) {
+			// Clear the type so that fs_type will be used to return it to the default
+			dos_data->system = PARTITION_LINUX;
+			return ped_partition_set_system (part, part->fs_type);
+		}
+		return 1;
 	}
 
 	switch (flag) {
