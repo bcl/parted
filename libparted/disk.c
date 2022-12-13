@@ -2579,6 +2579,8 @@ ped_partition_flag_get_name (PedPartitionFlag flag)
 		return N_("bls_boot");
         case PED_PARTITION_LINUX_HOME:
                 return N_("linux-home");
+        case PED_PARTITION_NO_AUTOMOUNT:
+                return N_("no_automount");
 
 	default:
 		ped_exception_throw (

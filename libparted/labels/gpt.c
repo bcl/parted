@@ -252,7 +252,8 @@ struct __attribute__ ((packed)) _GuidPartitionEntryAttributes_t
   uint64_t NoBlockIOProtocol:1;
   uint64_t LegacyBIOSBootable:1;
   uint64_t Reserved:45;
-  uint64_t GuidSpecific:16;
+  uint64_t GuidSpecific:15;
+  uint64_t NoAutomount:1;
 #else
 #       warning "Using crippled partition entry type"
   uint32_t RequiredToFunction:1;
@@ -260,7 +261,8 @@ struct __attribute__ ((packed)) _GuidPartitionEntryAttributes_t
   uint32_t LegacyBIOSBootable:1;
   uint32_t Reserved:30;
   uint32_t LOST:5;
-  uint32_t GuidSpecific:16;
+  uint32_t GuidSpecific:15;
+  uint32_t NoAutomount:1;
 #endif
 };
 
@@ -1637,6 +1639,9 @@ gpt_partition_set_flag (PedPartition *part, PedPartitionFlag flag, int state)
     case PED_PARTITION_LEGACY_BOOT:
       gpt_part_data->attributes.LegacyBIOSBootable = state;
       return 1;
+    case PED_PARTITION_NO_AUTOMOUNT:
+      gpt_part_data->attributes.NoAutomount = state;
+      return 1;
     case PED_PARTITION_ROOT:
     case PED_PARTITION_LBA:
     default:
@@ -1662,6 +1667,8 @@ gpt_partition_get_flag (const PedPartition *part, PedPartitionFlag flag)
       return gpt_part_data->attributes.RequiredToFunction;
     case PED_PARTITION_LEGACY_BOOT:
       return gpt_part_data->attributes.LegacyBIOSBootable;
+    case PED_PARTITION_NO_AUTOMOUNT:
+      return gpt_part_data->attributes.NoAutomount;
     case PED_PARTITION_LBA:
     case PED_PARTITION_ROOT:
     default:
@@ -1681,6 +1688,7 @@ gpt_partition_is_flag_available (const PedPartition *part,
     {
     case PED_PARTITION_HIDDEN:
     case PED_PARTITION_LEGACY_BOOT:
+    case PED_PARTITION_NO_AUTOMOUNT:
       return 1;
     case PED_PARTITION_ROOT:
     case PED_PARTITION_LBA:
