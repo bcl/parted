@@ -42,7 +42,8 @@ for type in ext2 ext3 ext4 btrfs xfs nilfs2 ntfs vfat hfsplus udf f2fs; do
   # create an $type file system, creation failures are not parted bugs,
   # skip the filesystem instead of failing the test.
   if [ "$type" = "xfs" ]; then
-      mkfs.xfs -ssize=$ss -dfile,name=$dev,size=${n_sectors}s || { warn_ "$ME: mkfs.$type failed, skipping"; continue; }
+      # XFS requires at least 300M which is > 1024 sectors with 8192b sector size
+      mkfs.xfs -ssize=$ss -dfile,name=$dev,size=300m || { warn_ "$ME: mkfs.$type failed, skipping"; continue; }
   else
       dd if=/dev/null of=$dev bs=$ss seek=$n_sectors >/dev/null || { warn_ "$ME: dd failed, skipping $type"; continue; }
       mkfs.$type $force $dev || { warn_ "$ME: mkfs.$type failed skipping"; continue; }
