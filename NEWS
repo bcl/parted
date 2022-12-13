@@ -4,6 +4,8 @@ GNU parted NEWS                                    -*- outline -*-
 
 ** New Features
 
+  Support GPT partition attribute bit 63 as no_automount flag.
+
   Add type commands to set type-id on MS-DOS and type-uuid on GPT.
 
 * Noteworthy changes in release 3.5 (2022-04-18) [stable]
