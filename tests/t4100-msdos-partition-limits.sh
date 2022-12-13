@@ -37,7 +37,7 @@ mp=`pwd`/mount-point
 n=4096
 
 # create an XFS file system
-mkfs.xfs -dfile,name=$fs,size=100m || fail=1
+mkfs.xfs -dfile,name=$fs,size=300m || fail=1
 mkdir "$mp" || fail=1
 
 # Unmount upon interrupt, failure, etc., as well as upon normal completion.
