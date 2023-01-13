@@ -1709,7 +1709,7 @@ _device_open_ro (PedDevice* dev)
 static int
 linux_open (PedDevice* dev)
 {
-    return _device_open (dev, RW_MODE);
+    return _device_open (dev, dev->read_only ? RD_MODE : RW_MODE);
 }
 
 static int

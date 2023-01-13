@@ -335,7 +335,7 @@ beos_open (PedDevice* dev)
 	BEOSSpecific* arch_specific = BEOS_SPECIFIC(dev);
 
 retry:
-	arch_specific->fd = open(dev->path, O_RDWR);
+	arch_specific->fd = open(dev->path, dev->read_only ? RD_MODE : RW_MODE);
 	if (arch_specific->fd == -1) {
 		char* rw_error_msg = strerror(errno);
 
