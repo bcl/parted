@@ -28,7 +28,7 @@ main (int argc, char **argv)
         TCase* tcase_probe = tcase_create ("Probe");
 
         if (argc < 2) {
-                fail ("Insufficient arguments");
+                ck_abort_msg("Insufficient arguments");
                 return EXIT_FAILURE;
         }
         temporary_disk = argv[1];

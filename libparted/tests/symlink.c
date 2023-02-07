@@ -30,7 +30,7 @@ static void
 create_disk (void)
 {
         temporary_disk = _create_disk (4096 * 1024);
-        fail_if (temporary_disk == NULL, "Failed to create temporary disk");
+        ck_assert_msg(temporary_disk != NULL, "Failed to create temporary disk");
 }
 
 static void
@@ -45,7 +45,7 @@ START_TEST (test_symlink)
         char cwd[256], ln[256] = "/dev/mapper/parted-test-XXXXXX";
 
         if (!getcwd (cwd, sizeof cwd)) {
-                fail ("Could not get cwd");
+                ck_abort_msg("Could not get cwd");
                 return;
         }
 
@@ -53,7 +53,7 @@ START_TEST (test_symlink)
            temporary disk */
         int tmp_fd = mkstemp (ln);
         if (tmp_fd == -1) {
-                fail ("Could not create tempfile");
+                ck_abort_msg("Could not create tempfile");
                 return;
         }
 
@@ -62,11 +62,17 @@ START_TEST (test_symlink)
         close (tmp_fd);
         unlink (ln);
         char temp_disk_path[256];
-        snprintf (temp_disk_path, sizeof temp_disk_path, "%s/%s", cwd,
-                  temporary_disk);
+        int r = snprintf(temp_disk_path, sizeof temp_disk_path, "%s/%s",
+                          cwd,
+                          temporary_disk);
+        if (r < 0 || r >= sizeof temp_disk_path) {
+                ck_abort_msg("symlink truncated");
+                return;
+        }
+
         int res = symlink (temp_disk_path, ln);
         if (res) {
-                fail ("could not create symlink");
+                ck_abort_msg("could not create symlink");
                 return;
         }
 
@@ -77,7 +83,7 @@ START_TEST (test_symlink)
         /* Create a second temporary_disk */
         char *temporary_disk2 = _create_disk (4096 * 1024);
         if (temporary_disk2 == NULL) {
-                fail ("Failed to create 2nd temporary disk");
+                ck_abort_msg("Failed to create 2nd temporary disk");
                 goto exit_destroy_dev;
         }
 
@@ -89,11 +95,16 @@ START_TEST (test_symlink)
 
         /* Update symlink to point to our new / second temporary disk */
         unlink (ln);
-        snprintf (temp_disk_path, sizeof temp_disk_path, "%s/%s", cwd,
-                  temporary_disk);
+        r = snprintf (temp_disk_path, sizeof temp_disk_path, "%s/%s",
+                          cwd, temporary_disk);
+        if (r < 0 || r >= sizeof temp_disk_path) {
+                ck_abort_msg("2nd symlink truncated");
+                goto exit_destroy_dev;
+        }
+
         res = symlink (temp_disk_path, ln);
         if (res) {
-                fail ("could not create 2nd symlink");
+                ck_abort_msg("could not create 2nd symlink");
                 goto exit_destroy_dev;
         }
 

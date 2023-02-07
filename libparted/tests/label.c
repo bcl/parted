@@ -16,7 +16,7 @@ static void
 create_disk (void)
 {
         temporary_disk = _create_disk (80 * 1024 * 1024);
-        fail_if (temporary_disk == NULL, "Failed to create temporary disk");
+        ck_assert_msg(temporary_disk != NULL, "Failed to create temporary disk");
 }
 
 static void
@@ -72,12 +72,11 @@ START_TEST (test_probe_label)
 
                 /* Try to probe the disk label. */
                 probed = ped_disk_probe (dev);
-                fail_if (!probed,
+                ck_assert_msg(probed,
                          "Failed to probe the just created label of type: %s",
                          type->name);
                 if (probed && !STREQ (probed->name, type->name))
-                        fail_if (1,
-                                 "Probe returned label of type: %s as type: %s",
+                        ck_abort_msg("Probe returned label of type: %s as type: %s",
                                  type->name, probed->name);
         }
         ped_device_destroy (dev);
@@ -105,12 +104,11 @@ START_TEST (test_read_label)
 
                 /* Try to read the disk label. */
                 disk = ped_disk_new (dev);
-                fail_if (!disk,
+                ck_assert_msg(disk,
                          "Failed to read the just created label of type: %s",
                          type->name);
                 if (disk && !STREQ (disk->type->name, type->name))
-                        fail_if (1,
-                                 "Read returned label of type: %s as type: %s",
+                        ck_abort_msg("Read returned label of type: %s as type: %s",
                                  type->name, disk->type->name);
 
                 ped_disk_destroy (disk);
@@ -138,7 +136,7 @@ START_TEST (test_clone_label)
 
                 /* Try to clone the disk label. */
                 PedDisk* clone = ped_disk_duplicate (disk);
-                fail_if (!clone,
+                ck_assert_msg(clone,
                          "Failed to clone the just created label of type: %s",
                          type->name);
 
