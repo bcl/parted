@@ -34,7 +34,7 @@ static void set_test (void)
         type = ped_disk_type_get ("dasd");
 
         tmp_disk = _create_disk (20*1024*1024);
-        fail_if (tmp_disk == NULL, "Failed to create temporary disk");
+        ck_assert_msg(tmp_disk != NULL, "Failed to create temporary disk");
         dev = ped_device_get (tmp_disk);
         if (dev == NULL)
                 return;

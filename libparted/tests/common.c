@@ -27,7 +27,7 @@ size_t get_sector_size (void)
 PedExceptionOption
 _test_exception_handler (PedException* e)
 {
-        fail ("Exception of type %s has been raised: %s",
+        ck_abort_msg("Exception of type %s has been raised: %s",
               ped_exception_get_type_string (e->type),
               e->message);
 
@@ -69,10 +69,10 @@ _create_disk_label (PedDevice *dev, PedDiskType *type)
 
         /* Create the label */
         disk = ped_disk_new_fresh (dev, type);
-        fail_if (!disk, "Failed to create a label of type: %s",
+        ck_assert_msg(disk != NULL, "Failed to create a label of type: %s",
                  type->name);
-        fail_if (!ped_disk_commit(disk),
-		 "Failed to commit label to device");
+        ck_assert_msg(ped_disk_commit(disk) != 0,
+                 "Failed to commit label to device");
 
         return disk;
 }

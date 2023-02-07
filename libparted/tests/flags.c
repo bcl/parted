@@ -16,7 +16,7 @@ static void
 create_disk (void)
 {
         temporary_disk = _create_disk (80 * 1024 * 1024);
-        fail_if (temporary_disk == NULL, "Failed to create temporary disk");
+        ck_assert_msg(temporary_disk != NULL, "Failed to create temporary disk");
 }
 
 static void
@@ -47,7 +47,7 @@ START_TEST (test_gpt_flag)
 
         // Check flag to confirm it is still set
         part = ped_disk_get_partition (disk, 1);
-        fail_if (ped_partition_get_flag(part, PED_PARTITION_BIOS_GRUB) != 1, "BIOS_GRUB flag not set");
+        ck_assert_msg(ped_partition_get_flag(part, PED_PARTITION_BIOS_GRUB) == 1, "BIOS_GRUB flag not set");
 
         ped_disk_destroy (disk);
         ped_device_destroy (dev);
@@ -75,7 +75,7 @@ START_TEST (test_msdos_flag)
 
         // Check flag to confirm it is still set
         part = ped_disk_get_partition (disk, 1);
-        fail_if (ped_partition_get_flag(part, PED_PARTITION_BLS_BOOT) != 1, "BLS_BOOT flag not set");
+        ck_assert_msg(ped_partition_get_flag(part, PED_PARTITION_BLS_BOOT) == 1, "BLS_BOOT flag not set");
 
         ped_disk_destroy (disk);
         ped_device_destroy (dev);

@@ -14,7 +14,7 @@ static void
 create_disk (void)
 {
         temporary_disk = _create_disk (get_sector_size () * 4 * 10 * 1024);
-        fail_if (temporary_disk == NULL, "Failed to create temporary disk");
+        ck_assert_msg(temporary_disk != NULL, "Failed to create temporary disk");
 }
 
 static void
@@ -72,8 +72,8 @@ START_TEST (test_duplicate)
                 part = ped_disk_get_partition (disk, *i);
                 part_dup = ped_disk_get_partition (disk_dup, *i);
 
-                fail_if (part->geom.start != part_dup->geom.start ||
-                         part->geom.end != part_dup->geom.end,
+                ck_assert_msg(part->geom.start == part_dup->geom.start &&
+                         part->geom.end == part_dup->geom.end,
                          "Duplicated partition %d doesn't match. "
                          "Details are start: %d/%d end: %d/%d\n",
                          *i, part->geom.start, part_dup->geom.start,
