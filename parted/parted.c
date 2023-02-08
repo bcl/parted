@@ -130,6 +130,7 @@ static struct option const options[] = {
         {"fix",         0, NULL, 'f'},
         {"version",     0, NULL, 'v'},
         {"align",       required_argument, NULL, 'a'},
+        {"readonly",    0, NULL, 'r'},
         {"-pretend-input-tty", 0, NULL, PRETEND_INPUT_TTY},
         {NULL,          0, NULL, 0}
 };
@@ -143,6 +144,7 @@ static const char *const options_help [][2] = {
         {"fix",         N_("in script mode, fix instead of abort when asked")},
         {"version",     N_("displays the version")},
         {"align=[none|cyl|min|opt]", N_("alignment for new partitions")},
+        {"readonly",    N_("open the device using read-only mode")},
         {NULL,          NULL}
 };
 
@@ -153,6 +155,7 @@ int     opt_output_mode = HUMAN;
 int     disk_is_modified = 0;
 int     is_toggle_mode = 0;
 int     alignment = ALIGNMENT_OPTIMAL;
+int     opt_readonly = 0;
 
 static const char* number_msg = N_(
 "NUMBER is the partition number used by Linux.  On MS-DOS disk labels, the "
@@ -1330,8 +1333,13 @@ do_print (PedDevice** dev, PedDisk** diskp)
                 ped_device_free_all ();
 
                 *dev = ped_device_get (dev_name);
-                if (*dev && ped_device_open (*dev))
-                    status = 1;
+                if (*dev) {
+                    if (opt_readonly)
+                        (**dev).read_only = 1;
+
+                    if (ped_device_open (*dev))
+                        status = 1;
+                }
                 free (dev_name);
 
                 return status;
@@ -1960,6 +1968,10 @@ do_select (PedDevice** dev, PedDisk** diskp)
 
         if (!command_line_get_device (_("New device?"), &new_dev))
                 return 0;
+
+        if (opt_readonly)
+            new_dev->read_only = 1;
+
         if (!ped_device_open (new_dev))
                 return 0;
 
@@ -2522,6 +2534,7 @@ while (1)
                   alignment = XARGMATCH ("--align", optarg,
                                          align_args, align_types);
                   break;
+                case 'r': opt_readonly = 1; break;
                 case PRETEND_INPUT_TTY:
                   pretend_input_tty = 1;
                   break;
@@ -2561,33 +2574,36 @@ return 1;
 static PedDevice*
 _choose_device (int* argc_ptr, char*** argv_ptr)
 {
-PedDevice*      dev;
+    PedDevice*      dev;
 
-/* specified on command line? */
-if (*argc_ptr) {
-        dev = ped_device_get ((*argv_ptr) [0]);
-        if (!dev)
-                return NULL;
-        (*argc_ptr)--;
-        (*argv_ptr)++;
-} else {
-retry:
-        ped_device_probe_all ();
-        dev = ped_device_get_next (NULL);
-        if (!dev) {
-                if (ped_exception_throw (PED_EXCEPTION_ERROR,
-                        PED_EXCEPTION_RETRY_CANCEL,
-                        _("No device found"))
-                                == PED_EXCEPTION_RETRY)
-                        goto retry;
-                else
-                        return NULL;
-        }
-}
+    /* specified on command line? */
+    if (*argc_ptr) {
+            dev = ped_device_get ((*argv_ptr) [0]);
+            if (!dev)
+                    return NULL;
+            (*argc_ptr)--;
+            (*argv_ptr)++;
+    } else {
+    retry:
+            ped_device_probe_all ();
+            dev = ped_device_get_next (NULL);
+            if (!dev) {
+                    if (ped_exception_throw (PED_EXCEPTION_ERROR,
+                            PED_EXCEPTION_RETRY_CANCEL,
+                            _("No device found"))
+                                    == PED_EXCEPTION_RETRY)
+                            goto retry;
+                    else
+                            return NULL;
+            }
+    }
 
-if (!ped_device_open (dev))
-        return NULL;
-return dev;
+    if (opt_readonly)
+        dev->read_only = 1;
+
+    if (!ped_device_open (dev))
+            return NULL;
+    return dev;
 }
 
 static PedDevice*
