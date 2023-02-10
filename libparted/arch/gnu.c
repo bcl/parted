@@ -361,8 +361,6 @@ gnu_new (const char* path)
 				dev->path, strerror (rw_err), dev->path);
 			dev->read_only = 1;
 		}
-	} else {
-		dev->read_only = 0;
 	}
 
 	_flush_cache (dev);
