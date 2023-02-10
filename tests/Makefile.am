@@ -8,6 +8,7 @@ TESTS = \
   t0010-script-no-ctrl-chars.sh \
   t0100-print.sh \
   t0101-print-empty.sh \
+  t0102-print-readonly.sh \
   t0200-gpt.sh \
   t0201-gpt.sh \
   t0202-gpt-pmbr.sh \
@@ -48,6 +49,7 @@ TESTS = \
   t1101-busy-partition.sh \
   t1102-loop-label.sh \
   t1104-remove-and-add-partition.sh \
+  t1105-mklabel-readonly.sh \
   t1700-probe-fs.sh \
   t1701-rescue-fs.sh \
   t2200-dos-label-recog.sh \
