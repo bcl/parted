@@ -1718,8 +1718,11 @@ ped_disk_next_partition (const PedDisk* disk, const PedPartition* part)
 		return part->part_list ? part->part_list : part->next;
 	if (part->next)
 		return part->next;
-	if (part->type & PED_PARTITION_LOGICAL)
+	if (part->type & PED_PARTITION_LOGICAL) {
+		if (!ped_disk_extended_partition (disk))
+			return NULL;
 		return ped_disk_extended_partition (disk)->next;
+	}
 	return NULL;
 }
 
