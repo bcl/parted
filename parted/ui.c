@@ -564,8 +564,7 @@ _readline (const char* prompt, const StrList* possibilities)
         wipe_line ();
 #ifdef HAVE_LIBREADLINE
         if (!opt_script_mode) {
-                /* XXX: why isn't prompt const? */
-                line = readline ((char*) prompt);
+                line = readline (prompt);
                 if (line)
                         _add_history_unique (line);
         } else
@@ -781,6 +780,8 @@ realloc_and_cat (char* str, const char* append)
         int      length = strlen (str) + strlen (append) + 1;
         char*    new_str = realloc (str, length);
 
+        PED_ASSERT(new_str != NULL);
+
         strcat (new_str, append);
         return new_str;
 }
@@ -789,7 +790,9 @@ static char*
 _construct_prompt (const char* head, const char* def,
                    const StrList* possibilities)
 {
+        PED_ASSERT(head != NULL);
         char*    prompt = strdup (head);
+        PED_ASSERT(prompt != NULL);
 
         if (def && possibilities)
                 PED_ASSERT (str_list_match_any (possibilities, def));
