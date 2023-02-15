@@ -198,8 +198,9 @@ ped_file_system_close (PedFileSystem* fs)
 {
        PED_ASSERT (fs != NULL);
        PedDevice *dev = fs->geom->dev;
+       close_fn_t fn = close_fn (fs->type->name);
 
-       if (!(close_fn (fs->type->name) (fs)))
+       if (!fn || !(fn (fs)))
                goto error_close_dev;
        ped_device_close (dev);
        return 1;
