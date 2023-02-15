@@ -166,6 +166,8 @@ wchar_to_str (const wchar_t* str, size_t count)
 		goto error;
 
 	result = realloc (result, strlen (result) + 1);
+	if (!result)
+		goto error;
 	return result;
 
 error:
