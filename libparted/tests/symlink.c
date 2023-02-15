@@ -61,7 +61,7 @@ START_TEST (test_symlink)
            here, but as /dev/mapper is root owned this is a non issue */
         close (tmp_fd);
         unlink (ln);
-        char temp_disk_path[256];
+        char temp_disk_path[259];
         int r = snprintf(temp_disk_path, sizeof temp_disk_path, "%s/%s",
                           cwd,
                           temporary_disk);

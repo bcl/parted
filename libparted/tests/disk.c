@@ -75,7 +75,7 @@ START_TEST (test_duplicate)
                 ck_assert_msg(part->geom.start == part_dup->geom.start &&
                          part->geom.end == part_dup->geom.end,
                          "Duplicated partition %d doesn't match. "
-                         "Details are start: %d/%d end: %d/%d\n",
+                         "Details are start: %lld/%lld end: %lld/%lld\n",
                          *i, part->geom.start, part_dup->geom.start,
                          part->geom.end, part_dup->geom.end);
         }
