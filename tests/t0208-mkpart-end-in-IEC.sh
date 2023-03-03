@@ -25,7 +25,7 @@ dev=dev-file
 
 dd if=/dev/null of=$dev bs=1M seek=$n_mbs || fail=1
 # create 1st partition
-parted --align=none -s $dev mklabel gpt mkpart p1 1MiB 2MiB > err 2>&1 || fail=1
+parted --align=none -s $dev mklabel gpt mkpart p1 1MiB 2048KiB > err 2>&1 || fail=1
 compare /dev/null err || fail=1  # expect no output
 #parted -m -s $dev u s p > exp || fail=1
 

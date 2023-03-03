@@ -28,9 +28,40 @@ parted --align=none -s $dev mklabel gpt mkpart p1 $((64*1024))B $((1024*1024-$ss
 compare /dev/null err || fail=1
 parted -m -s $dev u s p > exp || fail=1
 
+# Test using MiB
 rm $dev
 dd if=/dev/null of=$dev bs=$ss seek=$n_sectors || fail=1
 parted --align=none -s $dev mklabel gpt mkpart p1 64KiB 1MiB \
+    > err 2>&1 || fail=1
+compare /dev/null err || fail=1
+parted -m -s $dev u s p > out || fail=1
+
+compare exp out || fail=1
+
+# Test using lower case kib and mib
+rm $dev
+dd if=/dev/null of=$dev bs=$ss seek=$n_sectors || fail=1
+parted --align=none -s $dev mklabel gpt mkpart p1 64kib 1mib \
+    > err 2>&1 || fail=1
+compare /dev/null err || fail=1
+parted -m -s $dev u s p > out || fail=1
+
+compare exp out || fail=1
+
+# Test using KiB
+rm $dev
+dd if=/dev/null of=$dev bs=$ss seek=$n_sectors || fail=1
+parted --align=none -s $dev mklabel gpt mkpart p1 64KiB 1024KiB \
+    > err 2>&1 || fail=1
+compare /dev/null err || fail=1
+parted -m -s $dev u s p > out || fail=1
+
+compare exp out || fail=1
+
+# Test using kiB
+rm $dev
+dd if=/dev/null of=$dev bs=$ss seek=$n_sectors || fail=1
+parted --align=none -s $dev mklabel gpt mkpart p1 64kiB 1024kiB \
     > err 2>&1 || fail=1
 compare /dev/null err || fail=1
 parted -m -s $dev u s p > out || fail=1

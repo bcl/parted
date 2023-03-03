@@ -583,16 +583,27 @@ void _strip_trailing_spaces(char *str)
                 str[i]='\0';
 }
 
-/* Return true, if str ends with [kMGTPEZY]iB, i.e. IEC units.  */
+/* Return true if the unit is one of the supported IEC unit values */
+static bool
+_is_unit_IEC(const PedUnit unit) {
+    return (unit == PED_UNIT_KIBIBYTE) || (unit == PED_UNIT_MEBIBYTE) ||
+           (unit == PED_UNIT_GIBIBYTE) || (unit == PED_UNIT_TEBIBYTE);
+}
+
+/* Return true, if str ends with IEC units.  */
 static bool
 _string_ends_with_iec_unit(const char *str)
 {
-        /* 3 characters for the IEC unit and at least 1 digit */
-        if (!str || strlen(str) < 4)
-                return false;
+    /* 3 characters for the IEC unit and at least 1 digit */
+    if (!str || strlen(str) < 4)
+        return false;
 
-        char const *p = str + strlen(str) - 3;
-        return strchr ("kMGTPEZY", *p) && c_strcasecmp (p+1, "iB") == 0;
+    char const *p = str + strlen(str) - 3;
+    PedUnit unit = ped_unit_get_by_name(p);
+    if (unit == -1) {
+        return false;
+    }
+    return _is_unit_IEC(unit);
 }
 
 /* Return true if str ends with explicit unit identifier.
@@ -612,7 +623,7 @@ _string_has_unit_suffix(const char *str)
         return false;
 }
 
-/* If the selected unit is one of kiB, MiB, GiB or TiB and the partition is not
+/* If the selected unit is one of KiB, MiB, GiB or TiB and the partition is not
  * only 1 sector long, then adjust the end so that it is one sector before the
  * given position. Also adjust range_end accordingly. Thus next partition can
  * start immediately after this one.
@@ -636,9 +647,7 @@ _adjust_end_if_iec (PedSector* start, PedSector* end,
         _strip_trailing_spaces(end_input);
         PedUnit unit = ped_unit_get_default();
         if (_string_ends_with_iec_unit(end_input) ||
-            (!_string_has_unit_suffix(end_input) &&
-             ((unit == PED_UNIT_KIBIBYTE) || (unit == PED_UNIT_MEBIBYTE) ||
-              (unit == PED_UNIT_GIBIBYTE) || (unit == PED_UNIT_TEBIBYTE)))) {
+            (!_string_has_unit_suffix(end_input) && _is_unit_IEC(unit))) {
                 *end -= 1;
                 range_end->start -= 1;
                 range_end->end -= 1;
