@@ -45,6 +45,7 @@ Here are most of the steps we (maintainers) follow when making a release.
    - ncurses-devel
    - readline-devel
    - check
+   - check-devel
    - pkgconfig
    - dosfstools
    - sudo
@@ -53,6 +54,7 @@ Here are most of the steps we (maintainers) follow when making a release.
    - hfsplus-tools
    - btrfs-progs
    - ntfsprogs
+   - wget
 
   Debian Packages
    - libtool
