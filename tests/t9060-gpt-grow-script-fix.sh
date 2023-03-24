@@ -2,7 +2,7 @@
 # grow a gpt disk, ensure that parted offers to update the gpt size
 # do this in script mode with fix
 
-# Copyright (C) 2009-2012, 2014, 2019, 2022 Free Software Foundation, Inc.
+# Copyright (C) 2009-2012, 2014, 2019, 2022-2023 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

@@ -1,7 +1,7 @@
 /* -*- Mode: c; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 8 -*-
 
     libparted - a library for manipulating disk partitions
-    Copyright (C) 2000-2001, 2005, 2007-2014, 2019-2022 Free Software
+    Copyright (C) 2000-2001, 2005, 2007-2014, 2019-2023 Free Software
     Foundation, Inc.
 
     This program is free software; you can redistribute it and/or modify
