@@ -425,6 +425,6 @@ require_64bit_()
 # Ruturns 0 if the filesystem is available, otherwise skips the test
 require_filesystem_()
 {
-  grep -q $1 /proc/filesystems && return 0
+  grep $1 /proc/filesystems >/dev/null && return 0
   modprobe --quiet --dry-run $1 || skip_ "this test requires kernel support for $1"
 }
