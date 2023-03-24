@@ -8,6 +8,17 @@ GNU parted NEWS                                    -*- outline -*-
 
   Add type commands to set type-id on MS-DOS and type-uuid on GPT.
 
+  Add swap flag support to the dasd disklabel
+
+  Add display of GPT disk and partition UUIDs in JSON output
+
+
+** Bug Fixes
+
+  Fix use of enums in flag limits by switching to using #define
+
+  Fix ending sector location when using kibi IEC suffix
+
 * Noteworthy changes in release 3.5 (2022-04-18) [stable]
 
 ** New Features
