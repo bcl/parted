@@ -298,6 +298,8 @@ Note: originally, libuuid was part of the e2fsprogs package.  Later, it
 moved to util-linux-ng-2.16, and that package is now the preferred source.])])
 AC_SUBST([UUID_LIBS])
 
+PARTED_LIBS="$PARTED_LIBS $UUID_LIBS"
+
 dnl Check for libdevmapper
 DM_LIBS=
 if test $ENABLE_DEVICE_MAPPER = yes; then
