@@ -3,6 +3,7 @@
 *.trs
 *~
 .deps
+.dirstamp
 .gdb-history
 .libs
 .tarball-version
