@@ -75,6 +75,7 @@ libparted_fs_resize_la_LDFLAGS =		\
 EXTRA_DIST += fsresize.sym
 libparted_fs_resize_la_DEPENDENCIES = $(sym_file)
 
+libparted_fs_resize_la_LIBADD  = $(UUID_LIBS)
 libparted_fs_resize_la_SOURCES = \
   r/filesys.c			\
   r/fat/bootsector.c		\
