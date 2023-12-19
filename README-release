@@ -180,3 +180,18 @@ Once all the builds and tests have passed,
 
   Send an email to coordinator@translationproject.org with a subject of parted-x.y.z.pot and a link
   to the tar.xz file mentioned in the release.
+
+* Update the API documentation webpage
+
+  Run `mkdir doc/libparted/API && `doxygen Doxyfile` from the top of the tree, after having run
+  make. Then copy the contents of the API directory to the cvs web manually.
+
+  * Check out the parted web directory with cvs using your login. See https://savannah.gnu.org/cvs/?group=parted for details on group membership.
+
+    cvs -z3 -d:ext:USER@cvs.savannah.gnu.org:/web/parted co parted
+
+  * Copy the new API into the ./api/ directory
+  * manually fiddle with adding new files, changed files, and removing removed files.
+  * commit the changes
+
+    cvs ci -m "Update API ..."
