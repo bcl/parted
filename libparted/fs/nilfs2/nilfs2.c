@@ -118,11 +118,12 @@ nilfs2_probe (PedGeometry* geom)
 
 	if (ped_geometry_read(geom, buf, 0, sectors))
 		sb = (struct nilfs2_super_block*)(buf + 1024);
+	if (!sb || !is_valid_nilfs_sb(sb))
+		return NULL;
+
 	if (ped_geometry_read(geom, buff2, sb2off, sectors2))
 		sb2 = (struct nilfs2_super_block*)buff2;
-
-	if ((!sb || !is_valid_nilfs_sb(sb)) &&
-	    (!sb2 || !is_valid_nilfs_sb(sb2)))
+	if (!sb2 || !is_valid_nilfs_sb(sb2))
 		return NULL;
 
 	/* reserve 4k bytes for secondary superblock */
