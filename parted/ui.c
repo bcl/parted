@@ -645,7 +645,7 @@ exception_handler (PedException* ex)
         /* script-mode and fix? */
         int fix_is_an_option = (ex->options & PED_EXCEPTION_FIX);
         if (opt_script_mode && opt_fix_mode && fix_is_an_option) {
-                printf ("Fixing, due to --fix\n");
+                fprintf (stderr, "Fixing, due to --fix\n");
                 return PED_EXCEPTION_FIX;
         }
 
