@@ -2172,7 +2172,7 @@ do_unit (PedDevice** dev, PedDisk** diskp)
 }
 
 static int
-do_version ()
+do_version (PedDevice** dev, PedDisk** diskp)
 {
     printf ("\n%s\n%s",
             prog_name,
