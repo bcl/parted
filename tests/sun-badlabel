@@ -1,0 +1,42 @@
+#!/usr/bin/python3
+# Mangle the CHS values stored in a SUN disklabel
+# This sets CHS to 1 track, 2 sectors and updates the checksum
+# This triggers a bug in the SUN disklabel code when the CHS
+# error is UNHANDLED (in script mode or with a custom exception
+# handler) and it continues using a bad label which will coredump
+# when .duplicate() is called on it.
+
+import array
+from struct import unpack_from, pack_into
+import sys
+
+file = open(sys.argv[1],'rb+')
+header = file.read(512)
+
+# Make sure it looks like a SUN disklabel first
+magic = unpack_from(">H", header, 0x1FC)[0]
+if magic != 0xDABE:
+    raise RuntimeError("Not a SUN disklabel. magic = 0x%04X" % magic)
+csum = unpack_from(">H", header, 0x1FE)[0]
+ntrks = unpack_from(">H", header, 0x1B4)[0]
+nsect = unpack_from(">H", header, 0x1B6)[0]
+
+header = array.array('B', header)
+# cylinders at 0x1B0
+# modify ntrks at offset 0x1B4
+pack_into('>H', header, 0x1B4, 1)
+# modify nsect at offset 0x1B6
+pack_into('>H', header, 0x1B6, 2)
+
+## Undo old values
+csum ^= ntrks
+csum ^= nsect
+
+## Add new
+csum ^= 1
+csum ^= 2
+pack_into('>H', header, 0x1FE, csum)
+
+file.seek(0)
+file.write(header)
+file.close()
