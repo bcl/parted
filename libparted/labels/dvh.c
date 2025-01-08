@@ -308,7 +308,7 @@ dvh_read (PedDisk* disk)
 			PED_EXCEPTION_IGNORE_CANCEL,
 			_("Checksum is wrong, indicating the partition "
 			  "table is corrupt."))
-				== PED_EXCEPTION_CANCEL)
+				!= PED_EXCEPTION_IGNORE)
 			return 0;
 	}
 
