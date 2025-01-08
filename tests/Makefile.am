@@ -71,6 +71,7 @@ TESTS = \
   t4100-msdos-partition-limits.sh \
   t4100-dvh-partition-limits.sh \
   t4100-msdos-starting-sector.sh \
+  t4101-dvh-badlabel.sh \
   t4200-partprobe.sh \
   t4300-nilfs2-tiny.sh \
   t4301-nilfs2-badsb2.sh \
