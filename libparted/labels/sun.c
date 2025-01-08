@@ -284,7 +284,7 @@ _check_geometry_sanity (PedDisk* disk, SunRawLabel* label)
 				PED_BE16_TO_CPU(label->pcylcount),
 				PED_BE16_TO_CPU(label->ntrks),
 				PED_BE16_TO_CPU(label->nsect))
-			== PED_EXCEPTION_CANCEL)
+			!= PED_EXCEPTION_IGNORE)
 			return 0;
 #endif
 		dev->bios_geom.sectors = PED_BE16_TO_CPU(label->nsect);
