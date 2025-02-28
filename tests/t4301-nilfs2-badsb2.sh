@@ -27,15 +27,21 @@ end=$(($len * 512 / $ss))
 parted -s $dev mklabel msdos mkpart primary 1s ${end}s || framework_failure_
 
 # Write a secondary superblock with the nilfs magic number and a nilfs
-# superblock length (s_bytes) field of only 10 bytes.
+# superblock length (s_bytes) field of only 13 bytes.
 # struct nilfs2_super_block starts with these four fields...
 #	uint32_t	s_rev_level;
 #	uint16_t	s_minor_rev_level;
 #	uint16_t	s_magic;
 #	uint16_t	s_bytes;
 sb2_offset=$(( 24 / ($ss / 512) + 1))
-perl -e "print pack 'LSSS.', 0, 0, 0x3434, 10, $ss" |
+perl -e "print pack 'LSSS.', 0, 0, 0x3434, 13, $ss" |
     dd of=$dev bs=$ss seek=$sb2_offset count=1 conv=notrunc
+
+# Write primary nilfs magic number and a nilfs
+# superblock length (s_bytes) field of only 13 bytes.
+sb_offset=3
+perl -e "print pack 'LSSS.', 0, 0, 0x3434, 13, $ss" |
+    dd of=$dev bs=$ss seek=$sb_offset count=1 conv=notrunc
 
 # This used to give parted a sigsegv.
 parted -s $dev print || fail=1

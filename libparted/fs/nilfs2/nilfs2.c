@@ -88,7 +88,7 @@ is_valid_nilfs_sb(struct nilfs2_super_block *sb)
 		return 0;
 
 	bytes = PED_LE16_TO_CPU(sb->s_bytes);
-	if (bytes > 1024 || bytes < sumoff - 4)
+	if (bytes > 1024 || bytes < sumoff + 4)
 		return 0;
 
 	crc = __efi_crc32(sb, sumoff, PED_LE32_TO_CPU(sb->s_crc_seed));
