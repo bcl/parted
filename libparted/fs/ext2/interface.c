@@ -52,24 +52,21 @@ _ext2_generic_probe (PedGeometry* geom, int expect_ext_ver)
 		int is_ext3 = 0;
 		int is_ext4 = 0;
 
-		is_ext3 = (EXT2_SUPER_FEATURE_COMPAT (*sb)
-			   & EXT3_FEATURE_COMPAT_HAS_JOURNAL) != 0;
-		if (is_ext3) {
-			is_ext4 = ((EXT2_SUPER_FEATURE_RO_COMPAT (*sb)
-				    & EXT4_FEATURE_RO_COMPAT_HUGE_FILE)
-				   || (EXT2_SUPER_FEATURE_RO_COMPAT (*sb)
-				       & EXT4_FEATURE_RO_COMPAT_GDT_CSUM)
-				   || (EXT2_SUPER_FEATURE_RO_COMPAT (*sb)
-				       & EXT4_FEATURE_RO_COMPAT_DIR_NLINK)
-				   || (EXT2_SUPER_FEATURE_INCOMPAT (*sb)
-				       & EXT4_FEATURE_INCOMPAT_EXTENTS)
-				   || (EXT2_SUPER_FEATURE_INCOMPAT (*sb)
-				       & EXT4_FEATURE_INCOMPAT_64BIT)
-				   || (EXT2_SUPER_FEATURE_INCOMPAT (*sb)
-				       & EXT4_FEATURE_INCOMPAT_FLEX_BG));
-			if (is_ext4)
-				is_ext3 = 0;
-		}
+		is_ext4 = ((EXT2_SUPER_FEATURE_RO_COMPAT (*sb)
+			    & EXT4_FEATURE_RO_COMPAT_HUGE_FILE)
+			   || (EXT2_SUPER_FEATURE_RO_COMPAT (*sb)
+			       & EXT4_FEATURE_RO_COMPAT_GDT_CSUM)
+			   || (EXT2_SUPER_FEATURE_RO_COMPAT (*sb)
+			       & EXT4_FEATURE_RO_COMPAT_DIR_NLINK)
+			   || (EXT2_SUPER_FEATURE_INCOMPAT (*sb)
+			       & EXT4_FEATURE_INCOMPAT_EXTENTS)
+			   || (EXT2_SUPER_FEATURE_INCOMPAT (*sb)
+			       & EXT4_FEATURE_INCOMPAT_64BIT)
+			   || (EXT2_SUPER_FEATURE_INCOMPAT (*sb)
+			       & EXT4_FEATURE_INCOMPAT_FLEX_BG));
+		if (!is_ext4)
+			is_ext3 = (EXT2_SUPER_FEATURE_COMPAT (*sb)
+				   & EXT3_FEATURE_COMPAT_HAS_JOURNAL) != 0;
 		if (expect_ext_ver == 2 && (is_ext3 || is_ext4))
 			return NULL;
 		if (expect_ext_ver == 3 && !is_ext3)
