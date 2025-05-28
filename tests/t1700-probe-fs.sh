@@ -70,4 +70,14 @@ for feature in uninit_bg flex_bg; do
   rm $dev
 done
 
+# ext4 without a journal should still indicate ext4
+# create an ext3 file system
+dd if=/dev/null of=$dev bs=1024 seek=8192 >/dev/null || skip_ "dd failed"
+mkfs.ext4 -O ^has_journal -F $dev >/dev/null || skip_ "mkfs.ext4 failed"
+
+# probe the file system, which should still be ext4
+parted -m -s $dev u s print >out 2>&1 || fail=1
+grep '^1:.*:ext4::;$' out || fail=1
+rm $dev
+
 Exit $fail

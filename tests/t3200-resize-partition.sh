@@ -111,7 +111,7 @@ compare exp out || fail=1
 parted -m -s $dev u s p > out 2>&1 || fail=1
 
 sed -n 3p out > k && mv k out || fail=1
-printf "1:$default_start:$new_end:3073s:ext2::$ms;\n" > exp || fail=1
+printf "1:$default_start:$new_end:3073s:ext4::$ms;\n" > exp || fail=1
 compare exp out || fail=1
 
 umount "${dev}1" || fail=1
